@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LaksAtlas — Norway Salmon Farming Transparency</title>
+
+<!-- =======================================================================
+  SECTION: EXTERNAL DEPENDENCIES
+======================================================================= -->
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+
+<style>
+:root {
+  --bg: #08090d;
+  --bg-card: rgba(255,255,255,0.03);
+  --bg-card-hover: rgba(255,255,255,0.06);
+  --border: rgba(255,255,255,0.06);
+  --border-hover: rgba(255,255,255,0.12);
+  --text: #e8e9ed;
+  --text-dim: #6b7084;
+  --text-muted: #3d4156;
+  --neon-cyan: #00f0ff;
+  --neon-magenta: #ff2d78;
+  --neon-green: #39ff8e;
+  --neon-amber: #ffb020;
+  --neon-red: #ff3b4a;
+  --neon-purple: #a855f7;
+  --glow-cyan: 0 0 20px rgba(0,240,255,0.3), 0 0 60px rgba(0,240,255,0.1);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: var(--bg); color: var(--text); font-family: 'Outfit', sans-serif; overflow: hidden; height: 100vh; }
+
+header { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; padding: 14px 24px; display: flex; justify-content: space-between; align-items: center; background: rgba(8,9,13,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+.logo { display: flex; align-items: center; gap: 12px; }
+.logo-mark { width: 32px; height: 32px; border: 2px solid var(--neon-cyan); border-radius: 7px; display: flex; align-items: center; justify-content: center; box-shadow: var(--glow-cyan); }
+.logo-mark::after { content: ''; width: 7px; height: 7px; background: var(--neon-cyan); border-radius: 50%; box-shadow: var(--glow-cyan); }
+.logo-text { font-weight: 800; font-size: 18px; letter-spacing: 4px; text-transform: uppercase; background: linear-gradient(135deg, var(--neon-cyan), var(--text)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.logo-sub { font-size: 9px; letter-spacing: 2.5px; color: var(--text-dim); text-transform: uppercase; }
+.header-meta { display: flex; align-items: center; gap: 20px; }
+.meta-badge { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-dim); background: var(--bg-card); border: 1px solid var(--border); padding: 5px 12px; border-radius: 6px; }
+.meta-badge strong { color: var(--neon-cyan); }
+
+.layout { display: grid; grid-template-columns: 280px 1fr 300px; height: 100vh; padding-top: 57px; }
+
+.panel { padding: 20px 16px; display: flex; flex-direction: column; gap: 12px; overflow-y: auto; border-right: 1px solid var(--border); }
+.panel:last-child { border-right: none; border-left: 1px solid var(--border); }
+.panel::-webkit-scrollbar { width: 4px; }
+.panel::-webkit-scrollbar-track { background: transparent; }
+.panel::-webkit-scrollbar-thumb { background: var(--border-hover); border-radius: 2px; }
+.panel-title { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--text-dim); font-weight: 600; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+
+.stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; transition: all 0.3s ease; opacity: 0; transform: translateY(8px); animation: fadeIn 0.5s ease forwards; }
+.stat-card:hover { background: var(--bg-card-hover); border-color: var(--border-hover); transform: translateY(-1px); }
+.stat-label { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-dim); font-weight: 500; margin-bottom: 6px; font-family: 'JetBrains Mono', monospace; }
+.stat-value { font-size: 26px; font-weight: 700; line-height: 1; margin-bottom: 3px; }
+.stat-value.cyan { color: var(--neon-cyan); text-shadow: 0 0 15px rgba(0,240,255,0.25); }
+.stat-value.green { color: var(--neon-green); }
+.stat-value.amber { color: var(--neon-amber); }
+.stat-value.red { color: var(--neon-red); }
+.stat-value.magenta { color: var(--neon-magenta); }
+.stat-sub { font-size: 11px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace; }
+.stat-bar { height: 3px; background: rgba(255,255,255,0.04); border-radius: 2px; margin-top: 10px; overflow: hidden; }
+.stat-bar-fill { height: 100%; border-radius: 2px; transition: width 1.5s ease; }
+.stat-bar-fill.cyan { background: var(--neon-cyan); }
+.stat-bar-fill.red { background: var(--neon-red); }
+.stat-bar-fill.amber { background: var(--neon-amber); }
+.stat-bar-fill.green { background: var(--neon-green); }
+.stat-bar-fill.magenta { background: var(--neon-magenta); }
+
+#map { width: 100%; height: 100%; background: var(--bg); }
+.leaflet-container { background: var(--bg) !important; font-family: 'Outfit', sans-serif !important; }
+.leaflet-control-zoom a { background: rgba(8,9,13,0.9) !important; color: var(--text) !important; border-color: var(--border) !important; }
+.leaflet-control-zoom a:hover { background: rgba(8,9,13,1) !important; color: var(--neon-cyan) !important; }
+.leaflet-control-attribution { background: rgba(8,9,13,0.8) !important; color: var(--text-muted) !important; font-size: 9px !important; }
+.leaflet-control-attribution a { color: var(--text-dim) !important; }
+
+/* =========================================================================
+   SECTION: FILTER PANEL — Checkboxes to show/hide categories
+========================================================================= */
+.filter-panel { position: absolute; top: 70px; right: 12px; z-index: 800; background: rgba(8,9,13,0.94); backdrop-filter: blur(12px); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; min-width: 210px; }
+.filter-title { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+.filter-item { display: flex; align-items: center; gap: 8px; padding: 5px 0; cursor: pointer; font-size: 11px; font-family: 'JetBrains Mono', monospace; color: var(--text-dim); transition: color 0.2s; user-select: none; }
+.filter-item:hover { color: var(--text); }
+.filter-item input[type="checkbox"] { appearance: none; -webkit-appearance: none; width: 14px; height: 14px; border: 1.5px solid var(--border-hover); border-radius: 3px; cursor: pointer; position: relative; flex-shrink: 0; transition: all 0.2s; }
+.filter-item input[type="checkbox"]:checked { border-color: var(--neon-cyan); background: rgba(0,240,255,0.15); }
+.filter-item input[type="checkbox"]:checked::after { content: '✓'; position: absolute; top: -1px; left: 2px; font-size: 10px; color: var(--neon-cyan); }
+.filter-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.filter-count { margin-left: auto; font-size: 10px; color: var(--text-muted); }
+.filter-divider { height: 1px; background: var(--border); margin: 8px 0; }
+
+/* =========================================================================
+   SECTION: TEMPERATURE LEGEND
+========================================================================= */
+.temp-legend { position: absolute; bottom: 70px; right: 12px; z-index: 800; background: rgba(8,9,13,0.94); backdrop-filter: blur(12px); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; display: none; }
+.temp-legend.visible { display: block; }
+.temp-legend-title { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; margin-bottom: 8px; }
+.temp-gradient { width: 160px; height: 10px; border-radius: 3px; background: linear-gradient(90deg, #1a1aff, #00ccff, #39ff8e, #ffb020, #ff3b4a); }
+.temp-labels { display: flex; justify-content: space-between; margin-top: 4px; font-size: 9px; font-family: 'JetBrains Mono', monospace; color: var(--text-dim); }
+
+/* =========================================================================
+   SECTION: MAP LEGEND
+========================================================================= */
+.map-legend { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 800; display: flex; gap: 16px; background: rgba(8,9,13,0.92); backdrop-filter: blur(12px); border: 1px solid var(--border); border-radius: 10px; padding: 10px 20px; }
+.legend-item { display: flex; align-items: center; gap: 6px; font-size: 10px; font-family: 'JetBrains Mono', monospace; color: var(--text-dim); }
+.legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+.legend-dot.green { background: var(--neon-green); box-shadow: 0 0 6px rgba(57,255,142,0.4); }
+.legend-dot.cyan { background: var(--neon-cyan); box-shadow: 0 0 6px rgba(0,240,255,0.4); }
+.legend-dot.amber { background: var(--neon-amber); box-shadow: 0 0 6px rgba(255,176,32,0.4); }
+.legend-dot.red { background: var(--neon-red); box-shadow: 0 0 6px rgba(255,59,74,0.4); }
+.legend-dot.grey { background: #444; }
+
+/* Leaflet popup styling */
+.leaflet-popup-content-wrapper { background: rgba(12,13,20,0.96) !important; color: var(--text) !important; border: 1px solid var(--border-hover) !important; border-radius: 12px !important; box-shadow: 0 20px 60px rgba(0,0,0,0.5) !important; padding: 0 !important; }
+.leaflet-popup-tip { background: rgba(12,13,20,0.96) !important; border: 1px solid var(--border-hover) !important; }
+.leaflet-popup-content { margin: 0 !important; min-width: 230px !important; }
+.popup-inner { padding: 16px 18px; }
+.popup-name { font-size: 15px; font-weight: 700; margin-bottom: 2px; }
+.popup-municipality { font-size: 10px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace; margin-bottom: 12px; }
+.popup-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.popup-stat-label { font-size: 8px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
+.popup-stat-value { font-size: 17px; font-weight: 700; margin-top: 1px; }
+.popup-diseases { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); font-size: 11px; color: var(--neon-red); font-family: 'JetBrains Mono', monospace; }
+.popup-fallow { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); font-size: 11px; color: var(--text-muted); font-style: italic; }
+
+.loading-overlay { position: fixed; inset: 0; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; transition: opacity 0.5s; }
+.loading-overlay.hidden { opacity: 0; pointer-events: none; }
+.loading-spinner { width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--neon-cyan); border-radius: 50%; animation: spin 1s linear infinite; }
+.loading-text { margin-top: 16px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-dim); letter-spacing: 2px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
+.stat-card:nth-child(2) { animation-delay: 0.05s; }
+.stat-card:nth-child(3) { animation-delay: 0.1s; }
+.stat-card:nth-child(4) { animation-delay: 0.15s; }
+.stat-card:nth-child(5) { animation-delay: 0.2s; }
+.stat-card:nth-child(6) { animation-delay: 0.25s; }
+.stat-card:nth-child(7) { animation-delay: 0.3s; }
+.stat-card:nth-child(8) { animation-delay: 0.35s; }
+
+@media (max-width: 1100px) {
+  .layout { grid-template-columns: 1fr; height: auto; }
+  .panel { max-height: 50vh; border: none !important; border-bottom: 1px solid var(--border) !important; }
+  #map { height: 60vh; }
+}
+</style>
+</head>
+<body>
+
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="loading-spinner"></div>
+  <div class="loading-text">Loading locality data...</div>
+</div>
+
+<header>
+  <div class="logo">
+    <div class="logo-mark"></div>
+    <div>
+      <div class="logo-text">LaksAtlas</div>
+      <div class="logo-sub">Salmon farming transparency</div>
+    </div>
+  </div>
+  <div class="header-meta">
+    <div class="meta-badge" id="weekBadge">Week <strong>—</strong> / <strong>—</strong></div>
+    <div class="meta-badge" id="countBadge"><strong>—</strong> localities</div>
+  </div>
+</header>
+
+<div class="layout">
+  <div class="panel" id="leftPanel">
+    <div class="panel-title">Norway Overview</div>
+  </div>
+  <div id="map"></div>
+  <div class="panel" id="rightPanel">
+    <div class="panel-title">Environmental Impact</div>
+  </div>
+</div>
+
+<!-- =====================================================================
+  SECTION: FILTER CONTROLS — Fallow unchecked by default
+====================================================================== -->
+<div class="filter-panel" id="filterPanel">
+  <div class="filter-title">Filter Localities</div>
+  <label class="filter-item"><input type="checkbox" id="filterGood" checked><div class="filter-dot" style="background:#39ff8e;box-shadow:0 0 4px rgba(57,255,142,0.4)"></div>Below 0.2<span class="filter-count" id="countGood">—</span></label>
+  <label class="filter-item"><input type="checkbox" id="filterModerate" checked><div class="filter-dot" style="background:#00f0ff;box-shadow:0 0 4px rgba(0,240,255,0.4)"></div>0.2 – 0.5<span class="filter-count" id="countModerate">—</span></label>
+  <label class="filter-item"><input type="checkbox" id="filterAbove" checked><div class="filter-dot" style="background:#ffb020;box-shadow:0 0 4px rgba(255,176,32,0.4)"></div>Above 0.5 limit<span class="filter-count" id="countAbove">—</span></label>
+  <label class="filter-item"><input type="checkbox" id="filterDisease" checked><div class="filter-dot" style="background:#ff3b4a;box-shadow:0 0 4px rgba(255,59,74,0.4)"></div>Disease active<span class="filter-count" id="countDisease">—</span></label>
+  <div class="filter-divider"></div>
+  <label class="filter-item"><input type="checkbox" id="filterFallow"><div class="filter-dot" style="background:#555"></div>Fallow / Not reporting<span class="filter-count" id="countFallow">—</span></label>
+  <div class="filter-divider"></div>
+  <label class="filter-item"><input type="checkbox" id="filterTemp"><div class="filter-dot" style="background:linear-gradient(135deg,#1a1aff,#ff3b4a);width:10px;height:10px"></div>Sea temperature layer</label>
+</div>
+
+<div class="temp-legend" id="tempLegend">
+  <div class="temp-legend-title">Sea Temperature</div>
+  <div class="temp-gradient"></div>
+  <div class="temp-labels"><span>2°C</span><span>5°C</span><span>8°C</span><span>11°C</span><span>14°C</span></div>
+</div>
+
+<div class="map-legend">
+  <div class="legend-item"><div class="legend-dot green"></div> Below 0.2</div>
+  <div class="legend-item"><div class="legend-dot cyan"></div> 0.2 – 0.5</div>
+  <div class="legend-item"><div class="legend-dot amber"></div> Above 0.5 limit</div>
+  <div class="legend-item"><div class="legend-dot red"></div> Disease active</div>
+  <div class="legend-item"><div class="legend-dot grey"></div> Fallow</div>
+</div>
+
+<script>
+// =========================================================================
+// SECTION: INITIALIZE MAP
+// =========================================================================
+const norwayBounds = L.latLngBounds([57.5, 3.5], [71.5, 31.5]);
+const map = L.map('map', { center: [65.0, 13], zoom: 5, minZoom: 4, maxZoom: 15, maxBounds: norwayBounds.pad(0.3), maxBoundsViscosity: 0.8, zoomControl: true, attributionControl: true });
+map.fitBounds(norwayBounds, { padding: [20, 20] });
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', { attribution: '&copy; OSM &copy; CARTO', subdomains: 'abcd', maxZoom: 19 }).addTo(map);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png', { subdomains: 'abcd', maxZoom: 19, pane: 'overlayPane' }).addTo(map);
+
+// =========================================================================
+// SECTION: GLOBAL STATE — Markers grouped by status for filtering
+// =========================================================================
+let allLocalityData = [];
+let markersByStatus = { good: [], moderate: [], above_limit: [], disease: [], fallow: [] };
+let layerGroups = {};
+let heatLayer = null;
+let allMarkersForZoom = [];
+
+// =========================================================================
+// SECTION: LOAD DATA FROM JSON
+// =========================================================================
+async function loadData() {
+  try {
+    const [locResponse, sumResponse] = await Promise.all([
+      fetch('../data/localities.json'),
+      fetch('../data/summary.json')
+    ]);
+    const locData = await locResponse.json();
+    const sumData = await sumResponse.json();
+
+    document.getElementById('weekBadge').innerHTML = `Week <strong>${locData.metadata.week}</strong> / <strong>${locData.metadata.year}</strong>`;
+    document.getElementById('countBadge').innerHTML = `<strong>${locData.metadata.total_localities}</strong> localities`;
+
+    allLocalityData = locData.localities;
+    plotLocalities(allLocalityData);
+    buildTemperatureLayer(allLocalityData);
+    buildLeftPanel(allLocalityData, sumData.summary);
+    buildRightPanel(allLocalityData, sumData.summary);
+    setupFilters();
+    document.getElementById('loadingOverlay').classList.add('hidden');
+  } catch (error) {
+    console.error('Failed to load data:', error);
+    document.querySelector('.loading-text').textContent = 'Error loading data.';
+  }
+}
+
+// =========================================================================
+// SECTION: CLASSIFY LOCALITY STATUS
+// =========================================================================
+function getLocalityStatus(loc) {
+  const lr = loc.liceReport || {};
+  const hasReported = lr.hasReported || false;
+  const isFallow = lr.isFallow || false;
+  const diseases = loc.diseases || [];
+  const avgLice = lr.adultFemaleLice?.average;
+
+  if (!hasReported || isFallow) return { color: '#555', status: 'fallow', radius: 2.5 };
+  if (diseases.length > 0) return { color: '#ff3b4a', status: 'disease', radius: 4 };
+  if (avgLice != null && avgLice > 0.5) return { color: '#ffb020', status: 'above_limit', radius: 4 };
+  if (avgLice != null && avgLice >= 0.2) return { color: '#00f0ff', status: 'moderate', radius: 3 };
+  return { color: '#39ff8e', status: 'good', radius: 3 };
+}
+
+// =========================================================================
+// SECTION: PLOT LOCALITIES — Grouped into filterable layer groups
+// =========================================================================
+function plotLocalities(localities) {
+  markersByStatus = { good: [], moderate: [], above_limit: [], disease: [], fallow: [] };
+  allMarkersForZoom = [];
+
+  function getDotSize(baseRadius) {
+    const zoom = map.getZoom();
+    return baseRadius * Math.max(0.4, Math.min(2.2, (zoom - 3) / 5));
+  }
+
+  localities.forEach(loc => {
+    const geo = loc.geometry;
+    if (!geo?.coordinates || geo.coordinates.length < 2) return;
+    const [lng, lat] = geo.coordinates;
+    if (!lat || !lng) return;
+
+    const status = getLocalityStatus(loc);
+    const name = loc.locality?.name || 'Unknown';
+    const localityNo = loc.locality?.no || '';
+    const municipality = loc.municipality?.name || '';
+    const lr = loc.liceReport || {};
+    const avgLice = lr.adultFemaleLice?.average;
+    const prevLice = lr.adultFemaleLice?.averageOfPreviousWeek;
+    const seaTemp = lr.seaTemperature;
+    const diseases = loc.diseases || [];
+    const isFallow = lr.isFallow || false;
+
+    const marker = L.circleMarker([lat, lng], {
+      radius: getDotSize(status.radius),
+      fillColor: status.color,
+      fillOpacity: 0.9,
+      color: status.color,
+      weight: 1,
+      opacity: 0.35
+    });
+
+    allMarkersForZoom.push({ marker, baseRadius: status.radius });
+
+    // Build popup
+    let p = `<div class="popup-inner"><div class="popup-name">${name}</div><div class="popup-municipality">${municipality} · Locality ${localityNo}</div>`;
+    if (isFallow) {
+      p += `<div class="popup-fallow">Currently fallow (no fish)</div>`;
+    } else {
+      const lv = avgLice != null ? avgLice.toFixed(2) : '—';
+      const lc = avgLice > 0.5 ? 'var(--neon-red)' : avgLice > 0.2 ? 'var(--neon-amber)' : 'var(--neon-green)';
+      const pv = prevLice != null ? prevLice.toFixed(2) : '—';
+      const tv = seaTemp != null ? seaTemp.toFixed(1) + '°C' : '—';
+      const ml = lr.mobileLice?.average;
+      const mv = ml != null ? ml.toFixed(2) : '—';
+      p += `<div class="popup-grid">`;
+      p += `<div><div class="popup-stat-label">Adult ♀ Lice</div><div class="popup-stat-value" style="color:${lc}">${lv}</div></div>`;
+      p += `<div><div class="popup-stat-label">Prev Week</div><div class="popup-stat-value" style="color:var(--text-dim)">${pv}</div></div>`;
+      p += `<div><div class="popup-stat-label">Sea Temp</div><div class="popup-stat-value" style="color:var(--neon-cyan)">${tv}</div></div>`;
+      p += `<div><div class="popup-stat-label">Mobile Lice</div><div class="popup-stat-value" style="color:var(--text-dim)">${mv}</div></div>`;
+      p += `</div>`;
+    }
+    if (diseases.length > 0) {
+      p += `<div class="popup-diseases">⚠ ${diseases.map(d => d.name || 'Unknown').join(', ')}</div>`;
+    }
+    p += `</div>`;
+    marker.bindPopup(p, { maxWidth: 280 });
+
+    markersByStatus[status.status].push(marker);
+  });
+
+  // Create layer groups
+  Object.keys(markersByStatus).forEach(s => { layerGroups[s] = L.layerGroup(markersByStatus[s]); });
+
+  // Add all EXCEPT fallow by default
+  layerGroups.good.addTo(map);
+  layerGroups.moderate.addTo(map);
+  layerGroups.above_limit.addTo(map);
+  layerGroups.disease.addTo(map);
+
+  // Update counts in filter panel
+  document.getElementById('countGood').textContent = markersByStatus.good.length;
+  document.getElementById('countModerate').textContent = markersByStatus.moderate.length;
+  document.getElementById('countAbove').textContent = markersByStatus.above_limit.length;
+  document.getElementById('countDisease').textContent = markersByStatus.disease.length;
+  document.getElementById('countFallow').textContent = markersByStatus.fallow.length;
+
+  // Resize on zoom
+  map.on('zoomend', () => {
+    allMarkersForZoom.forEach(({ marker, baseRadius }) => { marker.setRadius(getDotSize(baseRadius)); });
+  });
+}
+
+// =========================================================================
+// SECTION: SEA TEMPERATURE HEATMAP LAYER
+// Uses leaflet.heat to show temperature gradient across the coast
+// Blue (cold) → Cyan → Green → Amber → Red (warm)
+// =========================================================================
+function buildTemperatureLayer(localities) {
+  const heatData = [];
+  localities.forEach(loc => {
+    const geo = loc.geometry;
+    if (!geo?.coordinates || geo.coordinates.length < 2) return;
+    const [lng, lat] = geo.coordinates;
+    const temp = loc.liceReport?.seaTemperature;
+    if (temp != null && temp > 0) {
+      const intensity = Math.max(0.05, Math.min(1, (temp - 1) / 13));
+      heatData.push([lat, lng, intensity]);
+    }
+  });
+
+  heatLayer = L.heatLayer(heatData, {
+    radius: 35,
+    blur: 40,
+    maxZoom: 10,
+    max: 1.0,
+    minOpacity: 0.3,
+    gradient: { 0.0: '#1a1aff', 0.25: '#00ccff', 0.5: '#39ff8e', 0.75: '#ffb020', 1.0: '#ff3b4a' }
+  });
+}
+
+// =========================================================================
+// SECTION: FILTER CONTROLS — Connect checkboxes to layer visibility
+// =========================================================================
+function setupFilters() {
+  const filters = { filterGood: 'good', filterModerate: 'moderate', filterAbove: 'above_limit', filterDisease: 'disease', filterFallow: 'fallow' };
+
+  Object.entries(filters).forEach(([id, status]) => {
+    document.getElementById(id).addEventListener('change', (e) => {
+      if (e.target.checked) map.addLayer(layerGroups[status]);
+      else map.removeLayer(layerGroups[status]);
+    });
+  });
+
+  document.getElementById('filterTemp').addEventListener('change', (e) => {
+    const legend = document.getElementById('tempLegend');
+    if (e.target.checked) { map.addLayer(heatLayer); legend.classList.add('visible'); }
+    else { map.removeLayer(heatLayer); legend.classList.remove('visible'); }
+  });
+}
+
+// =========================================================================
+// SECTION: LEFT PANEL — National overview stats
+// =========================================================================
+function buildLeftPanel(localities, summary) {
+  const panel = document.getElementById('leftPanel');
+  const total = localities.length;
+  const reporting = localities.filter(l => l.liceReport?.hasReported).length;
+  const fallow = localities.filter(l => l.liceReport?.isFallow).length;
+  const withSalmonoid = localities.filter(l => l.hasSalmonoidLicense).length;
+  const temps = localities.map(l => l.liceReport?.seaTemperature).filter(t => t != null && t > 0);
+  const avgTemp = temps.length > 0 ? (temps.reduce((a, b) => a + b, 0) / temps.length).toFixed(1) : '—';
+  const municipalities = new Set(localities.map(l => l.municipality?.name).filter(Boolean));
+
+  const cards = [
+    { label: 'Total Localities', value: total.toLocaleString(), sub: `${withSalmonoid} with salmonoid license`, color: 'cyan' },
+    { label: 'Reporting This Week', value: reporting.toLocaleString(), sub: `${((reporting/total)*100).toFixed(0)}% of all localities`, color: 'cyan', bar: { width: ((reporting/total)*100), color: 'cyan' } },
+    { label: 'Currently Fallow', value: fallow.toLocaleString(), sub: 'no fish in water', color: 'amber' },
+    { label: 'Municipalities', value: municipalities.size.toLocaleString(), sub: 'with active farms', color: 'cyan' },
+    { label: 'Avg Sea Temperature', value: avgTemp + '°', sub: 'across reporting sites', color: 'cyan' },
+  ];
+  cards.forEach(c => {
+    panel.innerHTML += `<div class="stat-card"><div class="stat-label">${c.label}</div><div class="stat-value ${c.color}">${c.value}</div><div class="stat-sub">${c.sub}</div>${c.bar ? `<div class="stat-bar"><div class="stat-bar-fill ${c.bar.color}" style="width:${c.bar.width}%"></div></div>` : ''}</div>`;
+  });
+}
+
+// =========================================================================
+// SECTION: RIGHT PANEL — Environmental impact stats
+// =========================================================================
+function buildRightPanel(localities, summary) {
+  const panel = document.getElementById('rightPanel');
+  const reporting = localities.filter(l => l.liceReport?.hasReported && !l.liceReport?.isFallow);
+  const aboveLimit = reporting.filter(l => (l.liceReport?.adultFemaleLice?.average || 0) > 0.5);
+  const aboveModerate = reporting.filter(l => { const a = l.liceReport?.adultFemaleLice?.average || 0; return a > 0.2 && a <= 0.5; });
+  const allLice = reporting.map(l => l.liceReport?.adultFemaleLice?.average).filter(v => v != null);
+  const avgLice = allLice.length > 0 ? (allLice.reduce((a, b) => a + b, 0) / allLice.length).toFixed(3) : '—';
+  const withDisease = localities.filter(l => (l.diseases || []).length > 0);
+  const dc = {}; localities.forEach(l => { (l.diseases || []).forEach(d => { const n = d.name || 'Unknown'; dc[n] = (dc[n] || 0) + 1; }); });
+  let med = 0, nonMed = 0, cleaner = 0;
+  localities.forEach(l => { const t = l.liceTreatments || {}; if (Array.isArray(t.medicinalTreatments) && t.medicinalTreatments.length) med++; if (Array.isArray(t.nonMedicinalTreatments) && t.nonMedicinalTreatments.length) nonMed++; if (t.cleanerFishTreatment?.hasDeployed) cleaner++; });
+
+  const cards = [
+    { label: 'Above 0.5 Lice Limit', value: aboveLimit.length.toString(), sub: `of ${reporting.length} reporting`, color: 'red', bar: { width: Math.min((aboveLimit.length / Math.max(reporting.length, 1)) * 1000, 100), color: 'red' } },
+    { label: 'Avg Lice / Fish', value: avgLice, sub: 'adult females, all sites', color: 'amber' },
+    { label: 'Elevated Lice (0.2–0.5)', value: aboveModerate.length.toString(), sub: 'approaching limit', color: 'amber', bar: { width: (aboveModerate.length / Math.max(reporting.length, 1)) * 100, color: 'amber' } },
+    { label: 'Active Disease Cases', value: withDisease.length.toString(), sub: Object.entries(dc).map(([k,v]) => `${k}: ${v}`).join(' · ') || 'none', color: 'red' },
+    { label: 'Medicinal Treatments', value: med.toString(), sub: 'this week', color: 'magenta' },
+    { label: 'Non-Medicinal Treatments', value: nonMed.toString(), sub: 'mechanical / thermal / freshwater', color: 'amber' },
+    { label: 'Cleaner Fish Deployed', value: cleaner.toString(), sub: 'wrasse / lumpfish', color: 'green' },
+  ];
+  cards.forEach(c => {
+    panel.innerHTML += `<div class="stat-card"><div class="stat-label">${c.label}</div><div class="stat-value ${c.color}">${c.value}</div><div class="stat-sub">${c.sub}</div>${c.bar ? `<div class="stat-bar"><div class="stat-bar-fill ${c.bar.color}" style="width:${c.bar.width}%"></div></div>` : ''}</div>`;
+  });
+}
+
+// =========================================================================
+// SECTION: INITIALIZE
+// =========================================================================
+loadData();
+</script>
+</body>
+</html>

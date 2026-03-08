@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LaksAtlas — The True Cost of Norwegian Salmon</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+<style>
+:root{
+  --bg:#090b10;
+  --bg-soft:#0f131b;
+  --bg-card:rgba(255,255,255,0.045);
+  --bg-card-hover:rgba(255,255,255,0.065);
+  --border:rgba(255,255,255,0.08);
+  --border-hover:rgba(255,255,255,0.14);
+
+  --text:#f2f4f8;
+  --text-dim:#a8b1c1;
+  --text-muted:#7f889b;
+
+  --neon-cyan:#3aefff;
+  --neon-magenta:#ff4d94;
+  --neon-green:#5dff9d;
+  --neon-amber:#ffbf47;
+  --neon-red:#ff5563;
+  --neon-purple:#a86bff;
+
+  --glow-cyan:0 0 12px rgba(58,239,255,0.18),0 0 32px rgba(58,239,255,0.08);
+  --shadow-card:
+    inset 0 1px 0 rgba(255,255,255,0.02),
+    0 10px 30px rgba(0,0,0,0.22);
+
+  --radius-lg:18px;
+  --radius-md:14px;
+  --radius-sm:10px;
+  --content-width:1200px;
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+
+html{
+  scroll-behavior:smooth;
+}
+
+body{
+  background:
+    radial-gradient(circle at 50% -10%, rgba(58,239,255,0.06), transparent 35%),
+    radial-gradient(circle at 50% 20%, rgba(255,85,99,0.06), transparent 40%),
+    var(--bg);
+  color:var(--text);
+  font-family:'Outfit',sans-serif;
+  overflow-x:hidden;
+  line-height:1.7;
+  font-size:16px;
+}
+
+body::before{
+  content:'';
+  position:fixed;
+  inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.012'/%3E%3C/svg%3E");
+  pointer-events:none;
+  z-index:9999;
+}
+
+/* === NAV === */
+nav{
+  position:fixed;
+  top:0;
+  left:0;
+  right:0;
+  z-index:1000;
+  padding:16px 40px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  background:rgba(9,11,16,0.82);
+  backdrop-filter:blur(18px);
+  border-bottom:1px solid var(--border);
+}
+
+.nav-logo{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.nav-mark{
+  width:30px;
+  height:30px;
+  border:1.5px solid rgba(58,239,255,0.65);
+  border-radius:8px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow:var(--glow-cyan);
+  background:rgba(58,239,255,0.04);
+}
+
+.nav-mark::after{
+  content:'';
+  width:7px;
+  height:7px;
+  background:var(--neon-cyan);
+  border-radius:50%;
+}
+
+.nav-title{
+  font-weight:800;
+  font-size:15px;
+  letter-spacing:2.6px;
+  text-transform:uppercase;
+  background:linear-gradient(135deg,var(--neon-cyan),#dbe7ff);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+.nav-links{
+  display:flex;
+  gap:24px;
+}
+
+.nav-links a{
+  color:var(--text-muted);
+  text-decoration:none;
+  font-size:12px;
+  letter-spacing:1.2px;
+  text-transform:uppercase;
+  font-weight:500;
+  transition:color .25s ease, opacity .25s ease;
+}
+
+.nav-links a:hover{color:var(--text)}
+.nav-links a.active{color:var(--neon-cyan)}
+
+/* === HERO === */
+.hero{
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:130px 40px 90px;
+  position:relative;
+  overflow:hidden;
+}
+
+.hero::before{
+  content:'';
+  position:absolute;
+  width:820px;
+  height:820px;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(255,85,99,0.08) 0%,transparent 68%);
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  pointer-events:none;
+}
+
+.hero-label{
+  font-size:11px;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  color:var(--text-muted);
+  font-family:'JetBrains Mono',monospace;
+  margin-bottom:24px;
+  opacity:0;
+  animation:fadeUp .8s ease .15s forwards;
+}
+
+.hero-number{
+  font-size:clamp(72px,12vw,150px);
+  font-weight:900;
+  line-height:.92;
+  color:var(--neon-red);
+  text-shadow:0 0 24px rgba(255,85,99,0.22);
+  margin-bottom:10px;
+  letter-spacing:-0.04em;
+  opacity:0;
+  animation:fadeUp .8s ease .35s forwards;
+}
+
+.hero-unit{
+  font-size:clamp(22px,3.4vw,40px);
+  font-weight:300;
+  color:var(--text-dim);
+  margin-bottom:28px;
+  opacity:0;
+  animation:fadeUp .8s ease .55s forwards;
+}
+
+.hero-subtitle{
+  font-size:19px;
+  color:var(--text-dim);
+  max-width:740px;
+  line-height:1.8;
+  opacity:0;
+  animation:fadeUp .8s ease .75s forwards;
+}
+
+.hero-subtitle strong{
+  color:var(--text);
+  font-weight:700;
+}
+
+.hero-year{
+  margin-top:38px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:12px;
+  letter-spacing:1.4px;
+  color:var(--text-muted);
+  opacity:0;
+  animation:fadeUp .8s ease .95s forwards;
+}
+
+.hero-mini-stats{
+  margin-top:34px;
+  display:grid;
+  grid-template-columns:repeat(3, minmax(140px, 1fr));
+  gap:14px;
+  width:min(760px,100%);
+  opacity:0;
+  animation:fadeUp .8s ease 1.05s forwards;
+}
+
+.hero-mini-card{
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:16px 18px;
+  box-shadow:var(--shadow-card);
+}
+
+.hero-mini-label{
+  font-size:10px;
+  letter-spacing:1.2px;
+  text-transform:uppercase;
+  color:var(--text-muted);
+  font-family:'JetBrains Mono',monospace;
+  margin-bottom:6px;
+}
+
+.hero-mini-value{
+  font-size:24px;
+  font-weight:800;
+  line-height:1;
+}
+
+.scroll-indicator{
+  position:absolute;
+  bottom:34px;
+  left:50%;
+  transform:translateX(-50%);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:8px;
+  opacity:0;
+  animation:fadeUp .8s ease 1.2s forwards;
+}
+
+.scroll-indicator span{
+  font-size:9px;
+  letter-spacing:2.5px;
+  text-transform:uppercase;
+  color:var(--text-muted);
+  font-family:'JetBrains Mono',monospace;
+}
+
+.scroll-line{
+  width:1px;
+  height:42px;
+  background:linear-gradient(to bottom,var(--text-muted),transparent);
+  animation:scrollPulse 2s ease infinite;
+}
+
+@keyframes scrollPulse{
+  0%,100%{opacity:.3}
+  50%{opacity:1}
+}
+
+/* === SECTIONS === */
+.section{
+  padding:100px 40px;
+  max-width:var(--content-width);
+  margin:0 auto;
+}
+
+.section-label{
+  font-size:11px;
+  letter-spacing:2.5px;
+  text-transform:uppercase;
+  color:var(--text-muted);
+  font-family:'JetBrains Mono',monospace;
+  margin-bottom:14px;
+}
+
+.section-title{
+  font-size:clamp(30px,4vw,44px);
+  font-weight:750;
+  line-height:1.14;
+  margin-bottom:14px;
+  letter-spacing:-0.02em;
+  max-width:860px;
+}
+
+.section-desc{
+  font-size:17px;
+  color:var(--text-dim);
+  max-width:740px;
+  line-height:1.8;
+  margin-bottom:44px;
+}
+
+/* === CHARTS === */
+.chart-container{
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.028), rgba(255,255,255,0.02)),
+    linear-gradient(135deg, rgba(110,130,170,0.035), rgba(0,0,0,0));
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:30px;
+  margin-bottom:32px;
+  box-shadow:var(--shadow-card);
+  transition:transform .25s ease,border-color .25s ease,background .25s ease;
+}
+
+.chart-container:hover{
+  border-color:var(--border-hover);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.038), rgba(255,255,255,0.025)),
+    linear-gradient(135deg, rgba(110,130,170,0.045), rgba(0,0,0,0));
+  transform:translateY(-2px);
+}
+
+.chart-title{
+  font-size:15px;
+  font-weight:650;
+  letter-spacing:.2px;
+  margin-bottom:4px;
+  color:var(--text);
+}
+
+.chart-subtitle{
+  font-size:12px;
+  color:var(--text-muted);
+  font-family:'JetBrains Mono',monospace;
+  margin-bottom:22px;
+  line-height:1.6;
+}
+
+.chart-wrap{
+  position:relative;
+  height:360px;
+}
+
+/* === STAT GRID === */
+.stat-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+  gap:16px;
+  margin-bottom:48px;
+}
+
+.stat-block{
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02)),
+    linear-gradient(135deg, rgba(110,130,170,0.03), rgba(0,0,0,0));
+  border:1px solid var(--border);
+  border-radius:var(--radius-md);
+  padding:24px;
+  transition:all .25s ease;
+  box-shadow:var(--shadow-card);
+}
+
+.stat-block:hover{
+  border-color:var(--border-hover);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.03)),
+    linear-gradient(135deg, rgba(110,130,170,0.04), rgba(0,0,0,0));
+  transform:translateY(-2px);
+}
+
+.stat-block-label{
+  font-size:11px;
+  letter-spacing:1.2px;
+  text-transform:uppercase;
+  color:var(--text-muted);
+  font-family:'JetBrains Mono',monospace;
+  margin-bottom:10px;
+  line-height:1.5;
+}
+
+.stat-block-value{
+  font-size:38px;
+  font-weight:850;
+  line-height:1;
+  margin-bottom:8px;
+  letter-spacing:-0.03em;
+}
+
+.stat-block-value.red{color:var(--neon-red)}
+.stat-block-value.amber{color:var(--neon-amber)}
+.stat-block-value.cyan{color:var(--neon-cyan)}
+.stat-block-value.green{color:var(--neon-green)}
+.stat-block-value.magenta{color:var(--neon-magenta)}
+
+.stat-block-sub{
+  font-size:13px;
+  color:var(--text-dim);
+  line-height:1.6;
+}
+
+/* === TWO COL === */
+.two-col{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:24px;
+}
+
+/* === CTA === */
+.cta-section{
+  text-align:center;
+  padding:120px 40px;
+  position:relative;
+  max-width:var(--content-width);
+  margin:0 auto;
+}
+
+.cta-section::before{
+  content:'';
+  position:absolute;
+  width:620px;
+  height:620px;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(58,239,255,0.05) 0%,transparent 70%);
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  pointer-events:none;
+}
+
+.cta-button{
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  padding:16px 32px;
+  background:rgba(58,239,255,0.08);
+  border:1px solid rgba(58,239,255,0.28);
+  border-radius:12px;
+  color:var(--neon-cyan);
+  font-family:'JetBrains Mono',monospace;
+  font-size:13px;
+  letter-spacing:1.6px;
+  text-transform:uppercase;
+  text-decoration:none;
+  transition:all .25s ease;
+  cursor:pointer;
+  box-shadow:0 8px 24px rgba(0,0,0,0.18);
+}
+
+.cta-button:hover{
+  background:rgba(58,239,255,0.14);
+  box-shadow:var(--glow-cyan);
+  transform:translateY(-2px);
+}
+
+/* === FOOTER === */
+footer{
+  padding:42px 20px;
+  text-align:center;
+  border-top:1px solid var(--border);
+  font-size:11px;
+  color:var(--text-muted);
+  font-family:'JetBrains Mono',monospace;
+  letter-spacing:1px;
+  line-height:1.9;
+}
+
+footer a{
+  color:var(--text-dim);
+  text-decoration:none;
+}
+
+footer a:hover{
+  color:var(--text);
+}
+
+/* === ANIMATIONS === */
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(20px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+.reveal{
+  opacity:0;
+  transform:translateY(28px);
+  transition:opacity .7s ease,transform .7s ease;
+}
+
+.reveal.visible{
+  opacity:1;
+  transform:translateY(0);
+}
+
+/* === RESPONSIVE === */
+@media(max-width:900px){
+  .two-col{grid-template-columns:1fr}
+  .hero-mini-stats{grid-template-columns:1fr}
+}
+
+@media(max-width:768px){
+  nav{
+    padding:12px 18px;
+    gap:12px;
+  }
+
+  .nav-links{
+    gap:14px;
+  }
+
+  .nav-links a{
+    font-size:11px;
+    letter-spacing:1px;
+  }
+
+  .hero{
+    padding:120px 20px 90px;
+  }
+
+  .hero-subtitle{
+    font-size:17px;
+  }
+
+  .section{
+    padding:68px 20px;
+  }
+
+  .chart-container{
+    padding:20px;
+  }
+
+  .chart-wrap{
+    height:270px;
+  }
+
+  .stat-grid{
+    grid-template-columns:1fr;
+  }
+
+  .cta-section{
+    padding:90px 20px;
+  }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">
+    <div class="nav-mark"></div>
+    <div class="nav-title">LaksAtlas</div>
+  </div>
+  <div class="nav-links">
+    <a href="index.html" class="active">Overview</a>
+    <a href="map.html">Live Map</a>
+    <a href="#">About</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-label">Norwegian Salmon & Trout Farming — 2024</div>
+  <div class="hero-number">239.9M</div>
+  <div class="hero-unit">fish lost in production</div>
+  <div class="hero-subtitle">
+    In 2024, <strong>70.3 million fish died in sea cages</strong> and
+    <strong>169.6 million juveniles died in smolt facilities</strong>.
+    Of the <strong>460 million smolt</strong> put to sea, <strong>15.3% died</strong>
+    before ever reaching slaughter.
+  </div>
+  <div class="hero-year">Source: Fiskeridirektoratet — Official Statistics, updated 28.05.2025</div>
+
+  <div class="hero-mini-stats">
+    <div class="hero-mini-card">
+      <div class="hero-mini-label">Sea Phase Deaths</div>
+      <div class="hero-mini-value" style="color:var(--neon-red)">70.3M</div>
+    </div>
+    <div class="hero-mini-card">
+      <div class="hero-mini-label">Smolt Phase Deaths</div>
+      <div class="hero-mini-value" style="color:var(--neon-magenta)">169.6M</div>
+    </div>
+    <div class="hero-mini-card">
+      <div class="hero-mini-label">Sea Mortality Rate</div>
+      <div class="hero-mini-value" style="color:var(--neon-cyan)">15.3%</div>
+    </div>
+  </div>
+
+  <div class="scroll-indicator">
+    <span>Scroll to explore</span>
+    <div class="scroll-line"></div>
+  </div>
+</div>
+
+<!-- 01 -->
+<div class="section reveal">
+  <div class="section-label">01 — 2024 At A Glance</div>
+  <div class="section-title">The numbers behind Norwegian salmon</div>
+  <div class="stat-grid">
+    <div class="stat-block">
+      <div class="stat-block-label">Smolt Put To Sea</div>
+      <div class="stat-block-value cyan">460.0M</div>
+      <div class="stat-block-sub">juvenile fish released</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-block-label">Sea Phase Deaths</div>
+      <div class="stat-block-value red">70.3M</div>
+      <div class="stat-block-sub">died in sea cages</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-block-label">Sea Mortality Rate</div>
+      <div class="stat-block-value red">15.3%</div>
+      <div class="stat-block-sub">of fish put to sea</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-block-label">Smolt Phase Deaths</div>
+      <div class="stat-block-value magenta">169.6M</div>
+      <div class="stat-block-sub">juveniles lost on land</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-block-label">Production Sold</div>
+      <div class="stat-block-value cyan">3.30M t</div>
+      <div class="stat-block-sub">tonnes round weight</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-block-label">Cleaner Fish Used</div>
+      <div class="stat-block-value amber">45.0M</div>
+      <div class="stat-block-sub">wrasse & lumpfish</div>
+    </div>
+  </div>
+</div>
+
+<!-- 02 -->
+<div class="section reveal">
+  <div class="section-label">02 — Is It Getting Better?</div>
+  <div class="section-title">Sea mortality rate has barely improved in 30 years</div>
+  <div class="section-desc">
+    Despite industry promises of better welfare, the percentage of fish dying
+    at sea has fluctuated between 13–22% since the mid-1990s. In 2024, 15.3%
+    of all fish put to sea died — virtually unchanged from two decades ago.
+  </div>
+  <div class="chart-container">
+    <div class="chart-title">Sea Phase Mortality Rate</div>
+    <div class="chart-subtitle">Deaths as % of smolt put to sea — 1994–2024</div>
+    <div class="chart-wrap"><canvas id="mortalityRateChart"></canvas></div>
+  </div>
+</div>
+
+<!-- 03 -->
+<div class="section reveal">
+  <div class="section-label">03 — Scale of Death</div>
+  <div class="section-title">More production, more death</div>
+  <div class="section-desc">
+    As the industry has scaled from under 100 million to nearly 500 million fish
+    put to sea, the absolute number of deaths has grown in lockstep. From 10 million
+    fish dying in 1994 to 70 million in 2024.
+  </div>
+  <div class="chart-container">
+    <div class="chart-title">Fish Put to Sea vs. Fish Lost at Sea</div>
+    <div class="chart-subtitle">Millions of fish — 1994–2024</div>
+    <div class="chart-wrap"><canvas id="inputVsDeathChart"></canvas></div>
+  </div>
+</div>
+
+<!-- 04 -->
+<div class="section reveal">
+  <div class="section-label">04 — The Hidden Cost</div>
+  <div class="section-title">170 million juveniles die before reaching the sea</div>
+  <div class="section-desc">
+    The smolt and juvenile phase is rarely discussed. Yet in 2024, losses
+    in land-based facilities were more than double the losses at sea.
+    These fish die in hatcheries and smolt facilities from disease, handling,
+    and production failures — invisible to the public.
+  </div>
+  <div class="chart-container">
+    <div class="chart-title">Sea Phase vs. Smolt Phase Mortality</div>
+    <div class="chart-subtitle">Millions of fish lost — 2005–2024 (stacked)</div>
+    <div class="chart-wrap"><canvas id="combinedChart"></canvas></div>
+  </div>
+</div>
+
+<!-- 05 -->
+<div class="section reveal">
+  <div class="section-label">05 — What Kills Them At Sea</div>
+  <div class="section-title">Disease and wounds account for 84% of sea deaths</div>
+  <div class="section-desc">
+    "Dødfisk" — fish that die from disease, wounds, and environmental stress —
+    is by far the largest category at 59.1 million in 2024. Discarded fish (culled at
+    slaughter), escapes, and other causes make up the rest.
+  </div>
+  <div class="two-col">
+    <div class="chart-container">
+      <div class="chart-title">Cause of Death — 2024</div>
+      <div class="chart-subtitle">Sea phase, all species combined</div>
+      <div class="chart-wrap"><canvas id="causesDonut"></canvas></div>
+    </div>
+    <div class="chart-container">
+      <div class="chart-title">Causes Over Time</div>
+      <div class="chart-subtitle">Sea phase, 1998–2024</div>
+      <div class="chart-wrap"><canvas id="causesTime"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- 06 -->
+<div class="section reveal">
+  <div class="section-label">06 — Cleaner Fish</div>
+  <div class="section-title">Millions of fish used as living lice-removers</div>
+  <div class="section-desc">
+    The industry deploys wrasse and lumpfish into salmon cages to eat sea lice.
+    Usage peaked at 122 million in 2019 but has since declined to 45 million in 2024,
+    partly due to high cleaner fish mortality and a shift toward mechanical delousing.
+  </div>
+  <div class="chart-container">
+    <div class="chart-title">Cleaner Fish Deployed Per Year</div>
+    <div class="chart-subtitle">Millions of individuals — 1998–2024</div>
+    <div class="chart-wrap"><canvas id="cleanerChart"></canvas></div>
+  </div>
+</div>
+
+<!-- CTA -->
+<div class="cta-section reveal">
+  <div class="section-label">Explore Further</div>
+  <div class="section-title" style="margin-bottom:16px">See every farm. Updated weekly.</div>
+  <p style="color:var(--text-dim);max-width:560px;margin:0 auto 36px;font-size:17px;line-height:1.8">
+    Explore the live map of all salmon farming localities along the Norwegian coast
+    with weekly lice counts, disease status, and treatment data from Barentswatch.
+  </p>
+  <a class="cta-button" href="map.html">Open Live Map →</a>
+</div>
+
+<footer>
+  Data: <a href="https://www.fiskeridir.no">Fiskeridirektoratet</a> ·
+  <a href="https://www.barentswatch.no">Barentswatch</a> ·
+  <a href="https://www.vetinst.no">Veterinærinstituttet</a><br>
+  LaksAtlas is an independent transparency project. All data publicly available under NLOD license.
+</footer>
+
+<script>
+/* =========================================================================
+   CHART DEFAULTS
+========================================================================= */
+Chart.defaults.color = '#98a3b8';
+Chart.defaults.borderColor = 'rgba(255,255,255,0.025)';
+Chart.defaults.font.family = "'JetBrains Mono', monospace";
+Chart.defaults.font.size = 11;
+Chart.defaults.plugins.legend.labels.boxWidth = 12;
+Chart.defaults.plugins.legend.labels.padding = 16;
+
+/* =========================================================================
+   VERIFIED DATA FROM FISKERIDIREKTORATET XLSX FILES
+========================================================================= */
+const Y94=['1994','1995','1996','1997','1998','1999','2000','2001','2002','2003','2004','2005','2006','2007','2008','2009','2010','2011','2012','2013','2014','2015','2016','2017','2018','2019','2020','2021','2022','2023','2024'];
+
+const SMOLT_INPUT=[89147,108068,110658,120595,121394,141873,155015,159441,162426,158444,165001,175030,200430,224819,239343,250079,277503,308570,303754,314373,330669,346399,340839,361309,374861,400647,411923,429819,452199,452001,459955];
+
+const SEA_LOSS=[9797,12607,15706,19037,27182,21574,19774,25590,33376,34771,28326,27590,34621,42658,49329,48479,50101,53533,41303,43671,46659,55314,59023,61070,56301,65138,63735,64046,64720,72010,70337];
+
+const SEA_RATE=SMOLT_INPUT.map((s,i)=>s>0?+(SEA_LOSS[i]/s*100).toFixed(1):0);
+
+const Y98=['1998','1999','2000','2001','2002','2003','2004','2005','2006','2007','2008','2009','2010','2011','2012','2013','2014','2015','2016','2017','2018','2019','2020','2021','2022','2023','2024'];
+const PROD=[820977,947160,976535,1012381,1091134,1156314,1254257,1290161,1384693,1643598,1645641,1873220,1988422,2246836,2613546,2479752,2654683,2752706,2642942,2606704,2700695,2895062,2969394,3314945,3301126,3266242,3298306];
+
+const CAUSE_Y=['1998','1999','2000','2001','2002','2003','2004','2005','2006','2007','2008','2009','2010','2011','2012','2013','2014','2015','2016','2017','2018','2019','2020','2021','2022','2023','2024'];
+const C_DEAD=[16749,18213,17247,22144,24133,24774,19548,21136,29410,36097,35727,38967,38383,39092,31524,32098,42043,46166,48571,52480,51172,58511,53616,51895,52802,63069,59057];
+const C_DISC=[3828,1870,1264,2318,2183,2975,2124,1811,1537,1995,3580,2284,1930,1977,2082,2319,2496,3593,3416,3343,2684,3388,3300,3793,3049,3443,2955];
+const C_ESC=[640,388,351,368,730,551,563,723,935,605,79,332,247,368,171,198,273,247,144,19,141,94,44,69,60,17,39];
+const C_OTH=[5966,1103,882,676,6330,6472,6092,3905,2734,3962,9943,6897,9541,12098,7528,9056,1846,5309,6893,5228,2304,3145,6776,8290,8810,5482,8286];
+
+const SMOLT_Y=['2005','2006','2007','2008','2009','2010','2011','2012','2013','2014','2015','2016','2017','2018','2019','2020','2021','2022','2023','2024'];
+const SMOLT_LOSS=[83763,93727,112278,127424,110332,124790,158874,192616,217114,133032,143960,118399,119680,111823,110059,122596,144925,156303,157628,169581];
+
+const CLEAN_Y=['1998','1999','2000','2001','2002','2003','2004','2005','2006','2007','2008','2009','2010','2011','2012','2013','2014','2015','2016','2017','2018','2019','2020','2021','2022','2023','2024'];
+const CLEAN=[4738,5238,3752,4642,3145,3078,2269,1561,1364,3128,3393,9766,21953,21277,27806,32412,48934,52818,74717,109149,97858,122070,103086,91149,66886,60454,45023];
+
+/* =========================================================================
+   CHART 1: Mortality Rate
+========================================================================= */
+new Chart(document.getElementById('mortalityRateChart'),{
+  type:'line',
+  data:{
+    labels:Y94,
+    datasets:[{
+      label:'Sea mortality rate (%)',
+      data:SEA_RATE,
+      borderColor:'#ff5563',
+      backgroundColor:'rgba(255,85,99,0.08)',
+      fill:true,
+      tension:.28,
+      borderWidth:2.2,
+      pointRadius:2.5,
+      pointHoverRadius:4,
+      pointBackgroundColor:Y94.map((y,i)=>i===Y94.length-1?'#ff5563':'rgba(255,85,99,0.45)'),
+      pointBorderColor:Y94.map((y,i)=>i===Y94.length-1?'#ffffff':'transparent'),
+      pointBorderWidth:Y94.map((y,i)=>i===Y94.length-1?1.8:0)
+    }]
+  },
+  options:{
+    responsive:true,
+    maintainAspectRatio:false,
+    plugins:{
+      legend:{display:false},
+      tooltip:{
+        callbacks:{
+          label:ctx=>ctx.parsed.y+'% of fish put to sea died'
+        }
+      }
+    },
+    scales:{
+      y:{
+        beginAtZero:true,
+        max:25,
+        grid:{color:'rgba(255,255,255,0.03)'},
+        ticks:{callback:v=>v+'%'}
+      },
+      x:{grid:{display:false}}
+    }
+  }
+});
+
+/* =========================================================================
+   CHART 2: Input vs Death
+========================================================================= */
+new Chart(document.getElementById('inputVsDeathChart'),{
+  type:'bar',
+  data:{
+    labels:Y94,
+    datasets:[
+      {
+        label:'Smolt put to sea',
+        data:SMOLT_INPUT.map(v=>v/1000),
+        backgroundColor:'rgba(58,239,255,0.22)',
+        borderColor:'rgba(58,239,255,0.65)',
+        borderWidth:1,
+        borderRadius:3,
+        order:2
+      },
+      {
+        label:'Died at sea',
+        data:SEA_LOSS.map(v=>v/1000),
+        backgroundColor:'rgba(255,85,99,0.62)',
+        borderColor:'rgba(255,85,99,0.92)',
+        borderWidth:1,
+        borderRadius:3,
+        order:1
+      }
+    ]
+  },
+  options:{
+    responsive:true,
+    maintainAspectRatio:false,
+    plugins:{
+      legend:{position:'top'},
+      tooltip:{
+        callbacks:{
+          label:ctx=>ctx.dataset.label+': '+ctx.parsed.y.toFixed(1)+'M fish'
+        }
+      }
+    },
+    scales:{
+      y:{
+        beginAtZero:true,
+        grid:{color:'rgba(255,255,255,0.03)'},
+        ticks:{callback:v=>v+'M'}
+      },
+      x:{grid:{display:false}}
+    }
+  }
+});
+
+/* =========================================================================
+   CHART 3: Sea + Smolt combined
+========================================================================= */
+const COMB_YEARS=SMOLT_Y;
+const COMB_SEA=COMB_YEARS.map(y=>{
+  const i=Y94.indexOf(y);
+  return i>=0?SEA_LOSS[i]/1000:0;
+});
+const COMB_SMOLT=SMOLT_LOSS.map(v=>v/1000);
+
+new Chart(document.getElementById('combinedChart'),{
+  type:'bar',
+  data:{
+    labels:COMB_YEARS,
+    datasets:[
+      {
+        label:'Sea phase deaths',
+        data:COMB_SEA,
+        backgroundColor:'rgba(255,85,99,0.6)',
+        borderColor:'rgba(255,85,99,0.92)',
+        borderWidth:1,
+        borderRadius:3
+      },
+      {
+        label:'Smolt/juvenile deaths',
+        data:COMB_SMOLT,
+        backgroundColor:'rgba(255,77,148,0.34)',
+        borderColor:'rgba(255,77,148,0.82)',
+        borderWidth:1,
+        borderRadius:3
+      }
+    ]
+  },
+  options:{
+    responsive:true,
+    maintainAspectRatio:false,
+    plugins:{
+      legend:{position:'top'},
+      tooltip:{
+        callbacks:{
+          label:ctx=>ctx.dataset.label+': '+ctx.parsed.y.toFixed(1)+'M fish'
+        }
+      }
+    },
+    scales:{
+      y:{
+        stacked:true,
+        beginAtZero:true,
+        grid:{color:'rgba(255,255,255,0.03)'},
+        ticks:{callback:v=>v+'M'}
+      },
+      x:{
+        stacked:true,
+        grid:{display:false}
+      }
+    }
+  }
+});
+
+/* =========================================================================
+   CHART 4: Causes doughnut
+========================================================================= */
+new Chart(document.getElementById('causesDonut'),{
+  type:'doughnut',
+  data:{
+    labels:[
+      'Dødfisk (disease/wounds): 59.1M',
+      'Utkast (discarded): 3.0M',
+      'Rømming (escaped): 39K',
+      'Annet (other): 8.3M'
+    ],
+    datasets:[{
+      data:[59057,2955,39,8286],
+      backgroundColor:[
+        'rgba(255,85,99,0.72)',
+        'rgba(255,191,71,0.72)',
+        'rgba(168,107,255,0.72)',
+        'rgba(127,136,155,0.42)'
+      ],
+      borderColor:[
+        '#ff5563',
+        '#ffbf47',
+        '#a86bff',
+        '#7f889b'
+      ],
+      borderWidth:1
+    }]
+  },
+  options:{
+    responsive:true,
+    maintainAspectRatio:false,
+    cutout:'62%',
+    plugins:{
+      legend:{
+        position:'bottom',
+        labels:{font:{size:10}}
+      },
+      tooltip:{
+        callbacks:{
+          label:ctx=>{
+            const t=ctx.dataset.data.reduce((a,b)=>a+b,0);
+            return (ctx.parsed/1000).toFixed(1)+'M fish ('+((ctx.parsed/t)*100).toFixed(1)+'%)';
+          }
+        }
+      }
+    }
+  }
+});
+
+/* =========================================================================
+   CHART 5: Causes over time
+========================================================================= */
+new Chart(document.getElementById('causesTime'),{
+  type:'line',
+  data:{
+    labels:CAUSE_Y,
+    datasets:[
+      {
+        label:'Dødfisk (disease)',
+        data:C_DEAD.map(v=>v/1000),
+        borderColor:'#ff5563',
+        backgroundColor:'rgba(255,85,99,0.13)',
+        fill:true,
+        tension:.28,
+        borderWidth:1.6,
+        pointRadius:1.2
+      },
+      {
+        label:'Annet (other)',
+        data:C_OTH.map(v=>v/1000),
+        borderColor:'#7f889b',
+        backgroundColor:'rgba(127,136,155,0.10)',
+        fill:true,
+        tension:.28,
+        borderWidth:1.5,
+        pointRadius:1.1
+      },
+      {
+        label:'Utkast (discarded)',
+        data:C_DISC.map(v=>v/1000),
+        borderColor:'#ffbf47',
+        backgroundColor:'rgba(255,191,71,0.12)',
+        fill:true,
+        tension:.28,
+        borderWidth:1.5,
+        pointRadius:1.1
+      },
+      {
+        label:'Rømming (escaped)',
+        data:C_ESC.map(v=>v/1000),
+        borderColor:'#a86bff',
+        backgroundColor:'rgba(168,107,255,0.10)',
+        fill:true,
+        tension:.28,
+        borderWidth:1.5,
+        pointRadius:1.1
+      }
+    ]
+  },
+  options:{
+    responsive:true,
+    maintainAspectRatio:false,
+    interaction:{mode:'index', intersect:false},
+    plugins:{
+      legend:{position:'top'},
+      tooltip:{
+        callbacks:{
+          label:ctx=>ctx.dataset.label+': '+ctx.parsed.y.toFixed(1)+'M'
+        }
+      }
+    },
+    scales:{
+      y:{
+        stacked:true,
+        grid:{color:'rgba(255,255,255,0.03)'},
+        ticks:{callback:v=>v+'M'}
+      },
+      x:{grid:{display:false}}
+    }
+  }
+});
+
+/* =========================================================================
+   CHART 6: Cleaner fish
+========================================================================= */
+new Chart(document.getElementById('cleanerChart'),{
+  type:'bar',
+  data:{
+    labels:CLEAN_Y,
+    datasets:[{
+      label:'Cleaner fish',
+      data:CLEAN.map(v=>v/1000),
+      backgroundColor:CLEAN.map((v,i)=>i===CLEAN.length-1?'rgba(58,239,255,0.62)':'rgba(58,239,255,0.30)'),
+      borderColor:CLEAN.map((v,i)=>i===CLEAN.length-1?'rgba(58,239,255,1)':'rgba(58,239,255,0.56)'),
+      borderWidth:1,
+      borderRadius:3
+    }]
+  },
+  options:{
+    responsive:true,
+    maintainAspectRatio:false,
+    plugins:{
+      legend:{display:false},
+      tooltip:{
+        callbacks:{
+          label:ctx=>ctx.parsed.y.toFixed(1)+'M fish deployed'
+        }
+      }
+    },
+    scales:{
+      y:{
+        beginAtZero:true,
+        grid:{color:'rgba(255,255,255,0.03)'},
+        ticks:{callback:v=>v+'M'}
+      },
+      x:{grid:{display:false}}
+    }
+  }
+});
+
+/* =========================================================================
+   SCROLL REVEAL
+========================================================================= */
+const obs = new IntersectionObserver(entries=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting) entry.target.classList.add('visible');
+  });
+},{
+  threshold:0.1,
+  rootMargin:'0px 0px -50px 0px'
+});
+
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+</script>
+</body>
+</html>
