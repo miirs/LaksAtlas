@@ -716,9 +716,85 @@ footer a:hover{
   </div>
 </div>
 
-<!-- 06 -->
+<!-- 06 — Disease & Sea Lice -->
 <div class="section reveal">
-  <div class="section-label">06 — Cleaner Fish</div>
+  <div class="section-label">06 — Disease & Sea Lice</div>
+  <div class="section-title">ISA is rising. Lice violations spiked in 2024.</div>
+  <div class="section-desc">
+    Infectious Salmon Anaemia (ISA) cases have climbed from single digits to over 20 per year.
+    Pancreas Disease (PD) peaked at 159 cases in 2020. Meanwhile, lice limit violations
+    nearly doubled from 556 in 2023 to 1,092 in 2024 — the worst since 2014.
+  </div>
+  <div class="two-col">
+    <div class="chart-container">
+      <div class="chart-title">Disease Outbreaks Per Year</div>
+      <div class="chart-subtitle">ISA & PD confirmed cases — 2013–2025 · Source: Barentswatch / Veterinærinstituttet</div>
+      <div class="chart-wrap"><canvas id="diseaseChart"></canvas></div>
+    </div>
+    <div class="chart-container">
+      <div class="chart-title">Lice Limit Violations Per Year</div>
+      <div class="chart-subtitle">Weekly instances of localities above 0.5 adult female lice — 2013–2025</div>
+      <div class="chart-wrap"><canvas id="liceChart"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== HTML BLOCK ============================== -->
+<!-- Paste this into the HTML body between sections 06 and 07 -->
+
+<!-- 07 — Regional Analysis -->
+<div class="section reveal">
+  <div class="section-label">07 — Regional Breakdown</div>
+  <div class="section-title">A 3x difference in mortality between Norway's best and worst regions</div>
+  <div class="section-desc">
+    Nordland produces the most salmon (360,000 tonnes) with the lowest mortality rate (7.1%).
+    Troms & Finnmark lose 26% of all fish put to sea — nearly four times worse.
+    For every 1,000 tonnes of salmon produced, Troms & Finnmark lose 63,000 fish while
+    Nordland loses only 21,000.
+  </div>
+
+  <div class="chart-container">
+    <div class="chart-title">Mortality Rate vs. Production by Region</div>
+    <div class="chart-subtitle">2024 — mortality % (bar) with production volume overlay (line) · Source: Fiskeridirektoratet</div>
+    <div class="chart-wrap"><canvas id="regionalMortChart"></canvas></div>
+  </div>
+
+  <div class="two-col">
+    <div class="chart-container">
+      <div class="chart-title">Who Produces vs. Who Kills</div>
+      <div class="chart-subtitle">Each region's share of national production vs. share of deaths</div>
+      <div class="chart-wrap"><canvas id="regionalShareChart"></canvas></div>
+    </div>
+    <div class="chart-container">
+      <div class="chart-title">Efficiency: Deaths per 1,000t Produced</div>
+      <div class="chart-subtitle">How many fish die (in thousands) for every 1,000 tonnes of salmon sold</div>
+      <div class="chart-wrap"><canvas id="regionalEffChart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Regional stat cards -->
+  <div class="stat-grid" style="margin-top:32px">
+    <div class="stat-block">
+      <div class="stat-block-label">Best: Nordland</div>
+      <div class="stat-block-value green">7.1%</div>
+      <div class="stat-block-sub">mortality · 360kt produced · 21 deaths per kt</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-block-label">Worst: Troms & Finnmark</div>
+      <div class="stat-block-value red">26.0%</div>
+      <div class="stat-block-sub">mortality · 329kt produced · 63 deaths per kt</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-block-label">Largest: Vestland</div>
+      <div class="stat-block-value amber">15.9M</div>
+      <div class="stat-block-sub">fish lost · 387kt produced · 16.9% mortality</div>
+    </div>
+  </div>
+</div>
+
+<!-- 08 -->
+<div class="section reveal">
+  <div class="section-label">08 — Cleaner Fish</div>
   <div class="section-title">Millions of fish used as living lice-removers</div>
   <div class="section-desc">
     The industry deploys wrasse and lumpfish into salmon cages to eat sea lice.
@@ -1065,7 +1141,277 @@ new Chart(document.getElementById('causesTime'),{
 });
 
 /* =========================================================================
-   CHART 6: Cleaner fish
+   CHART 6: Disease outbreaks (ISA & PD)
+========================================================================= */
+const DISEASE_Y=['2013','2014','2015','2016','2017','2018','2019','2020','2021','2022','2023','2024','2025'];
+const ISA_CASES=[9,7,16,18,12,13,6,28,29,17,21,21,22];
+const PD_CASES=[85,121,123,120,155,145,145,159,92,96,57,51,44];
+
+new Chart(document.getElementById('diseaseChart'),{
+  type:'bar',
+  data:{
+    labels:DISEASE_Y,
+    datasets:[
+      {
+        label:'ISA',
+        data:ISA_CASES,
+        backgroundColor:'rgba(255,85,99,0.6)',
+        borderColor:'rgba(255,85,99,0.92)',
+        borderWidth:1,
+        borderRadius:3
+      },
+      {
+        label:'PD',
+        data:PD_CASES,
+        backgroundColor:'rgba(255,191,71,0.5)',
+        borderColor:'rgba(255,191,71,0.82)',
+        borderWidth:1,
+        borderRadius:3
+      }
+    ]
+  },
+  options:{
+    responsive:true,
+    maintainAspectRatio:false,
+    plugins:{
+      legend:{position:'top'},
+      tooltip:{
+        callbacks:{
+          label:ctx=>ctx.dataset.label+': '+ctx.parsed.y+' cases'
+        }
+      }
+    },
+    scales:{
+      y:{
+        beginAtZero:true,
+        grid:{color:'rgba(255,255,255,0.03)'},
+        ticks:{stepSize:20}
+      },
+      x:{grid:{display:false}}
+    }
+  }
+});
+
+/* =========================================================================
+   CHART 7: Lice violations per year
+========================================================================= */
+const LICE_Y=['2013','2014','2015','2016','2017','2018','2019','2020','2021','2022','2023','2024','2025'];
+const LICE_VIOL=[1462,2306,1643,1209,1112,962,1186,982,827,798,556,1092,1061];
+
+new Chart(document.getElementById('liceChart'),{
+  type:'bar',
+  data:{
+    labels:LICE_Y,
+    datasets:[{
+      label:'Lice violations',
+      data:LICE_VIOL,
+      backgroundColor:LICE_VIOL.map((v,i)=>{
+        if(i>=LICE_VIOL.length-2) return 'rgba(255,191,71,0.62)';
+        return 'rgba(255,191,71,0.30)';
+      }),
+      borderColor:LICE_VIOL.map((v,i)=>{
+        if(i>=LICE_VIOL.length-2) return 'rgba(255,191,71,1)';
+        return 'rgba(255,191,71,0.56)';
+      }),
+      borderWidth:1,
+      borderRadius:3
+    }]
+  },
+  options:{
+    responsive:true,
+    maintainAspectRatio:false,
+    plugins:{
+      legend:{display:false},
+      tooltip:{
+        callbacks:{
+          label:ctx=>ctx.parsed.y+' weekly violations across all localities'
+        }
+      }
+    },
+    scales:{
+      y:{
+        beginAtZero:true,
+        grid:{color:'rgba(255,255,255,0.03)'}
+      },
+      x:{grid:{display:false}}
+    }
+  }
+});
+
+/* =========================================================================
+   REGIONAL DATA — verified from Fiskeridirektoratet xlsx files
+   Deaths: sta-laks-mat-08-tap (Tap totalt, 2024)
+   Production: sta-laks-mat-06-salg (Salg, 2024)
+   Smolt input: sta-laks-set-7-salg-smolt (Salg av smolt, 2024)
+========================================================================= */
+const REGIONS = ['Troms &\nFinnmark','Nordland','Trøndelag','Møre og\nRomsdal','Vestland','Rogaland'];
+const REG_DEATHS = [20708, 7524, 13723, 8112, 15867, 3205];     // 1000 fish
+const REG_PROD =   [328832, 360192, 324740, 125765, 386472, 99814]; // tonnes
+const REG_SMOLT =  [79738, 105774, 103733, 44918, 93900, 26542];   // 1000 fish
+const REG_MORT_RATE = REG_SMOLT.map((s,i) => +(REG_DEATHS[i]/s*100).toFixed(1));
+const REG_DEATHS_PER_KT = REG_PROD.map((p,i) => +(REG_DEATHS[i]/(p/1000)).toFixed(0));
+
+const TOTAL_DEATHS = REG_DEATHS.reduce((a,b)=>a+b,0);
+const TOTAL_PROD = REG_PROD.reduce((a,b)=>a+b,0);
+
+/* =========================================================================
+   CHART: Mortality Rate vs Production (dual axis)
+========================================================================= */
+new Chart(document.getElementById('regionalMortChart'),{
+  type:'bar',
+  data:{
+    labels:REGIONS,
+    datasets:[
+      {
+        label:'Mortality rate (%)',
+        data:REG_MORT_RATE,
+        backgroundColor:REG_MORT_RATE.map(v =>
+          v > 20 ? 'rgba(255,85,99,0.7)' :
+          v > 15 ? 'rgba(255,191,71,0.6)' :
+          'rgba(93,255,157,0.5)'
+        ),
+        borderColor:REG_MORT_RATE.map(v =>
+          v > 20 ? '#ff5563' :
+          v > 15 ? '#ffbf47' :
+          '#5dff9d'
+        ),
+        borderWidth:1,
+        borderRadius:4,
+        yAxisID:'y',
+        order:2
+      },
+      {
+        label:'Production (1000t)',
+        data:REG_PROD.map(v => v/1000),
+        type:'line',
+        borderColor:'rgba(58,239,255,0.8)',
+        backgroundColor:'rgba(58,239,255,0.08)',
+        pointBackgroundColor:'#3aefff',
+        pointRadius:5,
+        pointHoverRadius:7,
+        borderWidth:2.5,
+        tension:0.2,
+        fill:false,
+        yAxisID:'y1',
+        order:1
+      }
+    ]
+  },
+  options:{
+    responsive:true,
+    maintainAspectRatio:false,
+    plugins:{
+      legend:{position:'top'},
+      tooltip:{
+        callbacks:{
+          label:ctx => {
+            if(ctx.dataset.yAxisID === 'y') return 'Mortality: ' + ctx.parsed.y + '%';
+            return 'Production: ' + ctx.parsed.y.toFixed(0) + 'k tonnes';
+          }
+        }
+      }
+    },
+    scales:{
+      y:{
+        beginAtZero:true,
+        max:30,
+        grid:{color:'rgba(255,255,255,0.03)'},
+        ticks:{callback:v=>v+'%',color:'#ff5563'},
+        title:{display:true,text:'Mortality Rate (%)',color:'#ff5563',font:{size:11}}
+      },
+      y1:{
+        position:'right',
+        beginAtZero:true,
+        grid:{display:false},
+        ticks:{callback:v=>v+'kt',color:'#3aefff'},
+        title:{display:true,text:'Production (1000t)',color:'#3aefff',font:{size:11}}
+      },
+      x:{grid:{display:false},ticks:{font:{size:10}}}
+    }
+  }
+});
+
+/* =========================================================================
+   CHART: Share of production vs share of deaths (grouped bar)
+========================================================================= */
+new Chart(document.getElementById('regionalShareChart'),{
+  type:'bar',
+  data:{
+    labels:REGIONS,
+    datasets:[
+      {
+        label:'% of national production',
+        data:REG_PROD.map(v => +(v/TOTAL_PROD*100).toFixed(1)),
+        backgroundColor:'rgba(58,239,255,0.45)',
+        borderColor:'rgba(58,239,255,0.8)',
+        borderWidth:1,
+        borderRadius:3
+      },
+      {
+        label:'% of national deaths',
+        data:REG_DEATHS.map(v => +(v/TOTAL_DEATHS*100).toFixed(1)),
+        backgroundColor:'rgba(255,85,99,0.5)',
+        borderColor:'rgba(255,85,99,0.85)',
+        borderWidth:1,
+        borderRadius:3
+      }
+    ]
+  },
+  options:{
+    responsive:true,
+    maintainAspectRatio:false,
+    plugins:{
+      legend:{position:'top'},
+      tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': '+ctx.parsed.y+'%'}}
+    },
+    scales:{
+      y:{beginAtZero:true,grid:{color:'rgba(255,255,255,0.03)'},ticks:{callback:v=>v+'%'}},
+      x:{grid:{display:false},ticks:{font:{size:10}}}
+    }
+  }
+});
+
+/* =========================================================================
+   CHART: Efficiency — deaths per 1000t produced (horizontal bar)
+========================================================================= */
+new Chart(document.getElementById('regionalEffChart'),{
+  type:'bar',
+  data:{
+    labels:REGIONS,
+    datasets:[{
+      label:'Deaths per 1000t produced',
+      data:REG_DEATHS_PER_KT,
+      backgroundColor:REG_DEATHS_PER_KT.map(v =>
+        v > 55 ? 'rgba(255,85,99,0.65)' :
+        v > 35 ? 'rgba(255,191,71,0.55)' :
+        'rgba(93,255,157,0.5)'
+      ),
+      borderColor:REG_DEATHS_PER_KT.map(v =>
+        v > 55 ? '#ff5563' :
+        v > 35 ? '#ffbf47' :
+        '#5dff9d'
+      ),
+      borderWidth:1,
+      borderRadius:4
+    }]
+  },
+  options:{
+    indexAxis:'y',
+    responsive:true,
+    maintainAspectRatio:false,
+    plugins:{
+      legend:{display:false},
+      tooltip:{callbacks:{label:ctx=>ctx.parsed.x.toLocaleString()+' fish (×1000) die per 1000t produced'}}
+    },
+    scales:{
+      x:{beginAtZero:true,grid:{color:'rgba(255,255,255,0.03)'},ticks:{callback:v=>v+'k'}},
+      y:{grid:{display:false},ticks:{font:{size:11}}}
+    }
+  }
+});
+
+/* =========================================================================
+   CHART 8: Cleaner fish
 ========================================================================= */
 new Chart(document.getElementById('cleanerChart'),{
   type:'bar',
