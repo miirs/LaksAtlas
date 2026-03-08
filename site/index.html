@@ -575,7 +575,7 @@ footer a:hover{
 <!-- HERO -->
 <div class="hero">
   <div class="hero-label">Norwegian Salmon & Trout Farming — 2024</div>
-  <div class="hero-number">239.9M</div>
+  <div class="hero-number" id="heroCounter" data-target="239.9">0.0M</div>
   <div class="hero-unit">fish lost in production</div>
   <div class="hero-subtitle">
     In 2024, <strong>70.3 million fish died in sea cages</strong> and
@@ -739,18 +739,16 @@ footer a:hover{
   </div>
 </div>
 
-<!-- ============================== HTML BLOCK ============================== -->
-<!-- Paste this into the HTML body between sections 06 and 07 -->
-
+<!-- 07 -->
 <!-- 07 — Regional Analysis -->
 <div class="section reveal">
   <div class="section-label">07 — Regional Breakdown</div>
-  <div class="section-title">A 3x difference in mortality between Norway's best and worst regions</div>
+  <div class="section-title">A 5x difference in mortality between Norway's best and worst regions</div>
   <div class="section-desc">
     Nordland produces the most salmon (360,000 tonnes) with the lowest mortality rate (7.1%).
-    Troms & Finnmark lose 26% of all fish put to sea — nearly four times worse.
-    For every 1,000 tonnes of salmon produced, Troms & Finnmark lose 63,000 fish while
-    Nordland loses only 21,000.
+    Finnmark loses 35% of all fish put to sea — five times worse. For every 1,000 tonnes
+    produced, Finnmark loses 85,000 fish while Nordland loses just 21,000. But is this
+    about farm density, or something else entirely?
   </div>
 
   <div class="chart-container">
@@ -767,27 +765,76 @@ footer a:hover{
     </div>
     <div class="chart-container">
       <div class="chart-title">Efficiency: Deaths per 1,000t Produced</div>
-      <div class="chart-subtitle">How many fish die (in thousands) for every 1,000 tonnes of salmon sold</div>
+      <div class="chart-subtitle">Fish lost (×1000) for every 1,000 tonnes of salmon sold</div>
       <div class="chart-wrap"><canvas id="regionalEffChart"></canvas></div>
     </div>
   </div>
 
-  <!-- Regional stat cards -->
+  <div class="chart-container" style="margin-top:24px">
+    <div class="chart-title">Farm Density vs. Mortality — Does Crowding Kill?</div>
+    <div class="chart-subtitle">Active localities per 100km coastline vs. sea mortality rate (%) — bubble size = production volume</div>
+    <div class="chart-wrap"><canvas id="densityScatter"></canvas></div>
+  </div>
+
   <div class="stat-grid" style="margin-top:32px">
     <div class="stat-block">
       <div class="stat-block-label">Best: Nordland</div>
       <div class="stat-block-value green">7.1%</div>
-      <div class="stat-block-sub">mortality · 360kt produced · 21 deaths per kt</div>
+      <div class="stat-block-sub">mortality · 360kt produced · 180 localities · 3.2 per 100km coast</div>
     </div>
     <div class="stat-block">
-      <div class="stat-block-label">Worst: Troms & Finnmark</div>
-      <div class="stat-block-value red">26.0%</div>
-      <div class="stat-block-sub">mortality · 329kt produced · 63 deaths per kt</div>
+      <div class="stat-block-label">Worst: Finnmark</div>
+      <div class="stat-block-value red">35.0%</div>
+      <div class="stat-block-sub">mortality · 128kt produced · 45 localities · 1.4 per 100km coast</div>
     </div>
     <div class="stat-block">
-      <div class="stat-block-label">Largest: Vestland</div>
+      <div class="stat-block-label">Most Deaths: Vestland</div>
       <div class="stat-block-value amber">15.9M</div>
-      <div class="stat-block-sub">fish lost · 387kt produced · 16.9% mortality</div>
+      <div class="stat-block-sub">fish lost · 387kt produced · 185 localities · 4.1 per 100km coast</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-block-label">Densest: Trøndelag</div>
+      <div class="stat-block-value cyan">5.8</div>
+      <div class="stat-block-sub">localities per 100km · 13.2% mortality — density ≠ worst outcomes</div>
+    </div>
+  </div>
+
+  <div class="chart-container" style="margin-top:16px;border-color:rgba(58,239,255,0.15)">
+    <div class="chart-title" style="color:var(--neon-cyan)">What the Veterinary Institute Says</div>
+    <div class="chart-subtitle">Key findings from Fiskehelserapporten 2024 (Veterinærinstituttet)</div>
+    <div style="color:var(--text-dim);font-size:15px;line-height:1.9;max-width:800px">
+      <p style="margin-bottom:16px">
+        The Norwegian government has set a target to <strong style="color:var(--text)">reduce mortality to 5%</strong> across all farmed
+        species — roughly a third of the current level. The Veterinary Institute's disease database
+        (covering 387 localities in 2024) reveals the main killers:
+      </p>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:20px">
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center">
+          <div style="font-size:28px;font-weight:800;color:var(--neon-red)">32.9%</div>
+          <div style="font-size:11px;color:var(--text-muted);font-family:'JetBrains Mono',monospace;margin-top:4px">Infectious diseases</div>
+        </div>
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center">
+          <div style="font-size:28px;font-weight:800;color:var(--neon-amber)">26.6%</div>
+          <div style="font-size:11px;color:var(--text-muted);font-family:'JetBrains Mono',monospace;margin-top:4px">Injuries & trauma</div>
+        </div>
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center">
+          <div style="font-size:28px;font-weight:800;color:var(--text-muted)">21.2%</div>
+          <div style="font-size:11px;color:var(--text-muted);font-family:'JetBrains Mono',monospace;margin-top:4px">Unknown cause</div>
+        </div>
+      </div>
+      <p style="margin-bottom:12px">
+        The top three specific causes of death in 2024 were <strong style="color:var(--text)">winter sores</strong>
+        caused by the bacterium <em>Moritella viscosa</em> (13%), <strong style="color:var(--text)">handling injuries</strong>
+        during delousing operations (12%), and <strong style="color:var(--text)">unknown causes</strong> (12%).
+      </p>
+      <p style="margin-bottom:12px">
+        Finnmark's extreme mortality rate is partly explained by having <strong style="color:var(--text)">very few active
+        localities</strong> — individual catastrophic events disproportionately affect the regional statistics.
+        A marine heatwave in late summer 2024 also caused additional mortality across multiple regions.
+      </p>
+      <p style="font-size:12px;color:var(--text-muted);font-family:'JetBrains Mono',monospace;margin-top:20px">
+        Source: Fiskehelserapporten 2024, Veterinærinstituttet (Rapport 1a – 2025)
+      </p>
     </div>
   </div>
 </div>
@@ -1243,19 +1290,26 @@ new Chart(document.getElementById('liceChart'),{
    Deaths: sta-laks-mat-08-tap (Tap totalt, 2024)
    Production: sta-laks-mat-06-salg (Salg, 2024)
    Smolt input: sta-laks-set-7-salg-smolt (Salg av smolt, 2024)
+   Locality counts: approximate from Barentswatch + Fiskeridirektoratet
+   Coastline: approximate from Kartverket
 ========================================================================= */
-const REGIONS = ['Troms &\nFinnmark','Nordland','Trøndelag','Møre og\nRomsdal','Vestland','Rogaland'];
-const REG_DEATHS = [20708, 7524, 13723, 8112, 15867, 3205];     // 1000 fish
-const REG_PROD =   [328832, 360192, 324740, 125765, 386472, 99814]; // tonnes
-const REG_SMOLT =  [79738, 105774, 103733, 44918, 93900, 26542];   // 1000 fish
+
+const REGIONS = ['Finnmark','Troms','Nordland','Trøndelag','Møre og\nRomsdal','Vestland','Rogaland'];
+const REG_DEATHS = [10868, 9840, 7524, 13723, 8112, 15867, 3205];
+const REG_PROD =   [128002, 200830, 360192, 324740, 125765, 386472, 99814];
+const REG_SMOLT =  [31027, 48711, 105774, 103733, 44918, 93900, 26542];
+const REG_LOCS =   [45, 95, 180, 140, 95, 185, 65];
+const REG_COAST =  [3200, 2800, 5700, 2400, 3200, 4500, 1800];
+
 const REG_MORT_RATE = REG_SMOLT.map((s,i) => +(REG_DEATHS[i]/s*100).toFixed(1));
 const REG_DEATHS_PER_KT = REG_PROD.map((p,i) => +(REG_DEATHS[i]/(p/1000)).toFixed(0));
+const REG_DENSITY = REG_COAST.map((c,i) => +(REG_LOCS[i]/(c/100)).toFixed(1));
 
 const TOTAL_DEATHS = REG_DEATHS.reduce((a,b)=>a+b,0);
 const TOTAL_PROD = REG_PROD.reduce((a,b)=>a+b,0);
 
 /* =========================================================================
-   CHART: Mortality Rate vs Production (dual axis)
+   CHART: Mortality Rate vs Production by Region (dual axis)
 ========================================================================= */
 new Chart(document.getElementById('regionalMortChart'),{
   type:'bar',
@@ -1266,14 +1320,13 @@ new Chart(document.getElementById('regionalMortChart'),{
         label:'Mortality rate (%)',
         data:REG_MORT_RATE,
         backgroundColor:REG_MORT_RATE.map(v =>
-          v > 20 ? 'rgba(255,85,99,0.7)' :
+          v > 25 ? 'rgba(255,85,99,0.7)' :
           v > 15 ? 'rgba(255,191,71,0.6)' :
+          v > 10 ? 'rgba(58,239,255,0.45)' :
           'rgba(93,255,157,0.5)'
         ),
         borderColor:REG_MORT_RATE.map(v =>
-          v > 20 ? '#ff5563' :
-          v > 15 ? '#ffbf47' :
-          '#5dff9d'
+          v > 25 ? '#ff5563' : v > 15 ? '#ffbf47' : v > 10 ? '#3aefff' : '#5dff9d'
         ),
         borderWidth:1,
         borderRadius:4,
@@ -1285,7 +1338,6 @@ new Chart(document.getElementById('regionalMortChart'),{
         data:REG_PROD.map(v => v/1000),
         type:'line',
         borderColor:'rgba(58,239,255,0.8)',
-        backgroundColor:'rgba(58,239,255,0.08)',
         pointBackgroundColor:'#3aefff',
         pointRadius:5,
         pointHoverRadius:7,
@@ -1298,72 +1350,33 @@ new Chart(document.getElementById('regionalMortChart'),{
     ]
   },
   options:{
-    responsive:true,
-    maintainAspectRatio:false,
-    plugins:{
-      legend:{position:'top'},
-      tooltip:{
-        callbacks:{
-          label:ctx => {
-            if(ctx.dataset.yAxisID === 'y') return 'Mortality: ' + ctx.parsed.y + '%';
-            return 'Production: ' + ctx.parsed.y.toFixed(0) + 'k tonnes';
-          }
-        }
-      }
-    },
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{position:'top'},tooltip:{callbacks:{
+      label:ctx => ctx.dataset.yAxisID==='y' ? 'Mortality: '+ctx.parsed.y+'%' : 'Production: '+ctx.parsed.y.toFixed(0)+'k tonnes'
+    }}},
     scales:{
-      y:{
-        beginAtZero:true,
-        max:30,
-        grid:{color:'rgba(255,255,255,0.03)'},
-        ticks:{callback:v=>v+'%',color:'#ff5563'},
-        title:{display:true,text:'Mortality Rate (%)',color:'#ff5563',font:{size:11}}
-      },
-      y1:{
-        position:'right',
-        beginAtZero:true,
-        grid:{display:false},
-        ticks:{callback:v=>v+'kt',color:'#3aefff'},
-        title:{display:true,text:'Production (1000t)',color:'#3aefff',font:{size:11}}
-      },
+      y:{beginAtZero:true,max:40,grid:{color:'rgba(255,255,255,0.03)'},ticks:{callback:v=>v+'%',color:'#ff5563'},title:{display:true,text:'Mortality Rate (%)',color:'#ff5563',font:{size:11}}},
+      y1:{position:'right',beginAtZero:true,grid:{display:false},ticks:{callback:v=>v+'kt',color:'#3aefff'},title:{display:true,text:'Production (1000t)',color:'#3aefff',font:{size:11}}},
       x:{grid:{display:false},ticks:{font:{size:10}}}
     }
   }
 });
 
 /* =========================================================================
-   CHART: Share of production vs share of deaths (grouped bar)
+   CHART: Share of production vs share of deaths
 ========================================================================= */
 new Chart(document.getElementById('regionalShareChart'),{
   type:'bar',
   data:{
     labels:REGIONS,
     datasets:[
-      {
-        label:'% of national production',
-        data:REG_PROD.map(v => +(v/TOTAL_PROD*100).toFixed(1)),
-        backgroundColor:'rgba(58,239,255,0.45)',
-        borderColor:'rgba(58,239,255,0.8)',
-        borderWidth:1,
-        borderRadius:3
-      },
-      {
-        label:'% of national deaths',
-        data:REG_DEATHS.map(v => +(v/TOTAL_DEATHS*100).toFixed(1)),
-        backgroundColor:'rgba(255,85,99,0.5)',
-        borderColor:'rgba(255,85,99,0.85)',
-        borderWidth:1,
-        borderRadius:3
-      }
+      {label:'% of national production',data:REG_PROD.map(v=>+(v/TOTAL_PROD*100).toFixed(1)),backgroundColor:'rgba(58,239,255,0.45)',borderColor:'rgba(58,239,255,0.8)',borderWidth:1,borderRadius:3},
+      {label:'% of national deaths',data:REG_DEATHS.map(v=>+(v/TOTAL_DEATHS*100).toFixed(1)),backgroundColor:'rgba(255,85,99,0.5)',borderColor:'rgba(255,85,99,0.85)',borderWidth:1,borderRadius:3}
     ]
   },
   options:{
-    responsive:true,
-    maintainAspectRatio:false,
-    plugins:{
-      legend:{position:'top'},
-      tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': '+ctx.parsed.y+'%'}}
-    },
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{position:'top'},tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': '+ctx.parsed.y+'%'}}},
     scales:{
       y:{beginAtZero:true,grid:{color:'rgba(255,255,255,0.03)'},ticks:{callback:v=>v+'%'}},
       x:{grid:{display:false},ticks:{font:{size:10}}}
@@ -1381,31 +1394,77 @@ new Chart(document.getElementById('regionalEffChart'),{
     datasets:[{
       label:'Deaths per 1000t produced',
       data:REG_DEATHS_PER_KT,
-      backgroundColor:REG_DEATHS_PER_KT.map(v =>
-        v > 55 ? 'rgba(255,85,99,0.65)' :
-        v > 35 ? 'rgba(255,191,71,0.55)' :
-        'rgba(93,255,157,0.5)'
-      ),
-      borderColor:REG_DEATHS_PER_KT.map(v =>
-        v > 55 ? '#ff5563' :
-        v > 35 ? '#ffbf47' :
-        '#5dff9d'
-      ),
-      borderWidth:1,
-      borderRadius:4
+      backgroundColor:REG_DEATHS_PER_KT.map(v => v>60?'rgba(255,85,99,0.65)':v>35?'rgba(255,191,71,0.55)':'rgba(93,255,157,0.5)'),
+      borderColor:REG_DEATHS_PER_KT.map(v => v>60?'#ff5563':v>35?'#ffbf47':'#5dff9d'),
+      borderWidth:1,borderRadius:4
     }]
   },
   options:{
-    indexAxis:'y',
-    responsive:true,
-    maintainAspectRatio:false,
-    plugins:{
-      legend:{display:false},
-      tooltip:{callbacks:{label:ctx=>ctx.parsed.x.toLocaleString()+' fish (×1000) die per 1000t produced'}}
-    },
+    indexAxis:'y',responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>ctx.parsed.x.toLocaleString()+' fish (×1000) die per 1000t produced'}}},
     scales:{
       x:{beginAtZero:true,grid:{color:'rgba(255,255,255,0.03)'},ticks:{callback:v=>v+'k'}},
       y:{grid:{display:false},ticks:{font:{size:11}}}
+    }
+  }
+});
+
+/* =========================================================================
+   CHART: Farm Density vs Mortality (bubble scatter)
+   X = localities per 100km coastline (density)
+   Y = mortality rate (%)
+   Bubble size = production volume
+========================================================================= */
+const REGION_COLORS = ['#ff5563','#ff4d94','#5dff9d','#3aefff','#ffbf47','#a86bff','#3aefff'];
+const REGION_NAMES_SHORT = ['Finnmark','Troms','Nordland','Trøndelag','Møre og R.','Vestland','Rogaland'];
+
+new Chart(document.getElementById('densityScatter'),{
+  type:'bubble',
+  data:{
+    datasets: REGION_NAMES_SHORT.map((name, i) => ({
+      label: name,
+      data: [{
+        x: REG_DENSITY[i],
+        y: REG_MORT_RATE[i],
+        r: Math.sqrt(REG_PROD[i] / 1000) / 1.8
+      }],
+      backgroundColor: REGION_COLORS[i] + '55',
+      borderColor: REGION_COLORS[i],
+      borderWidth: 1.5
+    }))
+  },
+  options:{
+    responsive:true,
+    maintainAspectRatio:false,
+    plugins:{
+      legend:{position:'top',labels:{font:{size:10}}},
+      tooltip:{
+        callbacks:{
+          label:ctx => {
+            const i = REGION_NAMES_SHORT.indexOf(ctx.dataset.label);
+            return [
+              ctx.dataset.label,
+              'Density: ' + ctx.parsed.x + ' farms/100km',
+              'Mortality: ' + ctx.parsed.y + '%',
+              'Production: ' + (REG_PROD[i]/1000).toFixed(0) + 'kt',
+              'Localities: ' + REG_LOCS[i]
+            ];
+          }
+        }
+      }
+    },
+    scales:{
+      x:{
+        title:{display:true,text:'Farm density (localities per 100km coastline)',color:'#98a3b8',font:{size:11}},
+        grid:{color:'rgba(255,255,255,0.03)'},
+        min:0,max:7
+      },
+      y:{
+        title:{display:true,text:'Sea mortality rate (%)',color:'#98a3b8',font:{size:11}},
+        grid:{color:'rgba(255,255,255,0.03)'},
+        min:0,max:40,
+        ticks:{callback:v=>v+'%'}
+      }
     }
   }
 });
@@ -1461,6 +1520,41 @@ const obs = new IntersectionObserver(entries=>{
 });
 
 document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+/* =========================================================================
+   HERO COUNT-UP ANIMATION
+========================================================================= */
+function animateHeroCounter(){
+  const counter = document.getElementById('heroCounter');
+  if(!counter) return;
+
+  const target = parseFloat(counter.dataset.target);
+  const duration = 1400; // milliseconds
+  const startTime = performance.now();
+
+  function updateCounter(currentTime){
+    const elapsed = currentTime - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+
+    // easeOutCubic for a fast, smooth finish
+    const eased = 1 - Math.pow(1 - progress, 3);
+
+    const currentValue = target * eased;
+    counter.textContent = currentValue.toFixed(1) + 'M';
+
+    if(progress < 1){
+      requestAnimationFrame(updateCounter);
+    } else {
+      counter.textContent = target.toFixed(1) + 'M';
+    }
+  }
+
+  requestAnimationFrame(updateCounter);
+}
+
+// Start after page load
+window.addEventListener('load', () => {
+  setTimeout(animateHeroCounter, 350);
+});
 </script>
 </body>
 </html>
