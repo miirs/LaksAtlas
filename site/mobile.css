@@ -8,7 +8,9 @@
 .nav-hamburger { display: none; }
 .nav-mobile-menu { display: none; }
 .map-filter-btn { display: none; }
+.map-bottom-bar { display: none; }
 .drawer-backdrop { display: none; }
+#detailsSheet { display: none; }
 
 /* ============================================================
    PREVENT HORIZONTAL OVERFLOW — must be first
@@ -346,13 +348,13 @@
 
 /* ============================================================
    MAP PAGE (map.html)
-   Uses <header> not <nav>, different class names (.logo not .nav-logo)
-   Two-row header on mobile: row1 = logo+hamburger (54px), row2 = week nav (40px)
-   Filter button = full-width bar pinned to bottom (48px)
+   Two-row header: row1 = logo+hamburger (54px), row2 = week nav (40px)
+   Bottom bar: Filters | Details (48px)
+   Details sheet: slides up from bottom, shows stat cards with inline charts
    ============================================================ */
 @media (max-width: 768px) {
 
-  /* Two-row header: row1 logo+hamburger, row2 week nav */
+  /* Two-row header */
   header {
     display: flex !important;
     flex-wrap: wrap !important;
@@ -362,13 +364,12 @@
   }
 
   header .scope-toggle { display: none !important; }
-
-  /* Hide badge and no-data message; keep header-meta visible as row 2 */
   .meta-badge   { display: none !important; }
   .week-no-data { display: none !important; }
 
-  /* Row 1: logo fills gap between itself and hamburger */
+  /* Row 1: logo (order 1) + hamburger (order 2) */
   .logo {
+    order: 1 !important;
     display: flex !important;
     align-items: center !important;
     gap: 8px !important;
@@ -379,15 +380,16 @@
   .logo-img  { height: 28px !important; }
   .logo-text { font-size: 11px !important; letter-spacing: 1.6px !important; }
 
-  /* Hamburger stays on row 1 */
   header .nav-hamburger {
+    order: 2 !important;
     display: flex !important;
     height: 54px !important;
     align-items: center !important;
   }
 
-  /* Row 2: week nav spans full width, centred */
+  /* Row 2: week nav (order 3) — full width, forces wrap */
   .header-meta {
+    order: 3 !important;
     display: flex !important;
     width: 100% !important;
     justify-content: center !important;
@@ -409,12 +411,9 @@
     padding: 0 !important;
   }
 
-  /* nav-mobile-menu on map page must clear the taller header (54+40=94px) */
-  header + .nav-mobile-menu {
-    top: 94px !important;
-  }
+  header + .nav-mobile-menu { top: 94px !important; }
 
-  /* Full-screen map — header 94px, bottom bar 48px */
+  /* Map layout: header 94px, bottom bar 48px */
   .layout {
     display: block !important;
     padding-top: 94px !important;
@@ -426,10 +425,12 @@
     height: calc(100vh - 94px - 48px) !important;
   }
 
-  /* Right panel hidden on mobile */
   #rightPanel { display: none !important; }
 
-  /* Left panel — hidden by default, slides in as a drawer */
+  /* Hide stat cards inside filter drawer — they live in the details sheet */
+  #leftPanelStats { display: none !important; }
+
+  /* Left panel filter drawer */
   #leftPanel {
     display: flex !important;
     flex-direction: column !important;
@@ -437,8 +438,8 @@
     top: 94px !important;
     left: -100% !important;
     width: 88vw !important;
-    max-width: 340px !important;
-    height: calc(100vh - 94px) !important;
+    max-width: 300px !important;
+    height: calc(100vh - 94px - 48px) !important;
     z-index: 950 !important;
     background: rgba(4,9,26,0.97) !important;
     backdrop-filter: blur(20px) !important;
@@ -449,11 +450,8 @@
     gap: 14px !important;
   }
 
-  #leftPanel.drawer-open {
-    left: 0 !important;
-  }
+  #leftPanel.drawer-open { left: 0 !important; }
 
-  /* Backdrop behind open drawer */
   .drawer-backdrop {
     display: none;
     position: fixed;
@@ -463,35 +461,126 @@
   }
   .drawer-backdrop.open { display: block; }
 
-  /* Full-width filter bar pinned to bottom */
-  .map-filter-btn {
+  /* ── Bottom bar: Filters | Details ────────────────────────── */
+  .map-bottom-bar {
     display: flex !important;
     position: fixed !important;
     bottom: 0 !important;
     left: 0 !important;
     right: 0 !important;
-    width: 100% !important;
     height: 48px !important;
     z-index: 900 !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 8px !important;
-    background: rgba(4,9,26,0.95) !important;
-    border: none !important;
-    border-top: 1px solid rgba(0,200,255,0.25) !important;
-    border-radius: 0 !important;
-    padding: 0 16px !important;
-    color: var(--neon-cyan) !important;
-    font-family: 'JetBrains Mono', monospace !important;
-    font-size: 12px !important;
-    letter-spacing: 1.2px !important;
-    text-transform: uppercase !important;
-    cursor: pointer !important;
+    background: rgba(4,9,26,0.97) !important;
+    border-top: 1px solid rgba(0,200,255,0.2) !important;
     backdrop-filter: blur(12px) !important;
     box-shadow: 0 -4px 20px rgba(0,0,0,0.4) !important;
   }
 
-  /* Legend — sits above the filter bar */
+  .map-bottom-btn {
+    flex: 1 !important;
+    background: none !important;
+    border: none !important;
+    border-right: 1px solid rgba(0,200,255,0.1) !important;
+    color: var(--text-dim) !important;
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: 11px !important;
+    letter-spacing: 1.2px !important;
+    text-transform: uppercase !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    transition: color 0.2s !important;
+  }
+
+  .map-bottom-btn:last-child { border-right: none !important; }
+  .map-bottom-btn.active,
+  .map-bottom-btn:hover      { color: var(--neon-cyan) !important; }
+
+  /* ── Details bottom sheet ──────────────────────────────────── */
+  #detailsSheet {
+    display: block !important;
+    position: fixed !important;
+    bottom: 48px !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: 65vh !important;
+    z-index: 890 !important;
+    background: rgba(4,9,26,0.98) !important;
+    border-top: 1px solid rgba(0,200,255,0.18) !important;
+    backdrop-filter: blur(20px) !important;
+    transform: translateY(100%) !important;
+    transition: transform 0.3s ease !important;
+    pointer-events: none !important;
+  }
+
+  #detailsSheet.open {
+    transform: translateY(0) !important;
+    pointer-events: auto !important;
+  }
+
+  #detailsSheetInner {
+    height: 100% !important;
+    overflow-y: auto !important;
+    padding: 16px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+
+  #detailsSheetTitle {
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: 10px !important;
+    letter-spacing: 2.5px !important;
+    text-transform: uppercase !important;
+    color: var(--text-dim) !important;
+    padding-bottom: 12px !important;
+    border-bottom: 1px solid rgba(0,200,255,0.08) !important;
+    margin-bottom: 4px !important;
+  }
+
+  /* ── Detail cards with inline expand ──────────────────────── */
+  .detail-card {
+    background: var(--bg-card) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 10px !important;
+    overflow: hidden !important;
+    cursor: pointer !important;
+    transition: border-color 0.2s !important;
+  }
+
+  .detail-card:hover { border-color: var(--border-hover) !important; }
+
+  .detail-card-row {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 12px 14px !important;
+    gap: 10px !important;
+  }
+
+  .detail-card-arrow {
+    color: var(--text-dim) !important;
+    font-size: 16px !important;
+    flex-shrink: 0 !important;
+    transition: color 0.2s, transform 0.2s !important;
+  }
+
+  .detail-card.chart-open .detail-card-arrow {
+    color: var(--neon-cyan) !important;
+  }
+
+  .detail-chart-wrap {
+    display: none !important;
+    padding: 0 12px 14px !important;
+  }
+
+  .detail-chart-wrap.open {
+    display: block !important;
+  }
+
+  /* Legend above the bottom bar */
   .map-legend {
     bottom: 56px !important;
     padding: 7px 10px !important;

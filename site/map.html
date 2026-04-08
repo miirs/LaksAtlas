@@ -329,7 +329,20 @@ header { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; padding: 0 2
   <a href="about.html" class="nav-mobile-link">About</a>
 </div>
 <div class="drawer-backdrop" id="drawerBackdrop"></div>
-<button class="map-filter-btn" id="mapFilterBtn">⊞ Filters</button>
+
+<!-- Details bottom sheet (mobile only) -->
+<div id="detailsSheet">
+  <div id="detailsSheetInner">
+    <div id="detailsSheetTitle">Explore Details</div>
+    <div id="detailsSheetStats"></div>
+  </div>
+</div>
+
+<!-- Bottom bar: Filters | Details (mobile only) -->
+<div class="map-bottom-bar" id="mapBottomBar">
+  <button class="map-bottom-btn" id="mapFilterBtn">⊞ Filters</button>
+  <button class="map-bottom-btn" id="mapDetailsBtn">◎ Details</button>
+</div>
 
 <div class="layout">
   <div class="panel" id="leftPanel">
@@ -724,6 +737,7 @@ async function loadWeekFile(locUrl, sumUrl) {
   Object.values(layerGroups).forEach(lg => { if (map.hasLayer(lg)) map.removeLayer(lg); });
   if (heatLayer && map.hasLayer(heatLayer)) map.removeLayer(heatLayer);
   document.getElementById('leftPanelStats').innerHTML = '';
+  document.getElementById('detailsSheetStats').innerHTML = '';
   document.getElementById('rightPanel').querySelectorAll('.stat-card, .bv-panel-btn').forEach(el => el.remove());
 
   const [locRes, sumRes] = await Promise.all([fetch(locUrl), fetch(sumUrl)]);
@@ -747,6 +761,7 @@ async function loadWeekFile(locUrl, sumUrl) {
   buildTemperatureLayer(allLocalityData);
   buildLeftPanel(allLocalityData, sumData.summary);
   buildRightPanel(allLocalityData, sumData.summary);
+  buildDetailsSheet(allLocalityData, sumData.summary);
 }
 
 function setupWeekNav() {
@@ -969,6 +984,102 @@ function setupFilters() {
     const legend = document.getElementById('tempLegend');
     if (e.target.checked) { map.addLayer(heatLayer); legend.classList.add('visible'); }
     else { map.removeLayer(heatLayer); legend.classList.remove('visible'); }
+  });
+}
+
+// =========================================================================
+// SECTION: DETAILS SHEET — Mobile accordion cards with inline charts
+// =========================================================================
+let detailsChartInstance = null;
+
+function buildDetailsSheet(localities) {
+  const container = document.getElementById('detailsSheetStats');
+  if (!container) return;
+  container.innerHTML = '';
+
+  const total = localities.length;
+  const reporting = localities.filter(l => l.liceReport?.hasReported).length;
+  const fallow = localities.filter(l => l.liceReport?.isFallow).length;
+  const withSalmonoid = localities.filter(l => l.hasSalmonoidLicense).length;
+  const temps = localities.map(l => l.liceReport?.seaTemperature).filter(t => t != null && t > 0);
+  const avgTemp = temps.length > 0 ? (temps.reduce((a, b) => a + b, 0) / temps.length).toFixed(1) : '—';
+  const municipalities = new Set(localities.map(l => l.municipality?.name).filter(Boolean));
+  const rep = localities.filter(l => l.liceReport?.hasReported && !l.liceReport?.isFallow);
+  const aboveLimit = rep.filter(l => (l.liceReport?.adultFemaleLice?.average || 0) > 0.5);
+  const aboveModerate = rep.filter(l => { const a = l.liceReport?.adultFemaleLice?.average || 0; return a > 0.2 && a <= 0.5; });
+  const allLice = rep.map(l => l.liceReport?.adultFemaleLice?.average).filter(v => v != null);
+  const avgLice = allLice.length > 0 ? (allLice.reduce((a, b) => a + b, 0) / allLice.length).toFixed(3) : '—';
+  const withDisease = localities.filter(l => (l.diseases || []).length > 0);
+
+  const cards = [
+    { label: 'Total Localities',        value: total.toLocaleString(),               sub: withSalmonoid + ' with salmonoid license',          color: 'cyan',  metric: 'totalLocalities' },
+    { label: 'Reporting This Week',      value: reporting.toLocaleString(),           sub: (((reporting)/(total-fallow))*100).toFixed(0) + '% of active', color: 'cyan',  metric: 'reporting' },
+    { label: 'Currently Fallow',         value: fallow.toLocaleString(),              sub: 'no fish in water',                                  color: 'amber', metric: 'fallow' },
+    { label: 'Municipalities',           value: municipalities.size.toLocaleString(), sub: 'with active farms',                                 color: 'cyan',  metric: 'municipalities' },
+    { label: 'Avg Sea Temperature',      value: avgTemp + '°',                        sub: 'across reporting sites',                            color: 'cyan',  metric: 'avgTemp' },
+    { label: 'Above 0.5 Lice Limit',    value: aboveLimit.length.toString(),         sub: 'of ' + rep.length + ' reporting',                   color: 'red',   metric: 'aboveLimit' },
+    { label: 'Avg Lice / Fish',          value: avgLice,                              sub: 'adult females, all sites',                          color: 'amber', metric: 'avgLice' },
+    { label: 'Elevated Lice (0.2–0.5)', value: aboveModerate.length.toString(),      sub: 'approaching limit',                                 color: 'amber', metric: 'aboveModerate' },
+    { label: 'Active Disease Cases',     value: withDisease.length.toString(),        sub: 'ISA · PD and other',                                color: 'red',   metric: 'diseaseCount' },
+  ];
+
+  cards.forEach(c => {
+    const el = document.createElement('div');
+    el.className = 'detail-card';
+    el.dataset.metric = c.metric;
+    el.innerHTML = `
+      <div class="detail-card-row">
+        <div>
+          <div class="stat-label">${c.label}</div>
+          <div class="stat-value ${c.color}" style="font-size:22px;margin-bottom:3px">${c.value}</div>
+          <div class="stat-sub">${c.sub}</div>
+        </div>
+        <div class="detail-card-arrow">▸</div>
+      </div>
+      <div class="detail-chart-wrap" id="dcw-${c.metric}">
+        <canvas id="dcc-${c.metric}" style="width:100%;height:150px;display:block"></canvas>
+      </div>`;
+    el.addEventListener('click', () => toggleDetailChart(c.metric, el));
+    container.appendChild(el);
+  });
+}
+
+function toggleDetailChart(metric, cardEl) {
+  const wrap = cardEl.querySelector('.detail-chart-wrap');
+  const isOpen = wrap.classList.contains('open');
+  document.querySelectorAll('#detailsSheetStats .detail-chart-wrap.open').forEach(w => {
+    w.classList.remove('open');
+    w.closest('.detail-card')?.classList.remove('chart-open');
+  });
+  if (detailsChartInstance) { detailsChartInstance.destroy(); detailsChartInstance = null; }
+  if (!isOpen) {
+    wrap.classList.add('open');
+    cardEl.classList.add('chart-open');
+    const canvas = wrap.querySelector('canvas');
+    const cfg = METRIC_CONFIG[metric];
+    if (cfg && canvas) renderDetailChart(cfg, canvas);
+  }
+}
+
+function renderDetailChart(cfg, canvas) {
+  const sorted = [...availableWeeks].reverse();
+  const labels = sorted.map(w => 'W' + w.week);
+  const values = sorted.map(w => {
+    const key = w.year + '_' + String(w.week).padStart(2, '0');
+    const s = weeklyStatsCache[key];
+    return s ? cfg.extract(s) : null;
+  });
+  if (!values.some(v => v != null)) return;
+  canvas.width  = canvas.parentElement.clientWidth - 24;
+  canvas.height = 150;
+  detailsChartInstance = new Chart(canvas, {
+    type: 'line',
+    data: { labels, datasets: [{ data: values, borderColor: cfg.color, backgroundColor: cfg.color + '18', borderWidth: 2, pointBackgroundColor: cfg.color, pointRadius: 3, tension: 0.35, fill: true, spanGaps: true }] },
+    options: {
+      responsive: false, animation: false,
+      plugins: { legend: { display: false }, tooltip: { backgroundColor: 'rgba(4,9,26,0.95)', borderColor: cfg.color + '55', borderWidth: 1, titleFont: { family: "'JetBrains Mono',monospace", size: 9 }, bodyFont: { family: "'JetBrains Mono',monospace", size: 10 }, titleColor: '#5e88aa', bodyColor: cfg.color, callbacks: { label: ctx => cfg.fmt(ctx.raw) } } },
+      scales: { x: { grid: { color: 'rgba(30,100,210,0.12)' }, ticks: { color: '#5e88aa', font: { family: "'JetBrains Mono',monospace", size: 8 }, maxRotation: 0, maxTicksLimit: 8 } }, y: { grid: { color: 'rgba(30,100,210,0.12)' }, ticks: { color: '#5e88aa', font: { family: "'JetBrains Mono',monospace", size: 8 } }, beginAtZero: false } }
+    }
   });
 }
 
