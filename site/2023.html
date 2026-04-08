@@ -744,7 +744,19 @@ footer a:hover{
     <a href="map.html">Live Map</a>
     <a href="about.html">About</a>
   </div>
+  <button class="nav-hamburger" id="navHamburger" aria-label="Menu" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
+<div class="nav-mobile-menu" id="navMobileMenu">
+  <div class="nav-mobile-scope">
+    <a href="index.html" class="active-no">Norway</a>
+    <a href="global.html">Global</a>
+  </div>
+  <a href="index.html" class="nav-mobile-link active">Overview</a>
+  <a href="map.html" class="nav-mobile-link">Live Map</a>
+  <a href="about.html" class="nav-mobile-link">About</a>
+</div>
 
 <!-- HERO -->
 <div class="hero">
@@ -1779,5 +1791,6 @@ window.addEventListener('load', () => {
   btn.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});
 })();
 </script>
+<script src="mobile.js"></script>
 </body>
 </html>
