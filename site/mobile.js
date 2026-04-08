@@ -44,26 +44,5 @@
     backdrop.addEventListener('click', closeDrawer);
   }
 
-  // ── Sync drawer week nav with main week nav ──────────────────────────────
-  // The drawer has duplicate week-nav buttons that mirror the real ones.
-  var prevDrawer = document.getElementById('weekPrevDrawer');
-  var nextDrawer = document.getElementById('weekNextDrawer');
-  var dispDrawer = document.getElementById('weekDisplayDrawer');
-  var prevMain   = document.getElementById('weekPrev');
-  var nextMain   = document.getElementById('weekNext');
-  var dispMain   = document.getElementById('weekDisplay');
-
-  if (prevDrawer && prevMain) {
-    prevDrawer.addEventListener('click', function () { prevMain.click(); });
-    nextDrawer.addEventListener('click', function () { nextMain.click(); });
-
-    // Keep drawer display in sync with main display
-    if (dispMain && dispDrawer) {
-      var observer = new MutationObserver(function () {
-        dispDrawer.innerHTML = dispMain.innerHTML;
-      });
-      observer.observe(dispMain, { childList: true, subtree: true });
-    }
-  }
 
 }());

@@ -358,13 +358,32 @@
   }
 
   header .scope-toggle { display: none !important; }
-  header .header-meta  { display: none !important; }
+
+  /* Keep week nav visible, hide badge and no-data message */
+  .meta-badge   { display: none !important; }
+  .week-no-data { display: none !important; }
 
   .logo     { display: flex; align-items: center; gap: 8px; text-decoration: none; flex-shrink: 0; }
   .logo-img { height: 28px !important; }
   .logo-text{ font-size: 11px !important; letter-spacing: 1.6px !important; }
 
-  /* Map header hamburger (same classes, reuse mobile.css rules) */
+  .week-nav {
+    gap: 6px !important;
+  }
+
+  .week-display {
+    font-size: 10px !important;
+    white-space: nowrap !important;
+  }
+
+  .week-nav-btn {
+    width: 26px !important;
+    height: 26px !important;
+    font-size: 16px !important;
+    padding: 0 !important;
+  }
+
+  /* Hamburger visible in map header */
   header .nav-hamburger {
     display: flex !important;
   }
@@ -417,16 +436,6 @@
     background: rgba(0,0,0,0.5);
   }
   .drawer-backdrop.open { display: block; }
-
-  /* Week nav inside the drawer */
-  .week-nav-mobile {
-    display: flex !important;
-    align-items: center !important;
-    gap: 10px !important;
-    padding: 10px 0 14px !important;
-    border-bottom: 1px solid rgba(0,200,255,0.1) !important;
-    margin-bottom: 4px !important;
-  }
 
   /* Floating filter button over map */
   .map-filter-btn {
