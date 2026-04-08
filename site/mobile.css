@@ -343,6 +343,131 @@
 }
 
 /* ============================================================
+   MAP PAGE (map.html)
+   Uses <header> not <nav>, different class names (.logo not .nav-logo)
+   ============================================================ */
+@media (max-width: 768px) {
+
+  /* Header */
+  header {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 0 14px !important;
+    height: 54px !important;
+  }
+
+  header .scope-toggle { display: none !important; }
+  header .header-meta  { display: none !important; }
+
+  .logo     { display: flex; align-items: center; gap: 8px; text-decoration: none; flex-shrink: 0; }
+  .logo-img { height: 28px !important; }
+  .logo-text{ font-size: 11px !important; letter-spacing: 1.6px !important; }
+
+  /* Map header hamburger (same classes, reuse mobile.css rules) */
+  header .nav-hamburger {
+    display: flex !important;
+  }
+
+  /* Full-screen map */
+  .layout {
+    display: block !important;
+    height: calc(100vh - 54px) !important;
+    padding-top: 54px !important;
+  }
+
+  #map {
+    width: 100vw !important;
+    height: calc(100vh - 54px) !important;
+  }
+
+  /* Right panel hidden on mobile */
+  #rightPanel { display: none !important; }
+
+  /* Left panel — hidden by default, slides in as a drawer */
+  #leftPanel {
+    display: flex !important;
+    flex-direction: column !important;
+    position: fixed !important;
+    top: 54px !important;
+    left: -100% !important;
+    width: 88vw !important;
+    max-width: 340px !important;
+    height: calc(100vh - 54px) !important;
+    z-index: 950 !important;
+    background: rgba(4,9,26,0.97) !important;
+    backdrop-filter: blur(20px) !important;
+    border-right: 1px solid rgba(0,200,255,0.15) !important;
+    overflow-y: auto !important;
+    transition: left 0.28s ease !important;
+    padding: 16px !important;
+    gap: 14px !important;
+  }
+
+  #leftPanel.drawer-open {
+    left: 0 !important;
+  }
+
+  /* Backdrop behind open drawer */
+  .drawer-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 940;
+    background: rgba(0,0,0,0.5);
+  }
+  .drawer-backdrop.open { display: block; }
+
+  /* Week nav inside the drawer */
+  .week-nav-mobile {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    padding: 10px 0 14px !important;
+    border-bottom: 1px solid rgba(0,200,255,0.1) !important;
+    margin-bottom: 4px !important;
+  }
+
+  /* Floating filter button over map */
+  .map-filter-btn {
+    display: flex !important;
+    position: fixed !important;
+    bottom: 80px !important;
+    right: 16px !important;
+    z-index: 900 !important;
+    align-items: center !important;
+    gap: 8px !important;
+    background: rgba(4,9,26,0.92) !important;
+    border: 1px solid rgba(0,200,255,0.35) !important;
+    border-radius: 12px !important;
+    padding: 11px 16px !important;
+    color: var(--neon-cyan) !important;
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: 11px !important;
+    letter-spacing: 1px !important;
+    text-transform: uppercase !important;
+    cursor: pointer !important;
+    backdrop-filter: blur(12px) !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4) !important;
+  }
+
+  /* Legend — smaller and centered */
+  .map-legend {
+    bottom: 16px !important;
+    padding: 7px 10px !important;
+    gap: 4px !important;
+    flex-wrap: wrap !important;
+    max-width: 92vw !important;
+    justify-content: center !important;
+  }
+
+  .legend-item {
+    font-size: 9px !important;
+    padding: 2px 7px !important;
+  }
+}
+
+/* ============================================================
    CTA & FOOTER
    ============================================================ */
 @media (max-width: 768px) {

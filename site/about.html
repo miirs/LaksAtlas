@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>LaksAtlas — About</title>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="mobile.css">
 
 <style>
 :root {
@@ -355,7 +356,19 @@ footer a:hover { color: var(--neon-cyan); }
     <a href="map.html">Live Map</a>
     <a href="about.html" class="active">About</a>
   </div>
+  <button class="nav-hamburger" id="navHamburger" aria-label="Menu" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
+<div class="nav-mobile-menu" id="navMobileMenu">
+  <div class="nav-mobile-scope">
+    <a href="index.html" class="active-no">Norway</a>
+    <a href="global.html">Global</a>
+  </div>
+  <a href="index.html" class="nav-mobile-link">Overview</a>
+  <a href="map.html" class="nav-mobile-link">Live Map</a>
+  <a href="about.html" class="nav-mobile-link active">About</a>
+</div>
 
 <!-- VIDEO HERO -->
 <div class="video-hero">
@@ -625,5 +638,6 @@ const observer = new IntersectionObserver(entries => {
 }, { threshold: 0.12 });
 document.querySelectorAll('.section').forEach(s => observer.observe(s));
 </script>
+<script src="mobile.js"></script>
 </body>
 </html>
