@@ -153,3 +153,16 @@ __pycache__/
 _deploy/
 venv/
 .venv/
+
+# Claude AI config — local tooling only, not part of the project
+.claude/
+CLAUDE.md
+
+# Local reference folders — not needed for the live site
+Example/
+FishStatJ/
+
+# Large binary source files — PDFs and Excel sheets used for local research only.
+# The data that matters is already extracted into data/*.json
+stats/*.pdf
+stats/*.xlsx
