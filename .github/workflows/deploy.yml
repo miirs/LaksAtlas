@@ -37,7 +37,9 @@ jobs:
         run: |
           cp -r site/. _deploy/
           cp -r data   _deploy/data
+          cp -r logo   _deploy/logo
           find _deploy -name '*.html' -exec sed -i 's|\.\./data/|data/|g' {} +
+          find _deploy -name '*.html' -exec sed -i 's|\.\./logo/|logo/|g' {} +
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
