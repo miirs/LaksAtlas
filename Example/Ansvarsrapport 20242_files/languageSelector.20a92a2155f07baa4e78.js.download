@@ -1,0 +1,1 @@
+document.getElementById("language-select").addEventListener("change",(e=>{window.location.href=window.location.origin+e.target.value}));

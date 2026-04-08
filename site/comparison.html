@@ -1,0 +1,2047 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LaksAtlas — Yearly Comparison</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+<style>
+:root{
+  /* Ocean depth palette */
+  --bg:#04091a;
+  --bg-soft:#071425;
+  --bg-card:rgba(4,28,68,0.52);
+  --bg-card-hover:rgba(6,38,88,0.70);
+  --border:rgba(30,100,210,0.18);
+  --border-hover:rgba(55,145,255,0.34);
+
+  --text:#d8e8f6;
+  --text-dim:#5e88aa;
+  --text-muted:#2a4560;
+
+  --neon-cyan:#00c8ff;
+  --neon-magenta:#a855f7;
+  --neon-green:#1de9a8;
+  --neon-amber:#f4a535;
+  --neon-red:#ff4757;
+  --neon-purple:#7c55e8;
+
+  --glow-cyan:0 0 14px rgba(0,200,255,0.22),0 0 40px rgba(0,200,255,0.08);
+  --shadow-card:
+    inset 0 1px 0 rgba(60,160,255,0.06),
+    0 12px 36px rgba(0,4,20,0.45);
+
+  --radius-lg:18px;
+  --radius-md:14px;
+  --radius-sm:10px;
+  --content-width:1200px;
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+
+html{
+  scroll-behavior:smooth;
+}
+
+body{
+  background:
+    radial-gradient(ellipse at 15% 0%, rgba(0,80,200,0.13), transparent 48%),
+    radial-gradient(ellipse at 85% 100%, rgba(0,50,140,0.10), transparent 48%),
+    radial-gradient(ellipse at 50% 50%, rgba(0,15,55,0.5), transparent 75%),
+    var(--bg);
+  color:var(--text);
+  font-family:'Outfit',sans-serif;
+  overflow-x:hidden;
+  line-height:1.7;
+  font-size:16px;
+}
+
+body::before{
+  content:'';
+  position:fixed;
+  inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.012'/%3E%3C/svg%3E");
+  pointer-events:none;
+  z-index:9999;
+}
+
+/* === NAV === */
+nav{
+  position:fixed;
+  top:0;
+  left:0;
+  right:0;
+  z-index:1000;
+  padding:0 40px;
+  height:66px;
+  display:grid;
+  grid-template-columns:1fr auto 1fr;
+  align-items:center;
+  background:rgba(4,9,26,0.88);
+  backdrop-filter:blur(18px);
+  border-bottom:1px solid var(--border);
+}
+
+.nav-logo{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  text-decoration:none;
+}
+
+.nav-logo-text{
+  font-weight:800;
+  font-size:15px;
+  letter-spacing:2.6px;
+  text-transform:uppercase;
+  background:linear-gradient(135deg,var(--neon-cyan),#dbe7ff);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+.nav-logo-img{
+  height:40px;
+  width:auto;
+  display:block;
+  border-radius:8px;
+  padding:3px 10px;
+  background:rgba(255,255,255,0.96);
+  box-shadow:0 2px 12px rgba(0,0,0,0.35);
+}
+
+.scope-toggle{
+  display:flex;
+  background:rgba(255,255,255,0.04);
+  border:1px solid var(--border);
+  border-radius:999px;
+  padding:3px;
+}
+.scope-btn{
+  padding:7px 18px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  text-decoration:none;
+  color:var(--text-dim);
+  transition:all .2s;
+  white-space:nowrap;
+}
+.scope-btn:hover{ color:var(--text); }
+.scope-no.active{
+  background:linear-gradient(135deg,var(--neon-cyan),#a8d8f8);
+  color:#04091a;
+  box-shadow:0 0 12px rgba(0,200,255,0.2);
+}
+.scope-gl.active{
+  background:linear-gradient(135deg,#1de9a8,#00c8ff);
+  color:#04091a;
+  box-shadow:0 0 12px rgba(0,200,255,0.2);
+}
+
+.nav-links{
+  display:flex;
+  gap:24px;
+  justify-self:end;
+}
+
+.nav-links a{
+  color:var(--text-muted);
+  text-decoration:none;
+  font-size:12px;
+  letter-spacing:1.2px;
+  text-transform:uppercase;
+  font-weight:500;
+  transition:color .25s ease, opacity .25s ease;
+}
+
+.nav-links a:hover{color:var(--text)}
+.nav-links a.active{color:var(--neon-cyan)}
+
+/* === HERO === */
+.hero{
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:130px 40px 90px;
+  position:relative;
+  overflow:hidden;
+}
+
+.hero::before{
+  content:'';
+  position:absolute;
+  width:820px;
+  height:820px;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(255,77,148,0.08) 0%,transparent 68%);
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  pointer-events:none;
+}
+
+.hero-label{
+  font-size:11px;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  color:var(--text-muted);
+  font-family:'JetBrains Mono',monospace;
+  margin-bottom:24px;
+  opacity:0;
+  animation:fadeUp .8s ease .15s forwards;
+}
+
+.hero-number{
+  font-size:clamp(72px,12vw,150px);
+  font-weight:900;
+  line-height:.92;
+  color:var(--neon-magenta);
+  text-shadow:0 0 24px rgba(255,77,148,0.22);
+  margin-bottom:10px;
+  letter-spacing:-0.04em;
+  opacity:0;
+  animation:fadeUp .8s ease .35s forwards;
+}
+
+.hero-unit{
+  font-size:clamp(20px,3vw,34px);
+  font-weight:300;
+  color:var(--text-dim);
+  margin-bottom:28px;
+  opacity:0;
+  animation:fadeUp .8s ease .55s forwards;
+}
+
+.hero-subtitle{
+  font-size:18px;
+  color:var(--text-dim);
+  max-width:820px;
+  line-height:1.8;
+  opacity:0;
+  animation:fadeUp .8s ease .75s forwards;
+}
+
+.hero-subtitle strong{
+  color:var(--text);
+  font-weight:700;
+}
+
+.hero-year{
+  margin-top:24px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:12px;
+  letter-spacing:1.4px;
+  color:var(--text-muted);
+  opacity:0;
+  animation:fadeUp .8s ease .95s forwards;
+}
+
+.scroll-indicator{
+  position:absolute;
+  bottom:34px;
+  left:0;
+  right:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:8px;
+  opacity:0;
+  animation:fadeUp .8s ease 1.2s forwards;
+}
+
+.scroll-indicator span{
+  font-size:9px;
+  letter-spacing:2.5px;
+  text-transform:uppercase;
+  color:var(--text-muted);
+  font-family:'JetBrains Mono',monospace;
+}
+
+.scroll-line{
+  width:1px;
+  height:42px;
+  background:linear-gradient(to bottom,var(--text-muted),transparent);
+  animation:scrollPulse 2s ease infinite;
+}
+
+@keyframes scrollPulse{
+  0%,100%{opacity:.3}
+  50%{opacity:1}
+}
+
+/* === COMPARISON CONTROLS === */
+.compare-controls-wrap{
+  margin-top:34px;
+  width:min(980px,100%);
+  opacity:0;
+  animation:fadeUp .8s ease 1.05s forwards;
+}
+
+.compare-controls{
+  display:grid;
+  grid-template-columns:repeat(4, minmax(160px,1fr));
+  gap:14px;
+  align-items:end;
+}
+
+.compare-control{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  text-align:left;
+}
+
+.compare-control label{
+  font-size:11px;
+  letter-spacing:1.2px;
+  text-transform:uppercase;
+  color:var(--text-muted);
+  font-family:'JetBrains Mono',monospace;
+}
+
+.compare-control select,
+.compare-control button{
+  width:100%;
+  background:var(--bg-card);
+  color:var(--text);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:13px 14px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:13px;
+  outline:none;
+  box-shadow:var(--shadow-card);
+}
+
+.compare-control select:focus,
+.compare-control button:focus{
+  border-color:rgba(58,239,255,0.45);
+}
+
+.compare-control button{
+  cursor:pointer;
+  transition:all .25s ease;
+}
+
+.compare-control button:hover{
+  border-color:var(--border-hover);
+  background:rgba(255,255,255,0.07);
+  transform:translateY(-2px);
+}
+
+.quick-range-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  justify-content:center;
+  margin-top:14px;
+}
+
+.quick-range{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:10px 16px;
+  border-radius:999px;
+  border:1px solid var(--border);
+  background:rgba(255,255,255,0.04);
+  color:var(--text-dim);
+  text-decoration:none;
+  font-family:'JetBrains Mono', monospace;
+  font-size:12px;
+  letter-spacing:1px;
+  transition:all .25s ease;
+  box-shadow:var(--shadow-card);
+  cursor:pointer;
+}
+
+.quick-range:hover{
+  color:var(--text);
+  border-color:var(--border-hover);
+  background:rgba(255,255,255,0.07);
+  transform:translateY(-2px);
+}
+
+.quick-range.active{
+  color:var(--bg);
+  background:linear-gradient(135deg,var(--neon-magenta),#ffd2e3);
+  border-color:rgba(255,77,148,0.75);
+  box-shadow:0 0 12px rgba(255,77,148,0.18),0 0 32px rgba(255,77,148,0.08);
+  font-weight:700;
+}
+
+.region-btn-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-bottom:28px;
+}
+
+.region-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:10px 18px;
+  border-radius:999px;
+  border:1px solid var(--border);
+  background:rgba(255,255,255,0.04);
+  color:var(--text-dim);
+  font-family:'JetBrains Mono',monospace;
+  font-size:12px;
+  letter-spacing:0.5px;
+  transition:all .25s ease;
+  cursor:pointer;
+  box-shadow:var(--shadow-card);
+}
+
+.region-btn:hover{
+  color:var(--text);
+  border-color:var(--border-hover);
+  background:rgba(255,255,255,0.07);
+  transform:translateY(-2px);
+}
+
+.region-btn.active{
+  color:var(--bg);
+  background:linear-gradient(135deg,var(--neon-cyan),#9bfaff);
+  border-color:rgba(58,239,255,0.75);
+  box-shadow:0 0 12px rgba(58,239,255,0.18),0 0 32px rgba(58,239,255,0.08);
+  font-weight:700;
+}
+
+.region-btn.partial{
+  opacity:0.72;
+}
+
+/* === SECTIONS === */
+.section{
+  padding:100px 40px;
+  max-width:var(--content-width);
+  margin:0 auto;
+}
+
+.section-label{
+  display:inline-block;
+  font-size:10px;
+  letter-spacing:2.5px;
+  text-transform:uppercase;
+  color:var(--neon-cyan);
+  font-family:'JetBrains Mono',monospace;
+  margin-bottom:18px;
+  padding:4px 12px;
+  border:1px solid rgba(0,200,255,0.22);
+  border-radius:999px;
+  background:rgba(0,200,255,0.06);
+}
+
+.section-title{
+  font-size:clamp(30px,4vw,44px);
+  font-weight:750;
+  line-height:1.14;
+  margin-bottom:14px;
+  letter-spacing:-0.02em;
+  max-width:860px;
+}
+
+.section-desc{
+  font-size:17px;
+  color:var(--text-dim);
+  max-width:820px;
+  line-height:1.8;
+  margin-bottom:44px;
+}
+
+/* === CHARTS === */
+.chart-container{
+  background:
+    linear-gradient(180deg, rgba(0,80,180,0.10), rgba(0,40,110,0.07)),
+    linear-gradient(135deg, rgba(0,100,220,0.05), rgba(0,0,0,0));
+  border:1px solid var(--border);
+  border-radius:0 var(--radius-lg) var(--radius-lg) var(--radius-lg);
+  padding:30px;
+  margin-bottom:32px;
+  box-shadow:var(--shadow-card);
+  transition:transform .25s ease,border-color .25s ease,background .25s ease;
+}
+
+.chart-container:hover{
+  border-color:var(--border-hover);
+  background:
+    linear-gradient(180deg, rgba(0,90,200,0.14), rgba(0,50,130,0.10)),
+    linear-gradient(135deg, rgba(0,110,240,0.07), rgba(0,0,0,0));
+  transform:translateY(-2px);
+}
+
+.chart-title{
+  font-size:15px;
+  font-weight:650;
+  letter-spacing:.2px;
+  margin-bottom:4px;
+  color:var(--text);
+}
+
+.chart-subtitle{
+  font-size:12px;
+  color:var(--text-muted);
+  font-family:'JetBrains Mono',monospace;
+  margin-bottom:22px;
+  line-height:1.6;
+}
+
+.chart-wrap{
+  position:relative;
+  height:360px;
+}
+
+/* === STAT GRID === */
+.stat-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:16px;
+  margin-bottom:48px;
+}
+
+.stat-block{
+  background:
+    linear-gradient(180deg, rgba(0,80,180,0.10), rgba(0,40,110,0.07)),
+    linear-gradient(135deg, rgba(0,100,220,0.04), rgba(0,0,0,0));
+  border:1px solid var(--border);
+  border-radius:var(--radius-md) var(--radius-md) 0 var(--radius-md);
+  padding:24px;
+  transition:all .25s ease;
+  box-shadow:var(--shadow-card);
+}
+
+.stat-block:hover{
+  border-color:var(--border-hover);
+  background:
+    linear-gradient(180deg, rgba(0,90,200,0.15), rgba(0,50,130,0.10)),
+    linear-gradient(135deg, rgba(0,110,240,0.06), rgba(0,0,0,0));
+  transform:translateY(-2px);
+}
+
+.stat-block-label{
+  font-size:11px;
+  letter-spacing:1.2px;
+  text-transform:uppercase;
+  color:var(--text-muted);
+  font-family:'JetBrains Mono',monospace;
+  margin-bottom:10px;
+  line-height:1.5;
+}
+
+.stat-block-value{
+  font-size:38px;
+  font-weight:850;
+  line-height:1;
+  margin-bottom:8px;
+  letter-spacing:-0.03em;
+}
+
+.stat-block-value.red{color:var(--neon-red)}
+.stat-block-value.amber{color:var(--neon-amber)}
+.stat-block-value.cyan{color:var(--neon-cyan)}
+.stat-block-value.green{color:var(--neon-green)}
+.stat-block-value.magenta{color:var(--neon-magenta)}
+.stat-block-value.purple{color:var(--neon-purple)}
+
+.stat-block-sub{
+  font-size:13px;
+  color:var(--text-dim);
+  line-height:1.6;
+}
+
+/* === TWO COL === */
+.two-col{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:24px;
+}
+
+/* === CTA === */
+.cta-section{
+  text-align:center;
+  padding:120px 40px;
+  position:relative;
+  max-width:var(--content-width);
+  margin:0 auto;
+}
+
+.cta-section::before{
+  content:'';
+  position:absolute;
+  width:620px;
+  height:620px;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(58,239,255,0.05) 0%,transparent 70%);
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  pointer-events:none;
+}
+
+.cta-button{
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  padding:16px 32px;
+  background:rgba(58,239,255,0.08);
+  border:1px solid rgba(58,239,255,0.28);
+  border-radius:12px;
+  color:var(--neon-cyan);
+  font-family:'JetBrains Mono',monospace;
+  font-size:13px;
+  letter-spacing:1.6px;
+  text-transform:uppercase;
+  text-decoration:none;
+  transition:all .25s ease;
+  cursor:pointer;
+  box-shadow:0 8px 24px rgba(0,0,0,0.18);
+}
+
+.cta-button:hover{
+  background:rgba(58,239,255,0.14);
+  box-shadow:var(--glow-cyan);
+  transform:translateY(-2px);
+}
+
+/* === FOOTER === */
+footer{
+  padding:42px 20px;
+  text-align:center;
+  border-top:1px solid var(--border);
+  font-size:11px;
+  color:var(--text-muted);
+  font-family:'JetBrains Mono',monospace;
+  letter-spacing:1px;
+  line-height:1.9;
+}
+
+footer a{
+  color:var(--text-dim);
+  text-decoration:none;
+}
+
+footer a:hover{
+  color:var(--text);
+}
+
+/* === ANIMATIONS === */
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(20px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+.reveal{
+  opacity:0;
+  transform:translateY(28px);
+  transition:opacity .7s ease,transform .7s ease;
+}
+
+.reveal.visible{
+  opacity:1;
+  transform:translateY(0);
+}
+
+/* === RESPONSIVE === */
+@media(max-width:900px){
+  .two-col{grid-template-columns:1fr}
+  .compare-controls{grid-template-columns:1fr 1fr}
+}
+
+@media(max-width:768px){
+  nav{
+    padding:12px 18px;
+    gap:12px;
+  }
+
+  .nav-links{
+    gap:14px;
+  }
+
+  .nav-links a{
+    font-size:11px;
+    letter-spacing:1px;
+  }
+
+  .hero{
+    padding:120px 20px 90px;
+  }
+
+  .hero-subtitle{
+    font-size:17px;
+  }
+
+  .section{
+    padding:68px 20px;
+  }
+
+  .chart-container{
+    padding:20px;
+  }
+
+  .chart-wrap{
+    height:270px;
+  }
+
+  .stat-grid{
+    grid-template-columns:1fr;
+  }
+
+  .cta-section{
+    padding:90px 20px;
+  }
+
+  .compare-controls{
+    grid-template-columns:1fr;
+  }
+}
+
+/* === BACK TO TOP === */
+.back-to-top{position:fixed;bottom:32px;right:32px;z-index:900;width:44px;height:44px;border-radius:12px;background:rgba(4,28,68,0.85);border:1px solid rgba(0,200,255,0.28);color:var(--neon-cyan);cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;transform:translateY(12px);transition:opacity .3s ease,transform .3s ease,background .2s ease,border-color .2s ease;pointer-events:none;backdrop-filter:blur(12px);box-shadow:0 4px 20px rgba(0,0,0,0.4)}
+.back-to-top.visible{opacity:1;transform:translateY(0);pointer-events:auto}
+.back-to-top:hover{background:rgba(0,200,255,0.12);border-color:rgba(0,200,255,0.55);box-shadow:0 4px 20px rgba(0,0,0,0.4),var(--glow-cyan)}
+.back-to-top svg{width:18px;height:18px;stroke:currentColor;stroke-width:2.2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">
+    <img src="../logo/logo.png" alt="LaksAtlas" class="nav-logo-img">
+    <span class="nav-logo-text">LAKSATLAS</span>
+  </a>
+  <div class="scope-toggle">
+    <a href="index.html" class="scope-btn scope-no active">Norway</a>
+    <a href="global.html" class="scope-btn scope-gl">Global</a>
+  </div>
+  <div class="nav-links">
+    <a href="index.html">Overview</a>
+    <a href="map.html">Live Map</a>
+    <a href="comparison.html" class="active">Compare</a>
+    <a href="about.html">About</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-label">Norwegian Salmon & Trout Farming — Multi-Year Comparison</div>
+  <div class="hero-number" id="heroCounter">0.0%</div>
+  <div class="hero-unit" id="heroUnit">highest sea loss rate in selected years</div>
+  <div class="hero-subtitle">
+    Compare <strong>losses</strong>, <strong>disease outbreaks</strong>,
+    <strong>lice pressure</strong>, <strong>production scale</strong>, and
+    <strong>cleaner fish use</strong> across years using official public data.
+  </div>
+  <div class="hero-year" id="heroRangeLabel">Default comparison: 2020–2024</div>
+
+  <div class="compare-controls-wrap">
+    <div class="compare-controls">
+      <div class="compare-control">
+        <label for="startYear">Start Year</label>
+        <select id="startYear"></select>
+      </div>
+      <div class="compare-control">
+        <label for="endYear">End Year</label>
+        <select id="endYear"></select>
+      </div>
+      <div class="compare-control">
+        <label for="regionYear">Regional Snapshot</label>
+        <select id="regionYear"></select>
+      </div>
+      <div class="compare-control">
+        <label>&nbsp;</label>
+        <button id="applyComparison">Apply Comparison</button>
+      </div>
+    </div>
+
+    <div class="quick-range-row">
+      <button class="quick-range active" data-start="2020" data-end="2024">2020–2024</button>
+      <button class="quick-range" data-start="2015" data-end="2024">2015–2024</button>
+      <button class="quick-range" data-start="1994" data-end="2024">All Loss Data</button>
+    </div>
+  </div>
+
+  <div class="scroll-indicator">
+    <span>Scroll to explore</span>
+    <div class="scroll-line"></div>
+  </div>
+</div>
+
+<div class="section reveal">
+  <div class="section-label">01 — Selected Range Summary</div>
+  <div class="section-title">Key takeaways across the chosen years</div>
+  <div class="section-desc">
+    These summary cards update when you change the year range above. They are designed
+    to show the scale of losses, the worst and best years, and cumulative pressure
+    from sea lice violations and disease.
+  </div>
+
+  <div class="stat-grid">
+    <div class="stat-block">
+      <div class="stat-block-label">Highest Sea Loss Year</div>
+      <div class="stat-block-value red" id="statWorstRate">0.0%</div>
+      <div class="stat-block-sub" id="statWorstRateSub">—</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-block-label">Lowest Sea Loss Year</div>
+      <div class="stat-block-value green" id="statBestRate">0.0%</div>
+      <div class="stat-block-sub" id="statBestRateSub">—</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-block-label">Total Sea Losses</div>
+      <div class="stat-block-value magenta" id="statSeaDeaths">0.0M</div>
+      <div class="stat-block-sub" id="statSeaDeathsSub">—</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-block-label">Total Smolt Losses</div>
+      <div class="stat-block-value purple" id="statSmoltDeaths">0.0M</div>
+      <div class="stat-block-sub" id="statSmoltDeathsSub">—</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-block-label">Total Lice Violations</div>
+      <div class="stat-block-value amber" id="statLice">0</div>
+      <div class="stat-block-sub" id="statLiceSub">—</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-block-label">Highest ISA Year</div>
+      <div class="stat-block-value cyan" id="statIsa">0</div>
+      <div class="stat-block-sub" id="statIsaSub">—</div>
+    </div>
+  </div>
+</div>
+
+<div class="section reveal">
+  <div class="section-label">02 — Losses</div>
+  <div class="section-title">Sea losses remain high while smolt losses grow in the background</div>
+  <div class="section-desc">
+    This section compares losses as both <strong>rate</strong> and <strong>absolute count</strong>.
+    The rate matters for welfare. The absolute count matters for scale. Together they show
+    whether the industry is truly improving or simply getting larger.
+  </div>
+
+  <div class="chart-container">
+    <div class="chart-title">Sea Phase Loss Rate</div>
+    <div class="chart-subtitle">Losses as % of smolt put to sea within the selected range</div>
+    <div class="chart-wrap"><canvas id="mortalityRateChart"></canvas></div>
+  </div>
+
+  <div class="two-col">
+    <div class="chart-container">
+      <div class="chart-title">Sea Losses by Year</div>
+      <div class="chart-subtitle">Millions of fish lost in sea cages</div>
+      <div class="chart-wrap"><canvas id="seaDeathsChart"></canvas></div>
+    </div>
+    <div class="chart-container">
+      <div class="chart-title">Smolt and Juvenile Losses by Year</div>
+      <div class="chart-subtitle">Millions of fish lost before sea transfer</div>
+      <div class="chart-wrap"><canvas id="smoltDeathsChart"></canvas></div>
+    </div>
+  </div>
+
+  <div class="chart-container">
+    <div class="chart-title">Sea vs Smolt Losses</div>
+    <div class="chart-subtitle">Stacked losses per year in the selected range</div>
+    <div class="chart-wrap"><canvas id="combinedMortalityChart"></canvas></div>
+  </div>
+</div>
+
+<div class="section reveal">
+  <div class="section-label">03 — Disease & Lice</div>
+  <div class="section-title">Disease pressure and lice violations reveal a persistent health burden</div>
+  <div class="section-desc">
+    ISA remains elevated compared with earlier years, PD has fluctuated sharply, and lice
+    limit violations remain a recurring system-level problem. This section lets users compare
+    the relative weight of each issue over time.
+  </div>
+
+  <div class="two-col">
+    <div class="chart-container">
+      <div class="chart-title">Disease Outbreaks Per Year</div>
+      <div class="chart-subtitle">ISA and PD confirmed cases</div>
+      <div class="chart-wrap"><canvas id="diseaseChart"></canvas></div>
+    </div>
+    <div class="chart-container">
+      <div class="chart-title">Lice Limit Violations</div>
+      <div class="chart-subtitle">Weekly instances of localities above the legal threshold</div>
+      <div class="chart-wrap"><canvas id="liceChart"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<div class="section reveal">
+  <div class="section-label">04 — Industry Scale</div>
+  <div class="section-title">More fish in the system means more fish at risk</div>
+  <div class="section-desc">
+    Production growth does not automatically imply welfare improvement. Comparing smolt input,
+    sold biomass, and cleaner fish deployment helps show whether rising scale has been matched
+    by lower losses, or whether losses have expanded alongside production.
+  </div>
+
+  <div class="two-col">
+    <div class="chart-container">
+      <div class="chart-title">Smolt Put to Sea</div>
+      <div class="chart-subtitle">Millions of fish transferred to sea</div>
+      <div class="chart-wrap"><canvas id="smoltInputChart"></canvas></div>
+    </div>
+    <div class="chart-container">
+      <div class="chart-title">Production Sold</div>
+      <div class="chart-subtitle">Million tonnes round weight</div>
+      <div class="chart-wrap"><canvas id="productionChart"></canvas></div>
+    </div>
+  </div>
+
+  <div class="chart-container">
+    <div class="chart-title">Cleaner Fish Deployed</div>
+    <div class="chart-subtitle">Millions of wrasse and lumpfish used as lice control</div>
+    <div class="chart-wrap"><canvas id="cleanerChart"></canvas></div>
+  </div>
+</div>
+
+<div class="section reveal">
+  <div class="section-label">05 — Regional History</div>
+  <div class="section-title">Highlight any region's trend over time</div>
+  <div class="section-desc">
+    Click a region to see its year-by-year loss rate and production. Troms and Finnmark
+    were administratively combined in 2020–2022, so they appear as one county for those years
+    and as separate counties from 2023 onward.
+  </div>
+  <div class="region-btn-row" id="regionBtnRow"></div>
+  <div class="chart-container">
+    <div class="chart-title" id="regionHistTitle">Nordland — Production &amp; Loss Rate by Year</div>
+    <div class="chart-subtitle" id="regionHistSubtitle">Loss rate (%) and production (kt) by year · Source: Fiskeridirektoratet</div>
+    <div class="chart-wrap"><canvas id="regionHistChart"></canvas></div>
+  </div>
+</div>
+
+<div class="section reveal">
+  <div class="section-label">07 — Finance &amp; Revenue</div>
+  <div class="section-title">Revenue grew 14x since 1999. Volume only grew 4.6x.</div>
+  <div class="section-desc">
+    Total first-hand sales value for all farmed salmonids (salmon, rainbow trout, trout)
+    climbed from 7.6 billion NOK in 1999 to a peak of 113 billion in 2023. Most of that
+    growth came from price, not volume — the average price per kg rose from 21 NOK in
+    1999 to 69 NOK in 2023. This is official first-hand price (førstehåndspris), meaning
+    the price processors pay farms, not the consumer retail price. Use the year range
+    controls above to focus on any period.
+  </div>
+
+  <div class="two-col">
+    <div class="chart-container">
+      <div class="chart-title">Average First-Hand Price per kg</div>
+      <div class="chart-subtitle">NOK/kg round weight — selected year range · Source: Fiskeridirektoratet</div>
+      <div class="chart-wrap"><canvas id="priceChart"></canvas></div>
+    </div>
+    <div class="chart-container">
+      <div class="chart-title">Total Industry Revenue</div>
+      <div class="chart-subtitle">Billion NOK — all salmonids combined · Source: Fiskeridirektoratet</div>
+      <div class="chart-wrap"><canvas id="revenueChart"></canvas></div>
+    </div>
+  </div>
+
+  <div class="chart-container">
+    <div class="chart-title">Revenue vs Volume Sold</div>
+    <div class="chart-subtitle">Revenue (bn NOK) grew far faster than volume (kt) — the price premium tells the real story</div>
+    <div class="chart-wrap"><canvas id="revVolChart"></canvas></div>
+  </div>
+</div>
+
+<div class="section reveal">
+  <div class="section-label">08 — Interpretation</div>
+  <div class="section-title">What this comparison page is meant to reveal</div>
+  <div class="section-desc">
+    The key question is not only whether losses rise or fall in a single year, but whether
+    the overall system is trending toward better outcomes. Users should be able to see whether
+    lower losses are sustained, whether disease pressure changes, and whether production growth
+    comes with a proportional welfare cost.
+  </div>
+
+  <div class="stat-grid">
+    <div class="stat-block">
+      <div class="stat-block-label">Core Question</div>
+      <div class="stat-block-value cyan" style="font-size:28px">Trend</div>
+      <div class="stat-block-sub">Are conditions improving over time, or only shifting in form?</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-block-label">Main Signal</div>
+      <div class="stat-block-value red" style="font-size:28px">Losses</div>
+      <div class="stat-block-sub">Sea losses remain the clearest welfare indicator at national scale.</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-block-label">Hidden Burden</div>
+      <div class="stat-block-value magenta" style="font-size:28px">Smolt Loss</div>
+      <div class="stat-block-sub">Large losses occur before sea transfer and deserve equal visibility.</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-block-label">Pressure Markers</div>
+      <div class="stat-block-value amber" style="font-size:28px">Lice & Disease</div>
+      <div class="stat-block-sub">ISA, PD, and lice violations help explain why losses remain high.</div>
+    </div>
+  </div>
+</div>
+
+<div class="cta-section reveal">
+  <div class="section-label">Explore Further</div>
+  <div class="section-title" style="margin:0 auto 16px">Return to the main dashboard or open the live farm map</div>
+  <p style="color:var(--text-dim);max-width:620px;margin:0 auto 36px;font-size:17px;line-height:1.8">
+    The overview page tells the story of a single year. This comparison page shows the trend.
+    The live map shows what is happening across the coast right now.
+  </p>
+  <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
+    <a class="cta-button" href="index.html">Open Overview →</a>
+    <a class="cta-button" href="map.html">Open Live Map →</a>
+  </div>
+</div>
+
+<footer>
+  Data: <a href="https://www.fiskeridir.no">Fiskeridirektoratet</a> ·
+  <a href="https://www.barentswatch.no">Barentswatch</a> ·
+  <a href="https://www.vetinst.no">Veterinærinstituttet</a><br>
+  LaksAtlas is an independent transparency project. All data publicly available under NLOD license.
+</footer>
+
+<script>
+/* =========================================================================
+   CHART DEFAULTS
+========================================================================= */
+Chart.defaults.color = '#98a3b8';
+Chart.defaults.borderColor = 'rgba(255,255,255,0.025)';
+Chart.defaults.font.family = "'JetBrains Mono', monospace";
+Chart.defaults.font.size = 11;
+Chart.defaults.plugins.legend.labels.boxWidth = 12;
+Chart.defaults.plugins.legend.labels.padding = 16;
+
+/* =========================================================================
+   MASTER DATA
+========================================================================= */
+const ALL_YEARS = ['1994','1995','1996','1997','1998','1999','2000','2001','2002','2003','2004','2005','2006','2007','2008','2009','2010','2011','2012','2013','2014','2015','2016','2017','2018','2019','2020','2021','2022','2023','2024'];
+
+const SMOLT_INPUT = [89147,108068,110658,120595,121394,141873,155015,159441,162426,158444,165001,175030,200430,224819,239343,250079,277503,308570,303754,314373,330669,346399,340839,361309,374861,400647,411923,429819,452199,452001,459955];
+
+const SEA_LOSS = [9797,12607,15706,19037,27182,21574,19774,25590,33376,34771,28326,27590,34621,42658,49329,48479,50101,53533,41303,43671,46659,55314,59023,61070,56301,65138,63735,64046,64720,72010,70337];
+
+const SEA_RATE = SMOLT_INPUT.map((s,i)=>s>0?+(SEA_LOSS[i]/s*100).toFixed(1):0);
+
+const PROD_YEARS = ['1998','1999','2000','2001','2002','2003','2004','2005','2006','2007','2008','2009','2010','2011','2012','2013','2014','2015','2016','2017','2018','2019','2020','2021','2022','2023','2024'];
+const PROD = [820977,947160,976535,1012381,1091134,1156314,1254257,1290161,1384693,1643598,1645641,1873220,1988422,2246836,2613546,2479752,2654683,2752706,2642942,2606704,2700695,2895062,2969394,3314945,3301126,3266242,3298306];
+
+const SMOLT_LOSS_YEARS = ['2005','2006','2007','2008','2009','2010','2011','2012','2013','2014','2015','2016','2017','2018','2019','2020','2021','2022','2023','2024'];
+const SMOLT_LOSS = [83763,93727,112278,127424,110332,124790,158874,192616,217114,133032,143960,118399,119680,111823,110059,122596,144925,156303,157628,169581];
+
+const CLEAN_YEARS = ['1998','1999','2000','2001','2002','2003','2004','2005','2006','2007','2008','2009','2010','2011','2012','2013','2014','2015','2016','2017','2018','2019','2020','2021','2022','2023','2024'];
+const CLEAN = [4738,5238,3752,4642,3145,3078,2269,1561,1364,3128,3393,9766,21953,21277,27806,32412,48934,52818,74717,109149,97858,122070,103086,91149,66886,60454,45023];
+
+const DISEASE_YEARS = ['2013','2014','2015','2016','2017','2018','2019','2020','2021','2022','2023','2024','2025'];
+const ISA_CASES = [9,7,16,18,12,13,6,28,29,17,21,21,22];
+const PD_CASES = [85,121,123,120,155,145,145,159,92,96,57,51,44];
+
+const LICE_YEARS = ['2013','2014','2015','2016','2017','2018','2019','2020','2021','2022','2023','2024','2025'];
+const LICE_VIOL = [1462,2306,1643,1209,1112,962,1186,982,827,798,556,1092,1061];
+
+/* =========================================================================
+   REGIONAL SNAPSHOT DATA
+   Source: Fiskeridirektoratet sta-laks-mat-11-beh-bevegelse.xlsx (Utsett/Tap)
+   and production data. 2020–2022 use 6 regions (Troms og Finnmark combined).
+   2023–2024 use 7 regions (Finnmark and Troms split after 2023 admin change).
+========================================================================= */
+const REGIONAL_DATA = {
+  '2020': {
+    regions:['Troms og\nFinnmark','Nordland','Trøndelag','Møre og\nRomsdal','Vestland','Rogaland'],
+    deaths:[15520, 7484, 9817, 5156, 19668, 5187],
+    prod:[303876, 299765, 328086, 95208, 361302, 85101],
+    smolt:[86146, 79981, 50655, 52691, 90190, 28636],
+    locs:[196, 203, 163, 80, 272, 62],
+    coast:[6000, 5700, 2400, 3200, 4500, 1800]
+  },
+  '2021': {
+    regions:['Troms og\nFinnmark','Nordland','Trøndelag','Møre og\nRomsdal','Vestland','Rogaland'],
+    deaths:[12918, 9243, 10850, 6648, 17569, 5924],
+    prod:[361624, 362181, 251874, 221118, 343366, 92617],
+    smolt:[93125, 77452, 86853, 23631, 97102, 23143],
+    locs:[195, 213, 161, 80, 270, 61],
+    coast:[6000, 5700, 2400, 3200, 4500, 1800]
+  },
+  '2022': {
+    regions:['Troms og\nFinnmark','Nordland','Trøndelag','Møre og\nRomsdal','Vestland','Rogaland'],
+    deaths:[15061, 9333, 8014, 6613, 18254, 5804],
+    prod:[355324, 366133, 311603, 121363, 374380, 104777],
+    smolt:[101118, 91261, 62376, 58759, 97138, 30009],
+    locs:[195, 212, 161, 80, 271, 60],
+    coast:[6000, 5700, 2400, 3200, 4500, 1800]
+  },
+  '2023': {
+    regions:['Finnmark','Troms','Nordland','Trøndelag','Møre og\nRomsdal','Vestland','Rogaland'],
+    deaths:[5865, 9441, 12610, 10300, 8147, 19991, 5089],
+    prod:[115990, 226465, 364149, 239799, 219834, 340913, 106875],
+    smolt:[36964, 63150, 94106, 91768, 26741, 111361, 23852],
+    locs:[80, 116, 215, 159, 81, 270, 59],
+    coast:[3200, 2800, 5700, 2400, 3200, 4500, 1800]
+  },
+  '2024': {
+    regions:['Finnmark','Troms','Nordland','Trøndelag','Møre og\nRomsdal','Vestland','Rogaland'],
+    deaths:[10868, 9840, 7524, 13722, 8112, 15866, 3204],
+    prod:[128002, 200830, 360192, 324740, 125765, 386472, 99814],
+    smolt:[36249, 61831, 98792, 66669, 67352, 98925, 30786],
+    locs:[83, 117, 217, 157, 78, 273, 59],
+    coast:[3200, 2800, 5700, 2400, 3200, 4500, 1800]
+  }
+};
+
+/* =========================================================================
+   FINANCE DATA
+   Source: Fiskeridirektoratet sta-laks-mat-06-salg — Volume and Value of
+   slaughtered fish (salmon + rainbow trout + trout combined national total).
+   Price per kg = value / volume (implied first-hand / farm-gate price).
+   Value in billion NOK. Price in NOK/kg round weight.
+========================================================================= */
+const FINANCE_YEARS = ['1999','2000','2001','2002','2003','2004','2005','2006','2007','2008','2009','2010','2011','2012','2013','2014','2015','2016','2017','2018','2019','2020','2021','2022','2023','2024'];
+const REVENUE_BN =   [7.635,9.111,10.907,7.900,7.737,8.257,13.439,17.160,17.050,16.864,21.932,30.241,28.454,29.651,40.211,44.128,46.660,63.804,64.731,67.566,71.467,68.459,80.010,107.701,113.391,109.525];
+const PRICE_PER_KG = [21.10,21.43,24.80,18.17,16.73,16.21,20.83,24.78,20.75,20.50,23.42,30.42,25.33,22.69,32.43,33.25,33.90,48.28,49.67,50.04,49.37,46.11,48.27,65.25,69.43,66.41];
+const VOL_SOLD_KT =  [361.88,425.08,439.87,434.78,462.45,509.47,645.08,692.35,821.80,822.82,936.61,994.21,1123.41,1306.77,1239.88,1327.34,1376.35,1321.47,1303.35,1350.35,1447.53,1484.70,1657.47,1650.56,1633.12,1649.15];
+
+/* =========================================================================
+   REGION TIME SERIES — built dynamically from REGIONAL_DATA
+========================================================================= */
+const REGION_TIMESERIES = {};
+['2020','2021','2022','2023','2024'].forEach(year => {
+  const d = REGIONAL_DATA[year];
+  d.regions.forEach((region, i) => {
+    const key = region.replace('\n', ' ');
+    if(!REGION_TIMESERIES[key]) REGION_TIMESERIES[key] = {years:[],deaths:[],prod:[],smolt:[],mort:[]};
+    REGION_TIMESERIES[key].years.push(year);
+    REGION_TIMESERIES[key].deaths.push(d.deaths[i]);
+    REGION_TIMESERIES[key].prod.push(d.prod[i]);
+    REGION_TIMESERIES[key].smolt.push(d.smolt[i]);
+    REGION_TIMESERIES[key].mort.push(+(d.deaths[i]/d.smolt[i]*100).toFixed(1));
+  });
+});
+
+const REGION_ORDER = [
+  'Troms og Finnmark','Finnmark','Troms',
+  'Nordland','Trøndelag','Møre og Romsdal','Vestland','Rogaland'
+];
+
+/* =========================================================================
+   HELPERS
+========================================================================= */
+function filterSeries(labels, values, startYear, endYear){
+  const start = Number(startYear);
+  const end = Number(endYear);
+  const filteredLabels = [];
+  const filteredValues = [];
+
+  labels.forEach((label, i) => {
+    const yr = Number(label);
+    if(yr >= start && yr <= end){
+      filteredLabels.push(label);
+      filteredValues.push(values[i]);
+    }
+  });
+
+  return { labels: filteredLabels, values: filteredValues };
+}
+
+function sum(arr){
+  return arr.reduce((a,b)=>a+b,0);
+}
+
+function maxWithYear(labels, values){
+  let idx = 0;
+  for(let i=1;i<values.length;i++) if(values[i] > values[idx]) idx = i;
+  return { year: labels[idx], value: values[idx] };
+}
+
+function minWithYear(labels, values){
+  let idx = 0;
+  for(let i=1;i<values.length;i++) if(values[i] < values[idx]) idx = i;
+  return { year: labels[idx], value: values[idx] };
+}
+
+function formatMillionsFromThousands(v){
+  return (v/1000).toFixed(1) + 'M';
+}
+
+function formatMillionTonnes(v){
+  return (v/1000000).toFixed(2) + 'M t';
+}
+
+/* =========================================================================
+   DOM SETUP
+========================================================================= */
+const startYearSelect = document.getElementById('startYear');
+const endYearSelect = document.getElementById('endYear');
+const regionYearSelect = document.getElementById('regionYear');
+const applyButton = document.getElementById('applyComparison');
+const quickRangeButtons = document.querySelectorAll('.quick-range');
+
+function populateYearSelect(select, years, defaultValue){
+  select.innerHTML = '';
+  years.forEach(y => {
+    const option = document.createElement('option');
+    option.value = y;
+    option.textContent = y;
+    if(y === defaultValue) option.selected = true;
+    select.appendChild(option);
+  });
+}
+
+populateYearSelect(startYearSelect, ALL_YEARS, '2020');
+populateYearSelect(endYearSelect, ALL_YEARS, '2024');
+populateYearSelect(regionYearSelect, ['2020','2021','2022','2023','2024'], '2024');
+
+/* =========================================================================
+   CHART INSTANCES
+========================================================================= */
+let mortalityRateChart;
+let seaDeathsChart;
+let smoltDeathsChart;
+let combinedMortalityChart;
+let diseaseChart;
+let liceChart;
+let smoltInputChart;
+let productionChart;
+let cleanerChart;
+let regionalMortChart;
+let regionalShareChart;
+let regionalEffChart;
+let densityScatter;
+let revenueChart;
+let priceChart;
+let revVolChart;
+
+/* =========================================================================
+   CHART BUILDERS
+========================================================================= */
+function buildOrUpdateLineChart(chartRef, canvasId, labels, values, color, fillColor, label, yMax, tickSuffix, tooltipSuffix){
+  if(chartRef) chartRef.destroy();
+
+  return new Chart(document.getElementById(canvasId),{
+    type:'line',
+    data:{
+      labels,
+      datasets:[{
+        label,
+        data:values,
+        borderColor:color,
+        backgroundColor:fillColor,
+        fill:true,
+        tension:.28,
+        borderWidth:2.2,
+        pointRadius:2.5,
+        pointHoverRadius:4,
+        pointBackgroundColor:labels.map((y,i)=>i===labels.length-1?color:'rgba(255,255,255,0.22)'),
+        pointBorderColor:labels.map((y,i)=>i===labels.length-1?'#ffffff':'transparent'),
+        pointBorderWidth:labels.map((y,i)=>i===labels.length-1?1.8:0)
+      }]
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{
+          callbacks:{
+            label:ctx => label + ': ' + ctx.parsed.y + tooltipSuffix
+          }
+        }
+      },
+      scales:{
+        y:{
+          beginAtZero:true,
+          suggestedMax:yMax,
+          grid:{color:'rgba(255,255,255,0.03)'},
+          ticks:{callback:v=>v + tickSuffix}
+        },
+        x:{grid:{display:false}}
+      }
+    }
+  });
+}
+
+function buildOrUpdateBarChart(chartRef, canvasId, labels, values, bgColor, borderColor, label, tickSuffix, tooltipSuffix){
+  if(chartRef) chartRef.destroy();
+
+  return new Chart(document.getElementById(canvasId),{
+    type:'bar',
+    data:{
+      labels,
+      datasets:[{
+        label,
+        data:values,
+        backgroundColor:typeof bgColor === 'function' ? values.map((v,i)=>bgColor(v,i)) : bgColor,
+        borderColor:typeof borderColor === 'function' ? values.map((v,i)=>borderColor(v,i)) : borderColor,
+        borderWidth:1,
+        borderRadius:3
+      }]
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{
+          callbacks:{
+            label:ctx => ctx.dataset.label + ': ' + ctx.parsed.y + tooltipSuffix
+          }
+        }
+      },
+      scales:{
+        y:{
+          beginAtZero:true,
+          grid:{color:'rgba(255,255,255,0.03)'},
+          ticks:{callback:v=>v + tickSuffix}
+        },
+        x:{grid:{display:false}}
+      }
+    }
+  });
+}
+
+/* =========================================================================
+   RENDER SUMMARY
+========================================================================= */
+function renderSummary(startYear, endYear){
+  const mortality = filterSeries(ALL_YEARS, SEA_RATE, startYear, endYear);
+  const seaLoss = filterSeries(ALL_YEARS, SEA_LOSS, startYear, endYear);
+  const smoltLoss = filterSeries(SMOLT_LOSS_YEARS, SMOLT_LOSS, startYear, endYear);
+  const lice = filterSeries(LICE_YEARS, LICE_VIOL, startYear, endYear);
+  const isa = filterSeries(DISEASE_YEARS, ISA_CASES, startYear, endYear);
+
+  const worstRate = maxWithYear(mortality.labels, mortality.values);
+  const bestRate = minWithYear(mortality.labels, mortality.values);
+  const totalSeaDeaths = sum(seaLoss.values);
+  const totalSmoltDeaths = sum(smoltLoss.values);
+  const totalLice = sum(lice.values);
+  const topIsa = maxWithYear(isa.labels, isa.values);
+
+  document.getElementById('statWorstRate').textContent = worstRate.value.toFixed(1) + '%';
+  document.getElementById('statWorstRateSub').textContent = worstRate.year + ' · highest sea loss rate in selection';
+
+  document.getElementById('statBestRate').textContent = bestRate.value.toFixed(1) + '%';
+  document.getElementById('statBestRateSub').textContent = bestRate.year + ' · lowest sea loss rate in selection';
+
+  document.getElementById('statSeaDeaths').textContent = formatMillionsFromThousands(totalSeaDeaths);
+  document.getElementById('statSeaDeathsSub').textContent = startYear + '–' + endYear + ' cumulative sea phase losses';
+
+  document.getElementById('statSmoltDeaths').textContent = formatMillionsFromThousands(totalSmoltDeaths);
+  document.getElementById('statSmoltDeathsSub').textContent = startYear + '–' + endYear + ' cumulative pre-sea losses';
+
+  document.getElementById('statLice').textContent = totalLice.toLocaleString();
+  document.getElementById('statLiceSub').textContent = 'weekly violations across selected years';
+
+  document.getElementById('statIsa').textContent = topIsa.value;
+  document.getElementById('statIsaSub').textContent = topIsa.year + ' · peak ISA year in selection';
+
+  document.getElementById('heroRangeLabel').textContent = 'Current comparison: ' + startYear + '–' + endYear;
+  animateHeroCounterTo(worstRate.value, '%');
+}
+
+/* =========================================================================
+   RENDER CHARTS
+========================================================================= */
+function renderMainCharts(startYear, endYear){
+  const mortality = filterSeries(ALL_YEARS, SEA_RATE, startYear, endYear);
+  const seaLoss = filterSeries(ALL_YEARS, SEA_LOSS, startYear, endYear);
+  const smoltLoss = filterSeries(SMOLT_LOSS_YEARS, SMOLT_LOSS, startYear, endYear);
+  const diseaseIsa = filterSeries(DISEASE_YEARS, ISA_CASES, startYear, endYear);
+  const diseasePd = filterSeries(DISEASE_YEARS, PD_CASES, startYear, endYear);
+  const lice = filterSeries(LICE_YEARS, LICE_VIOL, startYear, endYear);
+  const smoltInput = filterSeries(ALL_YEARS, SMOLT_INPUT, startYear, endYear);
+  const prod = filterSeries(PROD_YEARS, PROD, startYear, endYear);
+  const cleaner = filterSeries(CLEAN_YEARS, CLEAN, startYear, endYear);
+
+  mortalityRateChart = buildOrUpdateLineChart(
+    mortalityRateChart,
+    'mortalityRateChart',
+    mortality.labels,
+    mortality.values,
+    '#ff5563',
+    'rgba(255,85,99,0.08)',
+    'Sea loss rate',
+    Math.max(20, Math.ceil(Math.max(...mortality.values) + 2)),
+    '%',
+    '%'
+  );
+
+  seaDeathsChart = buildOrUpdateBarChart(
+    seaDeathsChart,
+    'seaDeathsChart',
+    seaLoss.labels,
+    seaLoss.values.map(v=>+(v/1000).toFixed(1)),
+    'rgba(255,85,99,0.62)',
+    'rgba(255,85,99,0.92)',
+    'Sea losses',
+    'M',
+    'M fish'
+  );
+
+  smoltDeathsChart = buildOrUpdateBarChart(
+    smoltDeathsChart,
+    'smoltDeathsChart',
+    smoltLoss.labels,
+    smoltLoss.values.map(v=>+(v/1000).toFixed(1)),
+    'rgba(168,107,255,0.45)',
+    'rgba(168,107,255,0.82)',
+    'Smolt losses',
+    'M',
+    'M fish'
+  );
+
+  if(combinedMortalityChart) combinedMortalityChart.destroy();
+  const combinedYears = [...new Set([...seaLoss.labels, ...smoltLoss.labels])].sort();
+  const combinedSea = combinedYears.map(y=>{
+    const i = seaLoss.labels.indexOf(y);
+    return i >= 0 ? +(seaLoss.values[i]/1000).toFixed(1) : 0;
+  });
+  const combinedSmolt = combinedYears.map(y=>{
+    const i = smoltLoss.labels.indexOf(y);
+    return i >= 0 ? +(smoltLoss.values[i]/1000).toFixed(1) : 0;
+  });
+
+  combinedMortalityChart = new Chart(document.getElementById('combinedMortalityChart'),{
+    type:'bar',
+    data:{
+      labels:combinedYears,
+      datasets:[
+        {
+          label:'Sea phase losses',
+          data:combinedSea,
+          backgroundColor:'rgba(255,85,99,0.6)',
+          borderColor:'rgba(255,85,99,0.92)',
+          borderWidth:1,
+          borderRadius:3
+        },
+        {
+          label:'Smolt/juvenile losses',
+          data:combinedSmolt,
+          backgroundColor:'rgba(255,77,148,0.34)',
+          borderColor:'rgba(255,77,148,0.82)',
+          borderWidth:1,
+          borderRadius:3
+        }
+      ]
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      plugins:{
+        legend:{position:'top'},
+        tooltip:{
+          callbacks:{
+            label:ctx=>ctx.dataset.label+': '+ctx.parsed.y.toFixed(1)+'M fish'
+          }
+        }
+      },
+      scales:{
+        y:{
+          stacked:true,
+          beginAtZero:true,
+          grid:{color:'rgba(255,255,255,0.03)'},
+          ticks:{callback:v=>v+'M'}
+        },
+        x:{
+          stacked:true,
+          grid:{display:false}
+        }
+      }
+    }
+  });
+
+  if(diseaseChart) diseaseChart.destroy();
+  diseaseChart = new Chart(document.getElementById('diseaseChart'),{
+    type:'bar',
+    data:{
+      labels:diseaseIsa.labels,
+      datasets:[
+        {
+          label:'ISA',
+          data:diseaseIsa.values,
+          backgroundColor:'rgba(255,85,99,0.6)',
+          borderColor:'rgba(255,85,99,0.92)',
+          borderWidth:1,
+          borderRadius:3
+        },
+        {
+          label:'PD',
+          data:diseasePd.values,
+          backgroundColor:'rgba(255,191,71,0.5)',
+          borderColor:'rgba(255,191,71,0.82)',
+          borderWidth:1,
+          borderRadius:3
+        }
+      ]
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      plugins:{
+        legend:{position:'top'},
+        tooltip:{
+          callbacks:{
+            label:ctx=>ctx.dataset.label+': '+ctx.parsed.y+' cases'
+          }
+        }
+      },
+      scales:{
+        y:{
+          beginAtZero:true,
+          grid:{color:'rgba(255,255,255,0.03)'}
+        },
+        x:{grid:{display:false}}
+      }
+    }
+  });
+
+  if(liceChart) liceChart.destroy();
+  liceChart = new Chart(document.getElementById('liceChart'),{
+    type:'bar',
+    data:{
+      labels:lice.labels,
+      datasets:[{
+        label:'Lice violations',
+        data:lice.values,
+        backgroundColor:lice.values.map((v,i)=>{
+          return i===lice.values.length-1 ? 'rgba(255,191,71,0.62)' : 'rgba(255,191,71,0.30)';
+        }),
+        borderColor:lice.values.map((v,i)=>{
+          return i===lice.values.length-1 ? 'rgba(255,191,71,1)' : 'rgba(255,191,71,0.56)';
+        }),
+        borderWidth:1,
+        borderRadius:3
+      }]
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{
+          callbacks:{
+            label:ctx=>ctx.parsed.y+' weekly violations across all localities'
+          }
+        }
+      },
+      scales:{
+        y:{
+          beginAtZero:true,
+          grid:{color:'rgba(255,255,255,0.03)'}
+        },
+        x:{grid:{display:false}}
+      }
+    }
+  });
+
+  smoltInputChart = buildOrUpdateBarChart(
+    smoltInputChart,
+    'smoltInputChart',
+    smoltInput.labels,
+    smoltInput.values.map(v=>+(v/1000).toFixed(1)),
+    'rgba(58,239,255,0.25)',
+    'rgba(58,239,255,0.75)',
+    'Smolt put to sea',
+    'M',
+    'M fish'
+  );
+
+  productionChart = buildOrUpdateBarChart(
+    productionChart,
+    'productionChart',
+    prod.labels,
+    prod.values.map(v=>+(v/1000000).toFixed(2)),
+    'rgba(93,255,157,0.25)',
+    'rgba(93,255,157,0.75)',
+    'Production sold',
+    'M t',
+    'M tonnes'
+  );
+
+  cleanerChart = buildOrUpdateBarChart(
+    cleanerChart,
+    'cleanerChart',
+    cleaner.labels,
+    cleaner.values.map(v=>+(v/1000).toFixed(1)),
+    (v,i)=>i===cleaner.values.length-1?'rgba(58,239,255,0.62)':'rgba(58,239,255,0.30)',
+    (v,i)=>i===cleaner.values.length-1?'rgba(58,239,255,1)':'rgba(58,239,255,0.56)',
+    'Cleaner fish',
+    'M',
+    'M fish deployed'
+  );
+
+  const revenue = filterSeries(FINANCE_YEARS, REVENUE_BN, startYear, endYear);
+  const price   = filterSeries(FINANCE_YEARS, PRICE_PER_KG, startYear, endYear);
+  const volSold = filterSeries(FINANCE_YEARS, VOL_SOLD_KT, startYear, endYear);
+
+  revenueChart = buildOrUpdateLineChart(
+    revenueChart,
+    'revenueChart',
+    revenue.labels,
+    revenue.values,
+    '#5dff9d',
+    'rgba(93,255,157,0.07)',
+    'Revenue',
+    Math.ceil(Math.max(...revenue.values) * 1.12),
+    ' bn NOK',
+    ' bn NOK'
+  );
+
+  priceChart = buildOrUpdateLineChart(
+    priceChart,
+    'priceChart',
+    price.labels,
+    price.values,
+    '#ffbf47',
+    'rgba(255,191,71,0.07)',
+    'Price per kg',
+    Math.ceil(Math.max(...price.values) * 1.12),
+    ' NOK/kg',
+    ' NOK/kg'
+  );
+
+  if(revVolChart) revVolChart.destroy();
+  revVolChart = new Chart(document.getElementById('revVolChart'),{
+    type:'bar',
+    data:{
+      labels:revenue.labels,
+      datasets:[
+        {
+          label:'Revenue (bn NOK)',
+          data:revenue.values,
+          backgroundColor:'rgba(93,255,157,0.35)',
+          borderColor:'rgba(93,255,157,0.85)',
+          borderWidth:1,
+          borderRadius:3,
+          yAxisID:'y',
+          order:2
+        },
+        {
+          label:'Volume sold (kt)',
+          data:volSold.values,
+          type:'line',
+          borderColor:'rgba(58,239,255,0.85)',
+          backgroundColor:'transparent',
+          pointBackgroundColor:'#3aefff',
+          pointRadius:3,
+          pointHoverRadius:5,
+          borderWidth:2,
+          tension:0.25,
+          fill:false,
+          yAxisID:'y1',
+          order:1
+        }
+      ]
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      plugins:{
+        legend:{position:'top'},
+        tooltip:{callbacks:{
+          label:ctx=>ctx.dataset.yAxisID==='y'
+            ? 'Revenue: ' + ctx.parsed.y.toFixed(1) + ' bn NOK'
+            : 'Volume: ' + ctx.parsed.y.toFixed(0) + ' kt'
+        }}
+      },
+      scales:{
+        y:{
+          beginAtZero:true,
+          grid:{color:'rgba(255,255,255,0.03)'},
+          ticks:{callback:v=>v+'bn',color:'#5dff9d'},
+          title:{display:true,text:'Revenue (bn NOK)',color:'#5dff9d',font:{size:11}}
+        },
+        y1:{
+          position:'right',
+          beginAtZero:true,
+          grid:{display:false},
+          ticks:{callback:v=>v+'kt',color:'#3aefff'},
+          title:{display:true,text:'Volume sold (kt)',color:'#3aefff',font:{size:11}}
+        },
+        x:{grid:{display:false}}
+      }
+    }
+  });
+}
+
+/* =========================================================================
+   REGIONAL RENDER
+========================================================================= */
+function renderRegionalCharts(regionYear){
+  const data = REGIONAL_DATA[regionYear];
+  const REGIONS = data.regions;
+  const REG_DEATHS = data.deaths;
+  const REG_PROD = data.prod;
+  const REG_SMOLT = data.smolt;
+  const REG_LOCS = data.locs;
+  const REG_COAST = data.coast;
+
+  const REG_MORT_RATE = REG_SMOLT.map((s,i) => +(REG_DEATHS[i]/s*100).toFixed(1));
+  const REG_DEATHS_PER_KT = REG_PROD.map((p,i) => +(REG_DEATHS[i]/(p/1000)).toFixed(0));
+  const REG_DENSITY = REG_COAST.map((c,i) => +(REG_LOCS[i]/(c/100)).toFixed(1));
+
+  const TOTAL_DEATHS = REG_DEATHS.reduce((a,b)=>a+b,0);
+  const TOTAL_PROD = REG_PROD.reduce((a,b)=>a+b,0);
+
+  document.getElementById('regionalSubtitle').textContent = regionYear + ' regional snapshot';
+
+  if(regionalMortChart) regionalMortChart.destroy();
+  regionalMortChart = new Chart(document.getElementById('regionalMortChart'),{
+    type:'bar',
+    data:{
+      labels:REGIONS,
+      datasets:[
+        {
+          label:'Loss rate (%)',
+          data:REG_MORT_RATE,
+          backgroundColor:REG_MORT_RATE.map(v =>
+            v > 25 ? 'rgba(255,85,99,0.7)' :
+            v > 15 ? 'rgba(255,191,71,0.6)' :
+            v > 10 ? 'rgba(58,239,255,0.45)' :
+            'rgba(93,255,157,0.5)'
+          ),
+          borderColor:REG_MORT_RATE.map(v =>
+            v > 25 ? '#ff5563' : v > 15 ? '#ffbf47' : v > 10 ? '#3aefff' : '#5dff9d'
+          ),
+          borderWidth:1,
+          borderRadius:4,
+          yAxisID:'y',
+          order:2
+        },
+        {
+          label:'Production (1000t)',
+          data:REG_PROD.map(v => v/1000),
+          type:'line',
+          borderColor:'rgba(58,239,255,0.8)',
+          pointBackgroundColor:'#3aefff',
+          pointRadius:5,
+          pointHoverRadius:7,
+          borderWidth:2.5,
+          tension:0.2,
+          fill:false,
+          yAxisID:'y1',
+          order:1
+        }
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:'top'},tooltip:{callbacks:{
+        label:ctx => ctx.dataset.yAxisID==='y' ? 'Loss rate: '+ctx.parsed.y+'%' : 'Production: '+ctx.parsed.y.toFixed(0)+'k tonnes'
+      }}},
+      scales:{
+        y:{beginAtZero:true,max:40,grid:{color:'rgba(255,255,255,0.03)'},ticks:{callback:v=>v+'%',color:'#ff5563'},title:{display:true,text:'Loss Rate (%)',color:'#ff5563',font:{size:11}}},
+        y1:{position:'right',beginAtZero:true,grid:{display:false},ticks:{callback:v=>v+'kt',color:'#3aefff'},title:{display:true,text:'Production (1000t)',color:'#3aefff',font:{size:11}}},
+        x:{grid:{display:false},ticks:{font:{size:10}}}
+      }
+    }
+  });
+
+  if(regionalShareChart) regionalShareChart.destroy();
+  regionalShareChart = new Chart(document.getElementById('regionalShareChart'),{
+    type:'bar',
+    data:{
+      labels:REGIONS,
+      datasets:[
+        {label:'% of national production',data:REG_PROD.map(v=>+(v/TOTAL_PROD*100).toFixed(1)),backgroundColor:'rgba(58,239,255,0.45)',borderColor:'rgba(58,239,255,0.8)',borderWidth:1,borderRadius:3},
+        {label:'% of national losses',data:REG_DEATHS.map(v=>+(v/TOTAL_DEATHS*100).toFixed(1)),backgroundColor:'rgba(255,85,99,0.5)',borderColor:'rgba(255,85,99,0.85)',borderWidth:1,borderRadius:3}
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:'top'},tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': '+ctx.parsed.y+'%'}}},
+      scales:{
+        y:{beginAtZero:true,grid:{color:'rgba(255,255,255,0.03)'},ticks:{callback:v=>v+'%'}},
+        x:{grid:{display:false},ticks:{font:{size:10}}}
+      }
+    }
+  });
+
+  if(regionalEffChart) regionalEffChart.destroy();
+  regionalEffChart = new Chart(document.getElementById('regionalEffChart'),{
+    type:'bar',
+    data:{
+      labels:REGIONS,
+      datasets:[{
+        label:'Losses per 1000t produced',
+        data:REG_DEATHS_PER_KT,
+        backgroundColor:REG_DEATHS_PER_KT.map(v => v>60?'rgba(255,85,99,0.65)':v>35?'rgba(255,191,71,0.55)':'rgba(93,255,157,0.5)'),
+        borderColor:REG_DEATHS_PER_KT.map(v => v>60?'#ff5563':v>35?'#ffbf47':'#5dff9d'),
+        borderWidth:1,borderRadius:4
+      }]
+    },
+    options:{
+      indexAxis:'y',responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>ctx.parsed.x.toLocaleString()+' fish (×1000) die per 1000t produced'}}},
+      scales:{
+        x:{beginAtZero:true,grid:{color:'rgba(255,255,255,0.03)'},ticks:{callback:v=>v+'k'}},
+        y:{grid:{display:false},ticks:{font:{size:11}}}
+      }
+    }
+  });
+
+  if(densityScatter) densityScatter.destroy();
+  const REGION_COLORS = ['#ff5563','#ff4d94','#5dff9d','#3aefff','#ffbf47','#a86bff','#3aefff'];
+  const REGION_NAMES_SHORT = ['Finnmark','Troms','Nordland','Trøndelag','Møre og R.','Vestland','Rogaland'];
+
+  densityScatter = new Chart(document.getElementById('densityScatter'),{
+    type:'bubble',
+    data:{
+      datasets: REGION_NAMES_SHORT.map((name, i) => ({
+        label: name,
+        data: [{
+          x: REG_DENSITY[i],
+          y: REG_MORT_RATE[i],
+          r: Math.sqrt(REG_PROD[i] / 1000) / 1.8
+        }],
+        backgroundColor: REGION_COLORS[i] + '55',
+        borderColor: REGION_COLORS[i],
+        borderWidth: 1.5
+      }))
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      plugins:{
+        legend:{position:'top',labels:{font:{size:10}}},
+        tooltip:{
+          callbacks:{
+            label:ctx => {
+              const i = REGION_NAMES_SHORT.indexOf(ctx.dataset.label);
+              return [
+                ctx.dataset.label,
+                'Density: ' + ctx.parsed.x + ' farms/100km',
+                'Loss rate: ' + ctx.parsed.y + '%',
+                'Production: ' + (REG_PROD[i]/1000).toFixed(0) + 'kt',
+                'Localities: ' + REG_LOCS[i]
+              ];
+            }
+          }
+        }
+      },
+      scales:{
+        x:{
+          title:{display:true,text:'Farm density (localities per 100km coastline)',color:'#98a3b8',font:{size:11}},
+          grid:{color:'rgba(255,255,255,0.03)'},
+          min:0,max:7
+        },
+        y:{
+          title:{display:true,text:'Sea loss rate (%)',color:'#98a3b8',font:{size:11}},
+          grid:{color:'rgba(255,255,255,0.03)'},
+          min:0,max:40,
+          ticks:{callback:v=>v+'%'}
+        }
+      }
+    }
+  });
+}
+
+/* =========================================================================
+   REGION HISTORY CHART
+========================================================================= */
+let regionHistChart;
+
+function renderRegionHistoryChart(regionKey){
+  const d = REGION_TIMESERIES[regionKey];
+  document.getElementById('regionHistTitle').textContent =
+    regionKey + ' — Production & Loss Rate by Year';
+  document.getElementById('regionHistSubtitle').textContent =
+    'Loss rate (%) and production (kt) · ' + d.years[0] + '–' + d.years[d.years.length-1] + ' · Source: Fiskeridirektoratet';
+
+  if(regionHistChart) regionHistChart.destroy();
+
+  regionHistChart = new Chart(document.getElementById('regionHistChart'),{
+    type:'bar',
+    data:{
+      labels:d.years,
+      datasets:[
+        {
+          label:'Loss rate (%)',
+          data:d.mort,
+          backgroundColor:d.mort.map(v=>
+            v>25?'rgba(255,85,99,0.7)':v>15?'rgba(255,191,71,0.6)':v>10?'rgba(58,239,255,0.45)':'rgba(93,255,157,0.5)'
+          ),
+          borderColor:d.mort.map(v=>
+            v>25?'#ff5563':v>15?'#ffbf47':v>10?'#3aefff':'#5dff9d'
+          ),
+          borderWidth:1,
+          borderRadius:4,
+          yAxisID:'y',
+          order:2
+        },
+        {
+          label:'Production (kt)',
+          data:d.prod.map(v=>+(v/1000).toFixed(1)),
+          type:'line',
+          borderColor:'rgba(58,239,255,0.85)',
+          backgroundColor:'rgba(58,239,255,0.06)',
+          pointBackgroundColor:'#3aefff',
+          pointRadius:5,
+          pointHoverRadius:7,
+          borderWidth:2.5,
+          tension:0.2,
+          fill:true,
+          yAxisID:'y1',
+          order:1
+        }
+      ]
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      plugins:{
+        legend:{position:'top'},
+        tooltip:{
+          callbacks:{
+            afterBody:ctx=>'Losses: '+(d.deaths[ctx[0].dataIndex]/1000).toFixed(1)+'M fish'
+          }
+        }
+      },
+      scales:{
+        y:{
+          beginAtZero:true,
+          max:40,
+          grid:{color:'rgba(255,255,255,0.03)'},
+          ticks:{callback:v=>v+'%',color:'#ff5563'},
+          title:{display:true,text:'Loss Rate (%)',color:'#ff5563',font:{size:11}}
+        },
+        y1:{
+          position:'right',
+          beginAtZero:true,
+          grid:{display:false},
+          ticks:{callback:v=>v+'kt',color:'#3aefff'},
+          title:{display:true,text:'Production (kt)',color:'#3aefff',font:{size:11}}
+        },
+        x:{grid:{display:false}}
+      }
+    }
+  });
+}
+
+/* Populate region buttons */
+const regionBtnRow = document.getElementById('regionBtnRow');
+REGION_ORDER.forEach(key => {
+  if(!REGION_TIMESERIES[key]) return;
+  const d = REGION_TIMESERIES[key];
+  const btn = document.createElement('button');
+  btn.className = 'region-btn' + (d.years.length < 5 ? ' partial' : '');
+  btn.textContent = key + (d.years.length < 5 ? ' (' + d.years[0] + '–' + d.years[d.years.length-1] + ')' : '');
+  btn.dataset.region = key;
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.region-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderRegionHistoryChart(key);
+  });
+  regionBtnRow.appendChild(btn);
+});
+
+/* Init with Nordland */
+const initRegionBtn = document.querySelector('.region-btn[data-region="Nordland"]');
+if(initRegionBtn){ initRegionBtn.classList.add('active'); renderRegionHistoryChart('Nordland'); }
+
+/* =========================================================================
+   APPLY RANGE
+========================================================================= */
+function applyComparison(){
+  let startYear = Number(startYearSelect.value);
+  let endYear = Number(endYearSelect.value);
+
+  if(startYear > endYear){
+    const temp = startYear;
+    startYear = endYear;
+    endYear = temp;
+    startYearSelect.value = String(startYear);
+    endYearSelect.value = String(endYear);
+  }
+
+  quickRangeButtons.forEach(btn=>{
+    const matches = Number(btn.dataset.start) === startYear && Number(btn.dataset.end) === endYear;
+    btn.classList.toggle('active', matches);
+  });
+
+  renderSummary(String(startYear), String(endYear));
+  renderMainCharts(String(startYear), String(endYear));
+  renderRegionalCharts(regionYearSelect.value);
+}
+
+/* =========================================================================
+   QUICK RANGE BUTTONS
+========================================================================= */
+quickRangeButtons.forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    startYearSelect.value = btn.dataset.start;
+    endYearSelect.value = btn.dataset.end;
+    quickRangeButtons.forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    applyComparison();
+  });
+});
+
+applyButton.addEventListener('click', applyComparison);
+regionYearSelect.addEventListener('change', applyComparison);
+
+/* =========================================================================
+   SCROLL REVEAL
+========================================================================= */
+const obs = new IntersectionObserver(entries=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting) entry.target.classList.add('visible');
+  });
+},{
+  threshold:0.1,
+  rootMargin:'0px 0px -50px 0px'
+});
+
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+/* =========================================================================
+   HERO COUNTER
+========================================================================= */
+function animateHeroCounterTo(target, suffix){
+  const counter = document.getElementById('heroCounter');
+  if(!counter) return;
+
+  const startValue = 0;
+  const duration = 1200;
+  const startTime = performance.now();
+
+  function updateCounter(currentTime){
+    const elapsed = currentTime - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    const currentValue = startValue + (target - startValue) * eased;
+    counter.textContent = currentValue.toFixed(1) + suffix;
+
+    if(progress < 1){
+      requestAnimationFrame(updateCounter);
+    } else {
+      counter.textContent = target.toFixed(1) + suffix;
+    }
+  }
+
+  requestAnimationFrame(updateCounter);
+}
+
+/* =========================================================================
+   INIT
+========================================================================= */
+window.addEventListener('load', () => {
+  applyComparison();
+});
+</script>
+
+<button class="back-to-top" id="backToTop" aria-label="Back to top">
+  <svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg>
+</button>
+<script>
+(function(){
+  var btn=document.getElementById('backToTop');
+  window.addEventListener('scroll',function(){btn.classList.toggle('visible',window.scrollY>400);},{passive:true});
+  btn.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});
+})();
+</script>
+</body>
+</html>

@@ -21,20 +21,33 @@ from pathlib import Path
 # Load API credentials from .env file in project root
 # =============================================================================
 
-def load_env():
-    """Read .env file and return credentials as dict"""
+def load_credentials():
+    """
+    Load CLIENT_ID and CLIENT_SECRET.
+    Priority: environment variables (GitHub Actions / CI) → .env file (local dev).
+    """
+    client_id = os.environ.get("CLIENT_ID")
+    client_secret = os.environ.get("CLIENT_SECRET")
+    if client_id and client_secret:
+        return client_id, client_secret
+
+    # Fallback: read .env file for local development
     env_path = Path(__file__).parent.parent / ".env"
+    if not env_path.exists():
+        raise RuntimeError(
+            "No credentials found. Set CLIENT_ID and CLIENT_SECRET environment "
+            "variables, or create a .env file in the project root."
+        )
     env = {}
     with open(env_path, "r") as f:
         for line in f:
-            if "=" in line:
-                key, value = line.strip().split("=", 1)
-                env[key] = value
-    return env
+            line = line.strip()
+            if "=" in line and not line.startswith("#"):
+                key, value = line.split("=", 1)
+                env[key.strip()] = value.strip()
+    return env["CLIENT_ID"], env["CLIENT_SECRET"]
 
-env = load_env()
-CLIENT_ID = env["CLIENT_ID"]
-CLIENT_SECRET = env["CLIENT_SECRET"]
+CLIENT_ID, CLIENT_SECRET = load_credentials()
 
 TOKEN_URL = "https://id.barentswatch.no/connect/token"
 API_BASE = "https://www.barentswatch.no/bwapi"
@@ -131,6 +144,41 @@ def save_json(data, filename):
     size_mb = filepath.stat().st_size / (1024 * 1024)
     print(f"  ✓ Saved {filepath} ({size_mb:.1f} MB)")
 
+
+def update_manifest(year, week, fetched_at):
+    """Update data/available_weeks.json with the newly fetched week"""
+    data_dir = Path(__file__).parent.parent / "data"
+    manifest_path = data_dir / "available_weeks.json"
+
+    # Load existing manifest if present
+    if manifest_path.exists():
+        with open(manifest_path, "r", encoding="utf-8") as f:
+            manifest = json.load(f)
+    else:
+        manifest = {"weeks": []}
+
+    # Remove duplicate entry for this week if it exists
+    manifest["weeks"] = [
+        w for w in manifest["weeks"]
+        if not (w["year"] == year and w["week"] == week)
+    ]
+
+    # Prepend this week (newest first)
+    manifest["weeks"].insert(0, {
+        "year": year,
+        "week": week,
+        "fetched_at": fetched_at,
+        "total_localities": None  # filled below
+    })
+
+    # Sort newest first
+    manifest["weeks"].sort(key=lambda w: (w["year"], w["week"]), reverse=True)
+    manifest["latest"] = {"year": manifest["weeks"][0]["year"], "week": manifest["weeks"][0]["week"]}
+
+    with open(manifest_path, "w", encoding="utf-8") as f:
+        json.dump(manifest, f, indent=2)
+    print(f"  ✓ Updated available_weeks.json ({len(manifest['weeks'])} weeks)")
+
 # =============================================================================
 # SECTION 7: MAIN — Run everything
 # =============================================================================
@@ -161,8 +209,20 @@ def main():
 
     # Save everything
     print("\nSaving data...")
-    save_json({"metadata": metadata, "localities": localities}, "localities.json")
-    save_json({"metadata": metadata, "summary": summary}, "summary.json")
+    week_str = f"{year}_{str(week).zfill(2)}"
+    loc_payload  = {"metadata": metadata, "localities": localities}
+    sum_payload  = {"metadata": metadata, "summary": summary}
+
+    # Always overwrite "latest" files (used as fallback)
+    save_json(loc_payload, "localities.json")
+    save_json(sum_payload, "summary.json")
+
+    # Also save week-specific files for historical browsing
+    save_json(loc_payload, f"localities_{week_str}.json")
+    save_json(sum_payload, f"summary_{week_str}.json")
+
+    # Update the manifest of available weeks
+    update_manifest(year, week, metadata["fetched_at"])
 
     # Quick stats
     print(f"\n{'=' * 60}")

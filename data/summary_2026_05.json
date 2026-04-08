@@ -1,0 +1,594 @@
+{
+  "metadata": {
+    "fetched_at": "2026-03-30T19:25:37.871058",
+    "year": 2026,
+    "week": 5,
+    "total_localities": 1778
+  },
+  "summary": {
+    "diseaseOutbreaks": [
+      {
+        "locality": {
+          "no": 13837,
+          "name": "Verpeide",
+          "isOnLand": false
+        },
+        "disease": {
+          "name": "PANKREASSYKDOM",
+          "subType": "SAV3",
+          "status": "SUSPECTED"
+        }
+      },
+      {
+        "locality": {
+          "no": 24696,
+          "name": "Ørnøya II",
+          "isOnLand": false
+        },
+        "disease": {
+          "name": "PANKREASSYKDOM",
+          "subType": "SAV2",
+          "status": "SUSPECTED"
+        }
+      },
+      {
+        "locality": {
+          "no": 37197,
+          "name": "Ruggstein",
+          "isOnLand": false
+        },
+        "disease": {
+          "name": "PANKREASSYKDOM",
+          "subType": "SAV2",
+          "status": "SUSPECTED"
+        }
+      },
+      {
+        "locality": {
+          "no": 12394,
+          "name": "Ørnøya",
+          "isOnLand": false
+        },
+        "disease": {
+          "name": "PANKREASSYKDOM",
+          "subType": "SAV2",
+          "status": "SUSPECTED"
+        }
+      }
+    ],
+    "diseaseStatistics": [
+      {
+        "name": "PANKREASSYKDOM",
+        "count": 41
+      },
+      {
+        "name": "FRANCISELLOSE",
+        "count": 1
+      },
+      {
+        "name": "INFEKSIOES_LAKSEANEMI",
+        "count": 13
+      },
+      {
+        "name": "BAKTERIELL_NYRESYKE",
+        "count": 1
+      }
+    ],
+    "annualDiseaseStatistics": {
+      "isFiltered": false,
+      "diseaseStatistics": [
+        {
+          "name": "BAKTERIELL_NYRESYKE",
+          "count": 2
+        },
+        {
+          "name": "FRANCISELLOSE",
+          "count": 1
+        },
+        {
+          "name": "INFEKSIOES_LAKSEANEMI",
+          "count": 2
+        },
+        {
+          "name": "PANKREASSYKDOM",
+          "count": 23
+        }
+      ],
+      "filteredDiseaseStatistics": [
+        {
+          "name": "BAKTERIELL_NYRESYKE",
+          "count": 2
+        },
+        {
+          "name": "FRANCISELLOSE",
+          "count": 1
+        },
+        {
+          "name": "INFEKSIOES_LAKSEANEMI",
+          "count": 2
+        },
+        {
+          "name": "PANKREASSYKDOM",
+          "count": 23
+        }
+      ],
+      "weeklyDiseaseStatistics": {
+        "1": [],
+        "2": [
+          {
+            "name": "PANKREASSYKDOM",
+            "count": 2
+          }
+        ],
+        "3": [
+          {
+            "name": "PANKREASSYKDOM",
+            "count": 4
+          }
+        ],
+        "4": [
+          {
+            "name": "BAKTERIELL_NYRESYKE",
+            "count": 1
+          },
+          {
+            "name": "PANKREASSYKDOM",
+            "count": 1
+          }
+        ],
+        "5": [
+          {
+            "name": "PANKREASSYKDOM",
+            "count": 4
+          }
+        ],
+        "6": [
+          {
+            "name": "PANKREASSYKDOM",
+            "count": 4
+          }
+        ],
+        "7": [
+          {
+            "name": "FRANCISELLOSE",
+            "count": 1
+          },
+          {
+            "name": "PANKREASSYKDOM",
+            "count": 1
+          }
+        ],
+        "8": [
+          {
+            "name": "INFEKSIOES_LAKSEANEMI",
+            "count": 1
+          },
+          {
+            "name": "PANKREASSYKDOM",
+            "count": 1
+          }
+        ],
+        "9": [
+          {
+            "name": "PANKREASSYKDOM",
+            "count": 2
+          }
+        ],
+        "10": [],
+        "11": [
+          {
+            "name": "PANKREASSYKDOM",
+            "count": 4
+          }
+        ],
+        "12": [
+          {
+            "name": "INFEKSIOES_LAKSEANEMI",
+            "count": 1
+          }
+        ],
+        "13": [
+          {
+            "name": "BAKTERIELL_NYRESYKE",
+            "count": 1
+          }
+        ],
+        "14": [],
+        "15": [],
+        "16": [],
+        "17": [],
+        "18": [],
+        "19": [],
+        "20": [],
+        "21": [],
+        "22": [],
+        "23": [],
+        "24": [],
+        "25": [],
+        "26": [],
+        "27": [],
+        "28": [],
+        "29": [],
+        "30": [],
+        "31": [],
+        "32": [],
+        "33": [],
+        "34": [],
+        "35": [],
+        "36": [],
+        "37": [],
+        "38": [],
+        "39": [],
+        "40": [],
+        "41": [],
+        "42": [],
+        "43": [],
+        "44": [],
+        "45": [],
+        "46": [],
+        "47": [],
+        "48": [],
+        "49": [],
+        "50": [],
+        "51": [],
+        "52": [],
+        "53": []
+      }
+    },
+    "liceStatistics": {
+      "aboveThreshold": {
+        "count": 3,
+        "percentage": 0.546448087431694
+      },
+      "belowThreshold": {
+        "count": 546,
+        "percentage": 99.4535519125683
+      },
+      "belowMinimumThreshold": {
+        "count": 376,
+        "percentage": 68.48816029143899
+      }
+    },
+    "annualLiceStatistics": {
+      "isFiltered": false,
+      "liceStatistics": {
+        "aboveThreshold": 67
+      },
+      "filteredLiceStatistics": {
+        "aboveThreshold": 67
+      },
+      "weeklyLiceStatistics": {
+        "1": {
+          "aboveThreshold": 9
+        },
+        "2": {
+          "aboveThreshold": 7
+        },
+        "3": {
+          "aboveThreshold": 3
+        },
+        "4": {
+          "aboveThreshold": 5
+        },
+        "5": {
+          "aboveThreshold": 3
+        },
+        "6": {
+          "aboveThreshold": 9
+        },
+        "7": {
+          "aboveThreshold": 10
+        },
+        "8": {
+          "aboveThreshold": 4
+        },
+        "9": {
+          "aboveThreshold": 4
+        },
+        "10": {
+          "aboveThreshold": 2
+        },
+        "11": {
+          "aboveThreshold": 4
+        },
+        "12": {
+          "aboveThreshold": 6
+        },
+        "13": {
+          "aboveThreshold": 1
+        },
+        "14": {
+          "aboveThreshold": 0
+        },
+        "15": {
+          "aboveThreshold": null
+        },
+        "16": {
+          "aboveThreshold": null
+        },
+        "17": {
+          "aboveThreshold": null
+        },
+        "18": {
+          "aboveThreshold": null
+        },
+        "19": {
+          "aboveThreshold": null
+        },
+        "20": {
+          "aboveThreshold": null
+        },
+        "21": {
+          "aboveThreshold": null
+        },
+        "22": {
+          "aboveThreshold": null
+        },
+        "23": {
+          "aboveThreshold": null
+        },
+        "24": {
+          "aboveThreshold": null
+        },
+        "25": {
+          "aboveThreshold": null
+        },
+        "26": {
+          "aboveThreshold": null
+        },
+        "27": {
+          "aboveThreshold": null
+        },
+        "28": {
+          "aboveThreshold": null
+        },
+        "29": {
+          "aboveThreshold": null
+        },
+        "30": {
+          "aboveThreshold": null
+        },
+        "31": {
+          "aboveThreshold": null
+        },
+        "32": {
+          "aboveThreshold": null
+        },
+        "33": {
+          "aboveThreshold": null
+        },
+        "34": {
+          "aboveThreshold": null
+        },
+        "35": {
+          "aboveThreshold": null
+        },
+        "36": {
+          "aboveThreshold": null
+        },
+        "37": {
+          "aboveThreshold": null
+        },
+        "38": {
+          "aboveThreshold": null
+        },
+        "39": {
+          "aboveThreshold": null
+        },
+        "40": {
+          "aboveThreshold": null
+        },
+        "41": {
+          "aboveThreshold": null
+        },
+        "42": {
+          "aboveThreshold": null
+        },
+        "43": {
+          "aboveThreshold": null
+        },
+        "44": {
+          "aboveThreshold": null
+        },
+        "45": {
+          "aboveThreshold": null
+        },
+        "46": {
+          "aboveThreshold": null
+        },
+        "47": {
+          "aboveThreshold": null
+        },
+        "48": {
+          "aboveThreshold": null
+        },
+        "49": {
+          "aboveThreshold": null
+        },
+        "50": {
+          "aboveThreshold": null
+        },
+        "51": {
+          "aboveThreshold": null
+        },
+        "52": {
+          "aboveThreshold": null
+        },
+        "53": {
+          "aboveThreshold": null
+        }
+      }
+    },
+    "farmedFishEscapes": [],
+    "annualEscapeStatistics": {
+      "isFiltered": false,
+      "escapeStatistics": {
+        "count": 19
+      },
+      "filteredEscapeStatistics": {
+        "count": 19
+      },
+      "weeklyEscapeStatistics": {
+        "1": {
+          "count": 4
+        },
+        "4": {
+          "count": 2
+        },
+        "7": {
+          "count": 3
+        },
+        "10": {
+          "count": 1
+        },
+        "8": {
+          "count": 1
+        },
+        "6": {
+          "count": 1
+        },
+        "2": {
+          "count": 2
+        },
+        "9": {
+          "count": 2
+        },
+        "12": {
+          "count": 1
+        },
+        "13": {
+          "count": 2
+        },
+        "3": {
+          "count": 0
+        },
+        "5": {
+          "count": 0
+        },
+        "11": {
+          "count": 0
+        },
+        "14": {
+          "count": 0
+        },
+        "15": {
+          "count": null
+        },
+        "16": {
+          "count": null
+        },
+        "17": {
+          "count": null
+        },
+        "18": {
+          "count": null
+        },
+        "19": {
+          "count": null
+        },
+        "20": {
+          "count": null
+        },
+        "21": {
+          "count": null
+        },
+        "22": {
+          "count": null
+        },
+        "23": {
+          "count": null
+        },
+        "24": {
+          "count": null
+        },
+        "25": {
+          "count": null
+        },
+        "26": {
+          "count": null
+        },
+        "27": {
+          "count": null
+        },
+        "28": {
+          "count": null
+        },
+        "29": {
+          "count": null
+        },
+        "30": {
+          "count": null
+        },
+        "31": {
+          "count": null
+        },
+        "32": {
+          "count": null
+        },
+        "33": {
+          "count": null
+        },
+        "34": {
+          "count": null
+        },
+        "35": {
+          "count": null
+        },
+        "36": {
+          "count": null
+        },
+        "37": {
+          "count": null
+        },
+        "38": {
+          "count": null
+        },
+        "39": {
+          "count": null
+        },
+        "40": {
+          "count": null
+        },
+        "41": {
+          "count": null
+        },
+        "42": {
+          "count": null
+        },
+        "43": {
+          "count": null
+        },
+        "44": {
+          "count": null
+        },
+        "45": {
+          "count": null
+        },
+        "46": {
+          "count": null
+        },
+        "47": {
+          "count": null
+        },
+        "48": {
+          "count": null
+        },
+        "49": {
+          "count": null
+        },
+        "50": {
+          "count": null
+        },
+        "51": {
+          "count": null
+        },
+        "52": {
+          "count": null
+        },
+        "53": {
+          "count": null
+        }
+      }
+    }
+  }
+}

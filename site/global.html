@@ -1,0 +1,3976 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LaksAtlas — Global Aquaculture Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg: #04091a;
+  --bg-soft: #071425;
+  --bg-card: rgba(4,28,68,0.52);
+  --bg-card-hover: rgba(6,38,88,0.70);
+  --border: rgba(30,100,210,0.18);
+  --border-hover: rgba(55,145,255,0.34);
+  --text: #d8e8f6;
+  --text-dim: #8ab4d0;
+  --text-muted: #4e7898;
+  --neon-cyan: #00c8ff;
+  --neon-green: #1de9a8;
+  --neon-amber: #f4a535;
+  --neon-red: #ff4757;
+  --neon-magenta: #a855f7;
+  --neon-purple: #7c55e8;
+  --glow-cyan: 0 0 14px rgba(0,200,255,0.22), 0 0 40px rgba(0,200,255,0.08);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; overflow:hidden; }
+body { background:var(--bg); color:var(--text); font-family:'Outfit',sans-serif; font-size:14px; }
+
+/* === LOADING === */
+#loadOverlay {
+  position:fixed; inset:0; z-index:9999;
+  background:var(--bg);
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:20px;
+}
+.load-spinner {
+  width:44px; height:44px; border-radius:50%;
+  border:3px solid rgba(0,200,255,0.12);
+  border-top-color:var(--neon-cyan);
+  animation:spin 0.9s linear infinite;
+}
+.load-text { font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--text-dim); letter-spacing:2px; }
+@keyframes spin { to { transform:rotate(360deg); } }
+
+/* === NAV === */
+nav {
+  position:fixed; top:0; left:0; right:0; z-index:1000; height:66px;
+  padding:0 28px; display:grid; grid-template-columns:1fr auto 1fr; align-items:center;
+  background:rgba(4,9,26,0.92); backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+}
+.nav-logo { display:flex; align-items:center; gap:12px; text-decoration:none; }
+.nav-logo-img { height:36px; border-radius:7px; padding:2px 8px; background:rgba(255,255,255,0.96); box-shadow:0 2px 10px rgba(0,0,0,0.3); }
+.nav-logo-text { font-weight:800; font-size:14px; letter-spacing:2.6px; text-transform:uppercase; background:linear-gradient(135deg,var(--neon-cyan),#dbe7ff); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.scope-toggle { display:flex; background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:999px; padding:3px; }
+.scope-btn { padding:7px 18px; border-radius:999px; font-size:11px; font-weight:600; letter-spacing:1px; text-transform:uppercase; text-decoration:none; color:var(--text-dim); transition:all .2s; white-space:nowrap; }
+.scope-btn:hover { color:var(--text); }
+.scope-no.active { background:linear-gradient(135deg,var(--neon-cyan),#a8d8f8); color:#04091a; box-shadow:0 0 12px rgba(0,200,255,0.2); }
+.scope-gl.active { background:linear-gradient(135deg,#1de9a8,#00c8ff); color:#04091a; box-shadow:0 0 12px rgba(0,200,255,0.2); }
+.nav-links { display:flex; gap:22px; justify-self:end; }
+.nav-links a { color:var(--text-muted); text-decoration:none; font-size:12px; letter-spacing:1.2px; text-transform:uppercase; font-weight:500; transition:color .2s; }
+.nav-links a:hover { color:var(--text); }
+.nav-links a.active { color:var(--neon-cyan); }
+
+/* === YEAR BAR === */
+#yearBar {
+  position:fixed; bottom:0; left:0; right:0; z-index:500; height:54px;
+  background:rgba(4,9,26,0.96); border-top:1px solid var(--border);
+  backdrop-filter:blur(12px);
+  display:flex; align-items:center; gap:14px; padding:0 20px;
+}
+#playBtn {
+  width:34px; height:34px; border-radius:50%; border:1px solid var(--border);
+  background:var(--bg-card); color:var(--neon-cyan); font-size:13px;
+  cursor:pointer; display:flex; align-items:center; justify-content:center;
+  transition:all .2s; flex-shrink:0;
+}
+#playBtn:hover { border-color:var(--neon-cyan); box-shadow:var(--glow-cyan); }
+#yearDisplay {
+  font-family:'JetBrains Mono',monospace; font-size:18px; font-weight:700;
+  color:var(--neon-cyan); min-width:52px; text-align:center; flex-shrink:0;
+}
+#sliderTrack { flex:1; position:relative; }
+#yearSlider {
+  width:100%; -webkit-appearance:none; appearance:none;
+  height:4px; border-radius:2px;
+  background:linear-gradient(to right, var(--neon-cyan) 0%, var(--neon-cyan) var(--pct,100%), rgba(30,100,210,0.25) var(--pct,100%));
+  outline:none; cursor:pointer;
+}
+#yearSlider::-webkit-slider-thumb {
+  -webkit-appearance:none; width:14px; height:14px; border-radius:50%;
+  background:var(--neon-cyan); box-shadow:0 0 8px rgba(0,200,255,0.5);
+  cursor:pointer; transition:transform .15s;
+}
+#yearSlider::-webkit-slider-thumb:hover { transform:scale(1.3); }
+#yearRange {
+  font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--text-muted);
+  white-space:nowrap; flex-shrink:0;
+}
+
+/* === MAIN LAYOUT === */
+#mainLayout {
+  position:fixed; top:66px; left:0; right:0; bottom:54px;
+  display:flex; overflow:hidden;
+}
+
+/* === MAP PANE === */
+#mapPane {
+  position:relative; flex:1;
+  transition:flex .38s cubic-bezier(.4,0,.2,1);
+  overflow:hidden; min-width:0;
+}
+.country-selected #mapPane { flex:0 0 40%; }
+
+#worldSvg { display:block; width:100%; height:100%; }
+
+.country { transition:fill .2s; }
+.country:hover { cursor:pointer; }
+
+#mapTooltip {
+  position:absolute; pointer-events:none;
+  background:rgba(4,9,26,0.96); border:1px solid rgba(0,200,255,0.25);
+  border-radius:10px; padding:12px 15px; min-width:180px; max-width:240px;
+  backdrop-filter:blur(10px);
+  opacity:0; transform:translateY(4px); transition:opacity .15s, transform .15s;
+  font-size:12px; z-index:200;
+}
+#mapTooltip.visible { opacity:1; transform:none; }
+.tt-country { font-weight:700; font-size:14px; color:var(--text); margin-bottom:5px; }
+.tt-total { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--neon-cyan); margin-bottom:8px; }
+.tt-species { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--text-dim); line-height:1.7; }
+
+#mapHint {
+  position:absolute; bottom:20px; left:50%; transform:translateX(-50%);
+  font-family:'JetBrains Mono',monospace; font-size:11px; color:rgba(138,180,208,0.75);
+  letter-spacing:1.5px; text-align:center; pointer-events:none;
+  transition:opacity .4s; white-space:nowrap;
+}
+#mapHint.hidden { opacity:0; }
+
+/* === MAP ZOOM CONTROLS === */
+#mapZoomCtrls {
+  position:absolute; bottom:72px; right:14px; z-index:200;
+  display:flex; flex-direction:column; gap:5px;
+}
+.mzb {
+  width:30px; height:30px; border-radius:8px;
+  background:rgba(4,9,26,0.90); border:1px solid var(--border);
+  color:var(--neon-cyan); font-size:17px; font-weight:400;
+  cursor:pointer; display:flex; align-items:center; justify-content:center;
+  transition:border-color .15s, background .15s;
+  user-select:none; line-height:1;
+}
+.mzb:hover { border-color:var(--border-hover); background:rgba(0,200,255,0.08); }
+.mzb.mzb-reset { font-size:13px; color:var(--text-dim); }
+.mzb.mzb-reset:hover { color:var(--neon-cyan); }
+
+/* === OCEAN CURRENTS === */
+/* === SEA SURFACE TEMPERATURE OVERLAY === */
+#sstCanvas {
+  position:absolute; top:0; left:0; z-index:10;
+  pointer-events:none;
+}
+#sstToggle {
+  position:absolute; bottom:72px; left:18px; z-index:200;
+  display:flex; align-items:center; gap:10px;
+  background:rgba(4,9,26,0.92); border:1px solid rgba(0,200,255,0.22);
+  border-radius:10px; padding:9px 14px; cursor:pointer;
+  transition:border-color .15s, background .15s, box-shadow .15s;
+  user-select:none; max-width:220px;
+}
+#sstToggle:hover {
+  border-color:rgba(0,200,255,0.5);
+  background:rgba(0,200,255,0.06);
+  box-shadow: 0 0 12px rgba(0,200,255,0.1);
+}
+#sstToggle.active {
+  border-color:rgba(0,200,255,0.6);
+  background:rgba(0,200,255,0.08);
+  box-shadow: 0 0 16px rgba(0,200,255,0.15);
+}
+#sstToggle.loading { opacity:.5; cursor:wait; }
+.sst-btn-icon {
+  width:22px; height:22px; border-radius:50%; flex-shrink:0;
+  background:linear-gradient(135deg,#0a3080,#00c8ff,#1de9a8,#f4a535,#ff4757);
+  box-shadow: 0 0 8px rgba(0,200,255,0.3);
+}
+.sst-btn-text { display:flex; flex-direction:column; gap:1px; }
+.sst-btn-label {
+  font-family:'Outfit',sans-serif; font-size:12px; font-weight:600;
+  color:var(--text); letter-spacing:.3px; line-height:1;
+}
+.sst-btn-hint {
+  font-family:'JetBrains Mono',monospace; font-size:9px;
+  color:var(--text-dim); letter-spacing:.3px; line-height:1;
+}
+#sstToggle.active .sst-btn-hint { color:var(--neon-cyan); }
+#sstLegend {
+  display:none;
+  position:absolute; bottom:72px; left:240px; z-index:200;
+  background:rgba(4,9,26,0.88); border:1px solid var(--border);
+  border-radius:8px; padding:7px 10px 6px;
+  pointer-events:none;
+}
+#sstLegend.visible { display:block; }
+#sstLegendBar { display:block; width:140px; height:8px; border-radius:3px; }
+.sst-legend-labels {
+  display:flex; justify-content:space-between;
+  font-family:'JetBrains Mono',monospace; font-size:8px;
+  color:var(--text-dim); margin-top:3px; width:140px;
+}
+.sst-legend-title {
+  font-family:'JetBrains Mono',monospace; font-size:9px;
+  color:var(--text-dim); margin-bottom:4px; letter-spacing:.5px; text-transform:uppercase;
+}
+
+/* === MAP SCALE BAR === */
+#mapScaleBar {
+  position:absolute; bottom:18px; left:18px;
+  pointer-events:none; z-index:100;
+}
+#mapScaleBar canvas {
+  display:block; border-radius:3px;
+}
+.scale-label {
+  font-family:'JetBrains Mono',monospace; font-size:8px;
+  color:rgba(138,180,208,0.9); display:flex;
+  justify-content:space-between; margin-top:4px;
+  letter-spacing:0;
+  width:180px;
+}
+.scale-title {
+  font-family:'JetBrains Mono',monospace; font-size:9px;
+  color:rgba(138,180,208,0.75); text-align:center;
+  margin-bottom:4px; letter-spacing:1px; text-transform:uppercase;
+}
+
+/* === FILTER PANEL === */
+#filterPanel {
+  position:absolute; top:14px; left:14px; z-index:200;
+  background:rgba(4,9,26,0.94); border:1px solid var(--border);
+  border-radius:10px; overflow:hidden;
+  backdrop-filter:blur(12px); min-width:190px;
+}
+#filterToggleBtn {
+  width:100%; padding:9px 14px; background:none; border:none;
+  color:var(--text-dim); font-size:11px; font-family:'JetBrains Mono',monospace;
+  letter-spacing:1.5px; text-transform:uppercase; cursor:pointer;
+  display:flex; align-items:center; justify-content:space-between; gap:8px;
+  transition:color .2s;
+}
+#filterToggleBtn:hover { color:var(--neon-cyan); }
+#filterArrow { transition:transform .2s; }
+#filterPanel.open #filterArrow { transform:rotate(180deg); }
+#filterBody { display:none; padding:4px 0 10px; border-top:1px solid var(--border); }
+#filterPanel.open #filterBody { display:block; }
+.filter-section { padding:8px 14px 0; }
+.filter-section-title { font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:2px; text-transform:uppercase; color:rgba(138,180,208,0.75); margin-bottom:6px; }
+.filter-label { display:flex; align-items:center; gap:8px; font-size:12px; color:var(--text-dim); cursor:pointer; padding:3px 0; transition:color .15s; }
+.filter-label:hover { color:var(--text); }
+.filter-label input { cursor:pointer; accent-color:var(--neon-cyan); }
+.filter-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+.filter-nei {
+  margin:10px 14px 0;
+  padding:8px 10px;
+  background:rgba(0,200,255,0.04);
+  border:1px solid rgba(0,200,255,0.12);
+  border-radius:6px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px; line-height:1.5;
+  color:#8ab4d0;
+}
+.filter-nei-tag {
+  color:#00c8ff; font-weight:700; letter-spacing:1px;
+}
+
+/* === SEARCH === */
+#searchWrap {
+  position:absolute; top:14px; right:14px; z-index:200; width:220px;
+}
+#searchInput {
+  width:100%; padding:8px 14px; background:rgba(4,9,26,0.94);
+  border:1px solid var(--border); border-radius:8px;
+  color:var(--text); font-size:12px; font-family:'Outfit',sans-serif;
+  outline:none; transition:border-color .2s;
+}
+#searchInput::placeholder { color:var(--text-muted); }
+#searchInput:focus { border-color:rgba(0,200,255,0.4); }
+#searchDropdown {
+  position:absolute; top:calc(100% + 4px); left:0; right:0;
+  background:rgba(4,9,26,0.96); border:1px solid var(--border); border-radius:8px;
+  overflow:hidden; display:none;
+}
+#searchDropdown.open { display:block; }
+.search-item {
+  padding:9px 14px; font-size:12px; color:var(--text-dim); cursor:pointer;
+  transition:background .15s, color .15s;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.search-item:hover { background:rgba(0,200,255,0.07); color:var(--text); }
+
+/* === SPECIES PANE === */
+#speciesPane {
+  position:relative; flex:0 0 0%; overflow:hidden;
+  transition:flex .38s cubic-bezier(.4,0,.2,1);
+  border-left:1px solid transparent;
+  background:linear-gradient(90deg, rgba(4,14,40,0.6) 0%, var(--bg) 100%);
+  display:flex; flex-direction:column;
+}
+.country-selected #speciesPane {
+  flex:0 0 60%;
+  border-left-color:var(--border);
+}
+
+#speciesHeader {
+  padding:14px 18px 10px; border-bottom:1px solid var(--border);
+  display:flex; flex-direction:column; gap:6px; flex-shrink:0;
+}
+#speciesHeaderTop { display:flex; align-items:center; gap:12px; }
+#backBtn {
+  background:none; border:1px solid var(--border); border-radius:6px;
+  color:var(--text-dim); font-size:11px; font-family:'JetBrains Mono',monospace;
+  letter-spacing:1px; padding:5px 10px; cursor:pointer; transition:all .2s;
+  flex-shrink:0; white-space:nowrap;
+}
+#backBtn:hover { border-color:var(--neon-cyan); color:var(--neon-cyan); }
+#scaleBtnGroup {
+  margin-left:auto; display:flex; border:1px solid var(--border); border-radius:6px;
+  overflow:hidden; flex-shrink:0;
+}
+.scale-btn {
+  background:none; border:none; border-right:1px solid var(--border);
+  color:var(--text-muted); font-size:10px; font-family:'JetBrains Mono',monospace;
+  letter-spacing:0.8px; padding:5px 11px; cursor:pointer; transition:all .2s;
+  white-space:nowrap;
+}
+.scale-btn:last-child { border-right:none; }
+.scale-btn:hover { color:var(--text); background:rgba(255,255,255,0.04); }
+.scale-btn.active {
+  background:rgba(0,200,255,0.12); color:var(--neon-cyan);
+  border-color:transparent;
+}
+#speciesCountryName {
+  font-size:20px; font-weight:800;
+  background:linear-gradient(135deg,#d8e8f6,var(--neon-cyan));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+}
+#speciesYearStat {
+  font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--text-dim);
+}
+#speciesLegend { display:flex; flex-wrap:wrap; gap:10px; }
+.leg-item {
+  display:inline-flex; align-items:center; gap:5px;
+  font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.5px;
+  text-transform:uppercase;
+}
+.leg-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+
+#speciesCanvas { flex:1; display:block; min-height:0; }
+
+#speciesCanvasHint {
+  text-align:center; padding:6px;
+  font-family:'JetBrains Mono',monospace; font-size:9px; color:rgba(138,180,208,0.55);
+  letter-spacing:1px; flex-shrink:0;
+}
+
+#speciesBubbleTooltip {
+  position:absolute; pointer-events:none; z-index:300;
+  background:rgba(4,9,26,0.96); border:1px solid rgba(0,200,255,0.22);
+  border-radius:9px; padding:10px 14px;
+  opacity:0; transform:translateY(4px); transition:opacity .12s, transform .12s;
+}
+#speciesBubbleTooltip.visible { opacity:1; transform:none; }
+.btt-name { font-size:13px; font-weight:700; color:var(--text); margin-bottom:4px; }
+.btt-line { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--text-dim); line-height:1.6; }
+.btt-hint { font-size:9px; color:rgba(0,200,255,0.45); margin-top:5px; font-family:'JetBrains Mono',monospace; letter-spacing:0.5px; }
+
+/* === SPECIES MODAL === */
+#speciesModal {
+  position:fixed; inset:0; z-index:800;
+  display:none; align-items:center; justify-content:center;
+}
+#speciesModal.open { display:flex; }
+#modalBackdrop {
+  position:absolute; inset:0; background:rgba(4,9,26,0.75);
+  backdrop-filter:blur(4px); cursor:pointer;
+}
+#speciesModalBox {
+  position:relative; z-index:1;
+  background:rgba(4,14,40,0.98); border:1px solid rgba(0,200,255,0.22);
+  border-radius:16px; padding:24px 28px; width:640px; max-width:92vw;
+  box-shadow:0 0 60px rgba(0,200,255,0.08), 0 24px 60px rgba(0,0,0,0.6);
+  animation:modalIn .22s ease;
+}
+@keyframes modalIn { from { opacity:0; transform:scale(0.96) translateY(10px); } to { opacity:1; transform:none; } }
+#modalCloseBtn {
+  position:absolute; top:14px; right:16px; width:28px; height:28px;
+  background:none; border:1px solid var(--border); border-radius:50%;
+  color:var(--text-dim); font-size:16px; cursor:pointer; transition:all .2s;
+  display:flex; align-items:center; justify-content:center; line-height:1;
+}
+#modalCloseBtn:hover { border-color:var(--neon-cyan); color:var(--neon-cyan); }
+#modalSpeciesName {
+  font-size:20px; font-weight:800; color:var(--text); margin-bottom:4px; padding-right:40px;
+}
+#modalSpeciesMeta {
+  font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--text-dim);
+  margin-bottom:18px; letter-spacing:0.5px;
+}
+#modalValueWarn {
+  display:flex; align-items:center; gap:8px;
+  background:rgba(244,165,53,0.08); border:1px solid rgba(244,165,53,0.25);
+  border-radius:7px; padding:7px 12px; margin-bottom:10px;
+  font-size:11px; color:#f4a535; line-height:1.4;
+}
+#modalValueWarn::before { content:'⚠'; font-size:13px; flex-shrink:0; }
+#modalChartCanvas { display:block; margin-bottom:16px; }
+#modalBottomStats {
+  display:flex; gap:16px; padding-top:14px; border-top:1px solid var(--border);
+}
+.modal-stat { flex:1; text-align:center; }
+.modal-stat-val { font-size:20px; font-weight:700; color:var(--neon-cyan); }
+.modal-stat-lbl { font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--text-dim); margin-top:3px; letter-spacing:0.5px; }
+
+/* === GLOBAL TOP STATS === */
+#globalStats {
+  position:absolute; bottom:14px; right:14px; z-index:150;
+  display:flex; gap:10px;
+}
+.gstat {
+  background:rgba(4,9,26,0.88); border:1px solid var(--border);
+  border-radius:8px; padding:8px 14px; backdrop-filter:blur(8px);
+  text-align:center; pointer-events:none;
+}
+.gstat-val { font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:700; color:var(--neon-cyan); }
+.gstat-lbl { font-size:9px; color:var(--text-muted); letter-spacing:0.5px; margin-top:2px; }
+
+@keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+
+/* === TRENDS PANE (full-screen overlay) === */
+#trendsPane {
+  position:fixed; top:66px; left:0; right:0; bottom:54px;
+  z-index:450;
+  background:var(--bg);
+  display:flex; flex-direction:column;
+  overflow:hidden;
+  transform:translateX(100%);
+  transition:transform .38s cubic-bezier(.4,0,.2,1);
+}
+.trends-open #trendsPane { transform:translateX(0); }
+
+/* === EXPLORE BUTTON (right tab on map) === */
+@keyframes aurora {
+  0%   { background-position: 0% 50%;   }
+  33%  { background-position: 100% 0%;  }
+  66%  { background-position: 100% 100%;}
+  100% { background-position: 0% 50%;   }
+}
+@keyframes auroraGlow {
+  0%,100% { box-shadow: -4px 0 22px rgba(0,200,255,0.18), -1px 0 8px rgba(29,233,168,0.1); }
+  33%     { box-shadow: -4px 0 28px rgba(168,85,247,0.22), -1px 0 10px rgba(0,200,255,0.12); }
+  66%     { box-shadow: -4px 0 24px rgba(29,233,168,0.20), -1px 0 8px rgba(168,85,247,0.10); }
+}
+#exploreTrendsBtn {
+  position:absolute; right:0; top:50%; transform:translateY(-50%);
+  border-right:none; border-radius:8px 0 0 8px;
+  padding:20px 9px; cursor:pointer; z-index:150;
+  display:flex; flex-direction:column; align-items:center; gap:9px;
+  writing-mode:vertical-rl; text-orientation:mixed;
+  font-family:'JetBrains Mono',monospace; font-size:9px;
+  letter-spacing:2px; text-transform:uppercase;
+  backdrop-filter:blur(8px); outline:none;
+  /* Aurora background */
+  background: linear-gradient(
+    170deg,
+    rgba(4,9,26,0.92) 0%,
+    rgba(0,60,50,0.82) 25%,
+    rgba(20,10,50,0.88) 50%,
+    rgba(0,40,60,0.85) 75%,
+    rgba(4,9,26,0.92) 100%
+  );
+  background-size: 300% 300%;
+  animation: aurora 5s ease infinite, auroraGlow 5s ease infinite, auroraBorder 5s ease infinite;
+  border: 1px solid rgba(0,200,255,0.3);
+  border-right: none;
+  color: #a8f0e0;
+}
+@keyframes auroraBorder {
+  0%,100% { border-color: rgba(0,200,255,0.45); }
+  33%     { border-color: rgba(29,233,168,0.5);  }
+  66%     { border-color: rgba(168,85,247,0.4);  }
+}
+#exploreTrendsBtn:hover {
+  background-size: 200% 200%;
+  color: #fff;
+  filter: brightness(1.3);
+}
+.expl-arrow {
+  font-size:13px;
+  animation: explArrow 1.7s ease-in-out infinite;
+}
+@keyframes explArrow {
+  0%,100% { transform:translateX(0); opacity:.55; }
+  50%      { transform:translateX(3px); opacity:1; }
+}
+.trends-open #exploreTrendsBtn { display:none; }
+
+/* === TRENDS HEADER === */
+#trendsHeader {
+  padding:12px 18px 10px; border-bottom:1px solid var(--border);
+  display:flex; flex-direction:column; gap:8px; flex-shrink:0;
+}
+#trendsTitleRow { display:flex; align-items:center; gap:12px; }
+#closeTrendsBtn {
+  background:none; border:1px solid var(--border); border-radius:6px;
+  color:var(--text-dim); font-size:11px; font-family:'JetBrains Mono',monospace;
+  letter-spacing:1px; padding:5px 10px; cursor:pointer; transition:all .2s; flex-shrink:0;
+}
+#closeTrendsBtn:hover { border-color:var(--neon-cyan); color:var(--neon-cyan); }
+#trendsPaneTitle { font-size:15px; font-weight:700; color:var(--text); }
+#topProducerFilter { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.tp-label {
+  font-family:'JetBrains Mono',monospace; font-size:9px;
+  color:var(--text-muted); letter-spacing:1.5px; text-transform:uppercase; white-space:nowrap;
+}
+.producer-chip {
+  display:inline-flex; align-items:center; gap:5px; padding:4px 10px;
+  border-radius:999px; font-size:10px; font-family:'JetBrains Mono',monospace;
+  cursor:pointer; border:1px solid rgba(0,200,255,0.3);
+  background:rgba(0,200,255,0.08); color:var(--neon-cyan);
+  transition:all .18s; white-space:nowrap; user-select:none;
+}
+.producer-chip.excluded {
+  border-color:rgba(94,136,170,0.2); background:rgba(94,136,170,0.05);
+  color:var(--text-muted); text-decoration:line-through; opacity:.65;
+}
+.producer-chip:hover { border-color:rgba(0,200,255,0.55); }
+.chip-x { font-size:10px; }
+
+/* === TRENDS CONTENT === */
+#trendsContent {
+  flex:1; overflow-y:auto; padding:20px 28px 36px;
+  scrollbar-width:thin; scrollbar-color:rgba(0,200,255,0.15) transparent;
+}
+#trendsContent::-webkit-scrollbar { width:4px; }
+#trendsContent::-webkit-scrollbar-thumb { background:rgba(0,200,255,0.15); border-radius:2px; }
+
+.tsec { margin-bottom:36px; }
+
+/* === OCEAN DIVIDER === */
+@keyframes oceanShift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+@keyframes waveRise {
+  0%, 100% { transform: scaleY(1)   translateY(0); }
+  50%       { transform: scaleY(1.6) translateY(-1px); }
+}
+.tsec-divider {
+  position: relative;
+  height: 24px;
+  margin: 4px -28px 40px;
+  overflow: hidden;
+}
+.tsec-divider::before {
+  content: '';
+  position: absolute;
+  left: 0; right: 0;
+  bottom: 0; height: 1px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(3,105,161,0.2) 15%,
+    rgba(0,200,255,0.18) 35%,
+    rgba(29,233,168,0.15) 50%,
+    rgba(0,200,255,0.18) 65%,
+    rgba(3,105,161,0.2) 85%,
+    transparent 100%
+  );
+  background-size: 300% 100%;
+  animation: oceanShift 6s ease-in-out infinite;
+  box-shadow: 0 0 6px rgba(0,200,255,0.08);
+}
+.tsec-divider::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0;
+  bottom: 1px; height: 12px;
+  background: linear-gradient(to top,
+    rgba(0,200,255,0.03) 0%,
+    transparent 100%
+  );
+  animation: oceanShift 6s ease-in-out infinite, waveRise 5s ease-in-out infinite;
+  filter: blur(3px);
+}
+
+.tsec-tag {
+  font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:3px;
+  text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;
+}
+.tsec-title { font-size:20px; font-weight:700; color:var(--text); margin-bottom:6px; }
+.tsec-sub   { font-size:13px; color:var(--text-dim); margin-bottom:16px; line-height:1.5; }
+
+/* === CATEGORY CARDS === */
+#catGrid {
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;
+  padding-bottom:8px;
+}
+@media (max-width:1100px) { #catGrid { grid-template-columns:repeat(3,1fr); } }
+@media (max-width:750px)  { #catGrid { grid-template-columns:repeat(2,1fr); } }
+.cat-card {
+  background:var(--bg-card); border:1px solid var(--border);
+  border-radius:14px;
+  transition:border-color .18s, box-shadow .18s;
+  display:flex; flex-direction:column; align-items:center;
+  padding:16px 12px 14px;
+}
+
+/* External tooltip for doughnut charts — rendered as a DOM element so it
+   is never clipped by the canvas or its parent card */
+#catTooltip {
+  position:fixed; z-index:2000; pointer-events:none;
+  background:rgba(4,9,26,0.97); border:1px solid rgba(0,200,255,0.22);
+  border-radius:9px; padding:9px 13px; min-width:160px; max-width:260px;
+  backdrop-filter:blur(10px);
+  opacity:0; transition:opacity .12s;
+  font-size:11px;
+}
+#catTooltip.visible { opacity:1; }
+.ctt-title { font-weight:700; color:var(--text); margin-bottom:5px; font-size:12px; }
+.ctt-row { display:flex; align-items:center; gap:7px; padding:2px 0; }
+.ctt-swatch { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+.ctt-label { color:var(--text-dim); font-size:11px; flex:1; }
+.ctt-val { font-family:'JetBrains Mono',monospace; color:var(--neon-cyan); font-size:11px; white-space:nowrap; }
+.ctt-others-note {
+  margin-top:8px; padding-top:7px; border-top:1px solid rgba(0,200,255,0.12);
+  font-size:10px; color:var(--text-muted); line-height:1.5;
+}
+.cat-card:hover { border-color:var(--border-hover); box-shadow:0 0 20px rgba(0,200,255,0.06); }
+.cat-row { display:flex; align-items:center; gap:7px; margin-bottom:6px; }
+.cat-dot { width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+.cat-name { font-size:14px; font-weight:600; color:var(--text); }
+.cat-donut-wrap { position:relative; margin:6px 0 8px; }
+.cat-donut-wrap canvas { display:block; }
+.cat-total { font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--neon-cyan); margin-bottom:2px; }
+.cat-share { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-muted); }
+
+/* === REGIONAL / SPECIES CHARTS === */
+.trend-chart-box {
+  background:var(--bg-card); border:1px solid var(--border);
+  border-radius:11px; padding:14px 16px 10px;
+}
+.trend-chart-box canvas { display:block; }
+.species-scroll-box { height:300px; overflow-x:auto; overflow-y:hidden; }
+.species-scroll-box canvas { height:300px !important; }
+.species-scroll-box::-webkit-scrollbar { height:4px; }
+.species-scroll-box::-webkit-scrollbar-track { background:transparent; }
+.species-scroll-box::-webkit-scrollbar-thumb { background:var(--border-hover); border-radius:2px; }
+
+/* === CONTINENT SELECTOR === */
+#continentSelector {
+  display:flex; flex-wrap:wrap; gap:10px; margin-bottom:16px;
+}
+.cont-btn {
+  padding:8px 18px; border-radius:999px; cursor:pointer;
+  font-size:12px; font-weight:600; letter-spacing:0.5px;
+  border:1px solid var(--border); background:var(--bg-card);
+  color:var(--text-dim); transition:all .18s;
+}
+.cont-btn:hover { color:var(--text); border-color:var(--border-hover); }
+.cont-btn.active {
+  color:#04091a; border-color:transparent;
+  background:var(--cc, #00c8ff);
+  box-shadow:0 0 14px rgba(0,200,255,0.2);
+}
+
+/* === CONTINENT DETAIL PANEL === */
+#continentDetail {
+  margin-top:4px;
+}
+.cont-detail-grid {
+  display:grid; grid-template-columns:1fr 1fr; gap:14px;
+}
+.cont-detail-box {
+  background:var(--bg-card); border:1px solid var(--border);
+  border-radius:11px; padding:14px 16px 12px;
+}
+.cont-detail-box-title {
+  font-family:'JetBrains Mono',monospace; font-size:9px;
+  letter-spacing:2px; text-transform:uppercase;
+  color:var(--text-muted); margin-bottom:10px;
+}
+.cont-rank-row {
+  display:flex; align-items:center; gap:8px; padding:5px 0;
+  border-bottom:1px solid rgba(30,100,210,0.08);
+}
+.cont-rank-row:last-child { border-bottom:none; }
+.cont-rank-n {
+  font-family:'JetBrains Mono',monospace; font-size:9px;
+  color:var(--text-muted); min-width:16px; text-align:right; flex-shrink:0;
+}
+.cont-rank-bar-wrap { flex:1; height:6px; background:rgba(255,255,255,0.05); border-radius:3px; overflow:hidden; }
+.cont-rank-track    { flex:1; height:6px; background:rgba(255,255,255,0.05); border-radius:3px; overflow:hidden; }
+.cont-rank-bar      { height:100%; border-radius:3px; transition:width .4s ease; }
+.cont-rank-name     { font-size:13px; color:var(--text); min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1; }
+.cont-rank-val      { font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--neon-cyan); flex-shrink:0; }
+.cont-detail-hdr    { font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:10px; }
+.cont-empty         { font-size:13px; color:var(--text-muted); padding:8px 0; }
+
+/* === PREMIUM VS FOOD SECURITY === */
+.tsec-card {
+  background:var(--bg-card); border:1px solid var(--border);
+  border-radius:11px; padding:14px 16px 12px;
+}
+.vvp-ladder-grid {
+  display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:4px;
+}
+.vvp-ladder-box {
+  display:flex; flex-direction:column;
+  background:var(--bg-card); border:1px solid var(--border);
+  border-radius:11px; padding:14px 16px 12px;
+}
+.vvp-ladder-hdr {
+  font-family:'JetBrains Mono',monospace; font-size:12px;
+  letter-spacing:1.5px; text-transform:uppercase; margin-bottom:10px;
+}
+.vvp-hdr-premium { color:#f4a535; }
+.vvp-hdr-food    { color:#1de9a8; }
+.nei-note {
+  font-family:'JetBrains Mono',monospace; font-size:11px;
+  color:#6a9ab8; margin-top:8px;
+}
+
+/* === SPECIES DIVERSITY === */
+.sdiv-top-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:0; }
+.sdiv-box {
+  display:flex; flex-direction:column;
+  background:var(--bg-card); border:1px solid var(--border);
+  border-radius:11px; padding:14px 16px 12px;
+}
+.sdiv-hdr {
+  font-family:'JetBrains Mono',monospace; font-size:11px;
+  letter-spacing:1.5px; text-transform:uppercase; color:#8ab4d0;
+  margin-bottom:8px;
+}
+.sdiv-src { font-size:10px; color:#6a9ab8; letter-spacing:0; text-transform:none; font-weight:400; }
+.sdiv-sub { font-size:12px; color:#6a9ab8; margin-bottom:10px; line-height:1.5; }
+#sdivCountryList { display:flex; flex-direction:column; gap:0; margin-bottom:4px; }
+.sdiv-country-row {
+  display:flex; align-items:center; gap:10px;
+  padding:5px 0; border-bottom:1px solid rgba(30,100,210,0.07);
+}
+.sdiv-country-row:last-child { border-bottom:none; }
+.sdiv-c-name { font-size:13px; color:var(--text); min-width:180px; flex-shrink:0; }
+.sdiv-c-bar-wrap { flex:1; height:10px; display:flex; border-radius:3px; overflow:hidden; }
+.sdiv-c-bar-est  { background:#00c8ff88; height:100%; }
+.sdiv-c-bar-tri  { background:#f4a53555; height:100%; }
+.sdiv-c-nums { font-family:'JetBrains Mono',monospace; font-size:11px; color:#8ab4d0; flex-shrink:0; min-width:120px; text-align:right; }
+.sdiv-legend { display:flex; gap:16px; margin-bottom:10px; }
+.sdiv-legend-item { display:flex; align-items:center; gap:6px; font-size:12px; color:#8ab4d0; }
+.sdiv-col-hdr {
+  display:flex; align-items:center; gap:8px; padding:4px 0 6px;
+  border-bottom:1px solid rgba(0,200,255,0.1); margin-bottom:4px;
+  font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--text-muted); letter-spacing:0.5px;
+}
+.sdiv-col-hdr-bar { flex:1; text-align:center; }
+.sdiv-col-hdr-nums { min-width:120px; text-align:right; flex-shrink:0; }
+.sdiv-legend-dot { width:10px; height:10px; border-radius:2px; flex-shrink:0; }
+.sdiv-canvas-wrap { position:relative; width:100%; }
+.sdiv-canvas-wrap canvas { position:absolute; inset:0; }
+
+/* === SECTION 06 Growth & Momentum === */
+.gm-two-col { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+@media (max-width:800px) { .gm-two-col { grid-template-columns:1fr; } }
+.gm-panel {
+  display:flex; flex-direction:column;
+  background:var(--bg-card); border:1px solid var(--border);
+  border-radius:11px; padding:14px 16px 12px;
+}
+.gm-row {
+  display:flex; align-items:center; gap:8px;
+  padding:5px 0; border-bottom:1px solid rgba(0,200,255,0.07);
+}
+.gm-row:last-child { border-bottom:none; }
+.gm-rank { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-muted); width:18px; flex-shrink:0; text-align:right; }
+.gm-name { font-size:13px; color:var(--text); flex:1; min-width:0; white-space:normal; line-height:1.3; word-break:break-word; }
+.gm-bar-wrap { width:60px; height:8px; background:rgba(0,200,255,0.08); border-radius:3px; flex-shrink:0; overflow:hidden; }
+.gm-bar { height:100%; border-radius:3px; }
+.gm-val { font-family:'JetBrains Mono',monospace; font-size:12px; flex-shrink:0; width:58px; text-align:right; }
+.gm-sub-val { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-muted); flex-shrink:0; width:80px; text-align:right; }
+.gm-col-hdr {
+  display:flex; align-items:center; gap:8px;
+  padding:4px 0 6px; border-bottom:1px solid rgba(0,200,255,0.12);
+  margin-bottom:2px;
+}
+.gm-col-hdr-rank { width:18px; flex-shrink:0; }
+.gm-col-hdr-name { font-size:10px; color:#7aa8cc; flex:1; min-width:0; letter-spacing:.5px; text-transform:uppercase; }
+.gm-col-hdr-bar  { font-size:10px; color:#7aa8cc; width:60px; flex-shrink:0; letter-spacing:.5px; text-transform:uppercase; text-align:center; }
+.gm-col-hdr-val  { font-size:10px; color:#7aa8cc; width:58px; flex-shrink:0; letter-spacing:.5px; text-transform:uppercase; text-align:right; }
+.gm-col-hdr-sub  { font-size:10px; color:#7aa8cc; width:80px; flex-shrink:0; letter-spacing:.5px; text-transform:uppercase; text-align:right; }
+
+/* === SECTION 07 Environment Shift === */
+.env-sp-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-top:12px; }
+@media (max-width:900px) { .env-sp-grid { grid-template-columns:1fr; } }
+.env-sp-card {
+  background:var(--bg-card); border:1px solid var(--border);
+  border-radius:12px; padding:14px 14px 10px;
+}
+.env-sp-card-hdr { display:flex; align-items:center; gap:8px; margin-bottom:10px; }
+.env-sp-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+.env-sp-env-name { font-size:14px; font-weight:700; color:var(--text); }
+.env-sp-total { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-muted); margin-left:auto; }
+.env-sp-row { display:flex; align-items:center; gap:7px; padding:4px 0; border-bottom:1px solid rgba(0,200,255,0.05); }
+.env-sp-row:last-child { border-bottom:none; }
+.env-sp-rank { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-muted); width:16px; flex-shrink:0; text-align:right; }
+.env-sp-name { font-size:12px; color:var(--text-dim); flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.env-sp-bar-wrap { width:60px; height:6px; background:rgba(255,255,255,0.05); border-radius:2px; flex-shrink:0; overflow:hidden; }
+.env-sp-bar { height:100%; border-radius:2px; }
+.env-sp-val { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-muted); flex-shrink:0; width:52px; text-align:right; }
+#vvpShiftCanvas  { width:100% !important; display:block; }
+#vvpRankings {
+  display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:4px;
+}
+.vvp-rank-box {
+  background:var(--bg-card); border:1px solid var(--border);
+  border-radius:11px; padding:14px 16px 12px;
+}
+.vvp-rank-hdr {
+  font-family:'JetBrains Mono',monospace; font-size:12px;
+  letter-spacing:1.5px; text-transform:uppercase; margin-bottom:10px;
+}
+.vvp-rank-row {
+  display:flex; align-items:center; gap:8px; padding:5px 0;
+  border-bottom:1px solid rgba(30,100,210,0.08);
+}
+.vvp-rank-row:last-child { border-bottom:none; }
+.vvp-rank-name { font-size:13px; color:var(--text); flex:1; overflow:hidden; white-space:normal; word-break:break-word; line-height:1.3; }
+.vvp-rank-val  { font-family:'JetBrains Mono',monospace; font-size:12px; flex-shrink:0; min-width:62px; text-align:right; }
+.vvp-rank-sub  { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-muted); flex-shrink:0; min-width:56px; text-align:right; }
+.vvp-col-hdr   { display:flex; align-items:center; gap:8px; padding-bottom:4px; border-bottom:1px solid rgba(30,100,210,0.12); margin-bottom:4px; }
+.vvp-col-label { font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.5px; text-transform:uppercase; color:var(--text-muted); flex-shrink:0; min-width:62px; text-align:right; }
+.vvp-col-label:last-child { min-width:56px; }
+.vvp-col-legend { margin-bottom:10px; display:flex; flex-direction:column; gap:3px; }
+.vvp-col-legend span { font-size:11px; color:var(--text-muted); opacity:0.8; line-height:1.5; }
+#vvpPeriodBtns { display:flex; gap:8px; margin-bottom:10px; }
+.vvp-period-btn {
+  padding:6px 16px; border-radius:999px; cursor:pointer;
+  font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:600;
+  border:1px solid var(--border); background:var(--bg-card);
+  color:var(--text-dim); transition:all .15s;
+}
+.vvp-period-btn:hover { color:var(--text); border-color:var(--border-hover); }
+.vvp-period-btn.active { background:#f4a53522; border-color:#f4a535; color:#f4a535; }
+
+#vvpGroupBtns { display:flex; flex-wrap:wrap; gap:7px; margin-bottom:18px; }
+.vvp-group-btn {
+  padding:5px 14px; border-radius:999px; cursor:pointer;
+  font-size:11px; font-weight:600;
+  border:1px solid var(--border); background:var(--bg-card);
+  color:var(--text-dim); transition:all .15s;
+}
+.vvp-group-btn:hover { color:var(--text); border-color:var(--border-hover); }
+.vvp-group-btn.active[data-g="0"] { background:#00c8ff22; border-color:#00c8ff; color:#00c8ff; }
+.vvp-group-btn.active[data-g="1"] { background:#f4a53522; border-color:#f4a535; color:#f4a535; }
+.vvp-group-btn.active[data-g="2"] { background:#a855f722; border-color:#a855f7; color:#a855f7; }
+.vvp-group-btn.active[data-g="3"] { background:#1de9a822; border-color:#1de9a8; color:#1de9a8; }
+.vvp-group-btn.active[data-g="4"] { background:#7c55e822; border-color:#7c55e8; color:#7c55e8; }
+</style>
+</head>
+<body>
+
+<!-- Loading -->
+<div id="loadOverlay">
+  <div class="load-spinner"></div>
+  <div class="load-text">Loading global aquaculture data...</div>
+</div>
+
+<!-- Nav -->
+<nav>
+  <a href="index.html" class="nav-logo">
+    <img src="../logo/logo.png" alt="LaksAtlas" class="nav-logo-img">
+    <span class="nav-logo-text">LAKSATLAS</span>
+  </a>
+  <div class="scope-toggle">
+    <a href="index.html" class="scope-btn scope-no">Norway</a>
+    <a href="global.html" class="scope-btn scope-gl active">Global</a>
+  </div>
+  <div class="nav-links">
+    <a href="index.html">Overview</a>
+    <a href="map.html">Live Map</a>
+    <a href="about.html">About</a>
+  </div>
+</nav>
+
+<!-- Main layout -->
+<div id="mainLayout">
+
+  <!-- Map pane -->
+  <div id="mapPane">
+    <svg id="worldSvg"></svg>
+    <div id="mapTooltip"></div>
+    <div id="mapHint">Click any country to explore its species</div>
+    <div id="mapZoomCtrls">
+      <button class="mzb" id="zoomInBtn"    title="Zoom in (scroll wheel also works)">+</button>
+      <button class="mzb mzb-reset" id="zoomResetBtn" title="Reset view (double-click map)">⊙</button>
+      <button class="mzb" id="zoomOutBtn"   title="Zoom out">−</button>
+    </div>
+    <canvas id="sstCanvas"></canvas>
+    <button id="sstToggle">
+      <span class="sst-btn-icon"></span>
+      <span class="sst-btn-text">
+        <span class="sst-btn-label">Sea Temperature</span>
+        <span class="sst-btn-hint">Click to add layer</span>
+      </span>
+    </button>
+    <div id="sstLegend">
+      <div class="sst-legend-title">Sea Surface Temp.</div>
+      <canvas id="sstLegendBar" width="140" height="8"></canvas>
+      <div class="sst-legend-labels">
+        <span>−2°C</span><span>8°</span><span>16°</span><span>24°</span><span>32°C</span>
+      </div>
+    </div>
+    <div id="mapScaleBar">
+      <div class="scale-title">Production (tonnes)</div>
+      <canvas id="scaleCanvas" width="180" height="10"></canvas>
+      <div class="scale-label">
+        <span>100</span><span>10k</span><span>100k</span><span style="color:#00c8ff">1M</span><span style="color:#1de9a8">10M</span><span style="color:#f4a535">100M+</span>
+      </div>
+    </div>
+
+    <!-- Filter panel -->
+    <div id="filterPanel">
+      <button id="filterToggleBtn">
+        <span>Filters</span>
+        <span id="filterArrow">▾</span>
+      </button>
+      <div id="filterBody">
+        <div class="filter-section">
+          <div class="filter-section-title">Environment</div>
+          <label class="filter-label"><input type="checkbox" class="env-cb" value="0" checked><span class="filter-dot" style="background:#3b82f6"></span>Freshwater</label>
+          <label class="filter-label"><input type="checkbox" class="env-cb" value="1" checked><span class="filter-dot" style="background:#06b6d4"></span>Marine</label>
+          <label class="filter-label"><input type="checkbox" class="env-cb" value="2" checked><span class="filter-dot" style="background:#8b5cf6"></span>Brackishwater</label>
+        </div>
+        <div class="filter-section">
+          <div class="filter-section-title">Species group</div>
+          <label class="filter-label"><input type="checkbox" class="grp-cb" value="0" checked><span class="filter-dot" style="background:#00c8ff"></span>Fish</label>
+          <label class="filter-label"><input type="checkbox" class="grp-cb" value="1" checked><span class="filter-dot" style="background:#f4a535"></span>Crustacean</label>
+          <label class="filter-label"><input type="checkbox" class="grp-cb" value="2" checked><span class="filter-dot" style="background:#a855f7"></span>Mollusc</label>
+          <label class="filter-label"><input type="checkbox" class="grp-cb" value="3" checked><span class="filter-dot" style="background:#1de9a8"></span>Aquatic plant</label>
+          <label class="filter-label"><input type="checkbox" class="grp-cb" value="4" checked><span class="filter-dot" style="background:#7c55e8"></span>Other</label>
+        </div>
+        <div class="filter-nei">
+          <span class="filter-nei-tag">NEI</span> Not Elsewhere Included — FAO catch-all for species not classified in a specific category
+        </div>
+      </div>
+    </div>
+
+    <!-- Search -->
+    <div id="searchWrap">
+      <input type="text" id="searchInput" placeholder="Search country or species...">
+      <div id="searchDropdown"></div>
+    </div>
+
+    <!-- Global stats (bottom-right of map) -->
+    <div id="globalStats">
+      <div class="gstat">
+        <div class="gstat-val" id="gstatTotal">—</div>
+        <div class="gstat-lbl">World total</div>
+      </div>
+      <div class="gstat">
+        <div class="gstat-val" id="gstatCountries">220</div>
+        <div class="gstat-lbl">Countries</div>
+      </div>
+      <div class="gstat">
+        <div class="gstat-val" id="gstatSpecies">—</div>
+        <div class="gstat-lbl">Species</div>
+      </div>
+    </div>
+
+    <!-- Explore trends tab -->
+    <button id="exploreTrendsBtn" title="Open global trends explorer">
+      <span class="expl-arrow">→</span>
+      <span>Explore Trends</span>
+    </button>
+  </div>
+
+  <!-- Trends pane -->
+  <div id="trendsPane">
+    <div id="trendsHeader">
+      <div id="trendsTitleRow">
+        <button id="closeTrendsBtn">← Map</button>
+        <span id="trendsPaneTitle">Global Trends</span>
+      </div>
+      <div id="topProducerFilter">
+        <span class="tp-label">Exclude top producers:</span>
+        <div id="producerChips"></div>
+      </div>
+    </div>
+    <div id="trendsContent">
+
+      <!-- 01 Global Production Breakdown -->
+      <div class="tsec">
+        <div class="tsec-tag">01</div>
+        <div class="tsec-title">Global Production Breakdown</div>
+        <div class="tsec-sub">Each pie shows the top 10 farmed species within that category, measured in <strong>tonnes produced</strong> for the selected year. Hover a slice to see the species name, weight, and its share of that category's total. Use the "Exclude top producers" chips above to remove dominant countries and reveal the rest of the world.</div>
+        <div id="catGrid"></div>
+      </div>
+
+      <div class="tsec-divider"></div>
+
+      <!-- 02 Regional Trends -->
+      <div class="tsec">
+        <div class="tsec-tag">02</div>
+        <div class="tsec-title">Regional Trends</div>
+        <div class="tsec-sub">Click a continent to see which countries and species dominate farming there. Bars show total farmed tonnes for the year selected on the timeline. Use the year slider at the bottom to travel through time.</div>
+        <div id="continentSelector"></div>
+        <div id="continentDetail"></div>
+      </div>
+
+      <div class="tsec-divider"></div>
+
+      <!-- 03 Key Species -->
+      <div class="tsec">
+        <div class="tsec-tag">03</div>
+        <div class="tsec-title">Key Species</div>
+        <div class="tsec-sub">Top 20 farmed species worldwide. <strong>Bars (left axis)</strong> = total tonnes produced. <strong>Line (right axis)</strong> = total reported market value in USD. A species with a tall bar but low line is a high-volume, low-price staple. A species with a high line but shorter bar is a premium product. Scroll right to see all 20.</div>
+        <div class="trend-chart-box species-scroll-box">
+          <canvas id="speciesChartCanvas"></canvas>
+        </div>
+        <div class="nei-note">NEI = Not Elsewhere Included — FAO catch-all for species not assigned to a more specific category</div>
+      </div>
+
+      <div class="tsec-divider"></div>
+
+      <!-- 04 Premium vs Food Security -->
+      <div class="tsec">
+        <div class="tsec-tag">04</div>
+        <div class="tsec-title">Premium vs Food Security</div>
+        <div class="tsec-sub"><strong>USD/t</strong> = US dollars earned per tonne farmed — a measure of how valuable a species is relative to its weight. Species above $5 000/t are considered premium (salmon, shrimp, abalone). Species below are high-volume staples that feed billions. Use the time window pills to see how countries have shifted their farming mix over the years. Click a continent in the scatter legend to filter all charts.</div>
+        <div id="vvpPeriodBtns">
+          <button class="vvp-period-btn active" data-early="2004" data-late="2024">2004–2024</button>
+          <button class="vvp-period-btn" data-early="2014" data-late="2024">2014–2024</button>
+          <button class="vvp-period-btn" data-early="2019" data-late="2024">2019–2024</button>
+        </div>
+        <div id="vvpGroupBtns">
+          <button class="vvp-group-btn active" data-g="0">Fish</button>
+          <button class="vvp-group-btn active" data-g="1">Crustaceans</button>
+          <button class="vvp-group-btn active" data-g="2">Molluscs</button>
+          <button class="vvp-group-btn active" data-g="3">Aquatic Plants</button>
+          <button class="vvp-group-btn active" data-g="4">Other Aquatics</button>
+        </div>
+        <div class="vvp-ladder-grid">
+          <div class="vvp-ladder-box">
+            <div class="vvp-ladder-hdr vvp-hdr-premium">Most valuable to farm (USD/t)</div>
+            <canvas id="vvpHighCanvas"></canvas>
+          </div>
+          <div class="vvp-ladder-box">
+            <div class="vvp-ladder-hdr vvp-hdr-food">Food security workhorses (USD/t)</div>
+            <canvas id="vvpLowCanvas"></canvas>
+          </div>
+        </div>
+        <div class="nei-note">NEI = Not Elsewhere Included — FAO catch-all for species not assigned to a more specific category</div>
+        <div class="tsec-card" style="margin-top:20px">
+          <div class="tsec-sub" id="vvpShiftSub" style="margin-bottom:12px"></div>
+          <canvas id="vvpShiftCanvas" height="360"></canvas>
+        </div>
+        <div id="vvpRankings"></div>
+      </div>
+
+      <div class="tsec-divider"></div>
+
+      <!-- 05 Species Diversity -->
+      <div class="tsec">
+        <div class="tsec-tag">05</div>
+        <div class="tsec-title">Species Diversity</div>
+        <div class="tsec-sub">How many distinct species each country has tried farming. <strong>Established</strong> = farmed consistently for ≥5 years with a peak production of ≥10 tonnes — a proven commercial species. <strong>Experimental</strong> = tried briefly or in tiny quantities — innovation or one-off attempts. Countries with more established species have a broader, more resilient aquaculture base.</div>
+        <div class="sdiv-top-grid">
+          <div class="sdiv-box">
+            <div class="sdiv-hdr">Species in aquaculture over time</div>
+            <div class="sdiv-canvas-wrap" style="height:180px">
+              <canvas id="sdivTimeCanvas"></canvas>
+            </div>
+          </div>
+          <div class="sdiv-box">
+            <div class="sdiv-hdr">New species introduced per decade</div>
+            <div class="sdiv-canvas-wrap" style="height:180px">
+              <canvas id="sdivDecadeCanvas"></canvas>
+            </div>
+          </div>
+        </div>
+        <div class="tsec-card" style="margin-top:14px">
+          <div class="sdiv-hdr">Country species diversity — established vs experimental</div>
+          <div class="sdiv-sub">Established = farmed ≥5 years with peak ≥10t · Experimental = tried briefly or in tiny quantities</div>
+          <div id="sdivCountryList"></div>
+        </div>
+        <div class="tsec-card" style="margin-top:14px">
+          <div class="sdiv-hdr">Diversity vs country population <span class="sdiv-src">· UN 2023 population estimates</span></div>
+          <div class="sdiv-sub">Bubble size = total production — countries above the trend line farm more species relative to their population</div>
+          <div class="sdiv-canvas-wrap" style="height:360px">
+            <canvas id="sdivPopCanvas"></canvas>
+          </div>
+          <div class="nei-note" style="margin-top:8px">Species counts include all FAO-recorded production including NEI groups</div>
+        </div>
+      </div>
+
+      <div class="tsec-divider"></div>
+
+      <!-- 06 Growth & Momentum -->
+      <div class="tsec">
+        <div class="tsec-tag">06</div>
+        <div class="tsec-title">Growth &amp; Momentum</div>
+        <div class="tsec-sub">Two stories of growth: <strong>concentration</strong> (are a few countries controlling more and more of world production?) and <strong>acceleration</strong> (which countries are growing fastest right now?). <strong>CAGR</strong> = Compound Annual Growth Rate — the average yearly growth percentage over the period. A country with +20%/yr doubles its output roughly every 3–4 years.</div>
+
+        <div class="tsec-card">
+          <div class="sdiv-hdr">Market concentration over time — share of global output held by top producers</div>
+          <div class="sdiv-sub">Top-3 dominance has grown from ~60% in 1980 to ~78% in 2024 — aquaculture is consolidating</div>
+          <div class="sdiv-canvas-wrap" style="height:220px">
+            <canvas id="gmConcentrationCanvas"></canvas>
+          </div>
+        </div>
+
+        <div class="gm-two-col" style="margin-top:14px">
+          <div class="gm-panel">
+            <div class="sdiv-hdr">Fastest growing producers <span class="sdiv-src">· 2018–2024 · min 10 000 t</span></div>
+            <div class="sdiv-sub">Ranked by average yearly growth rate (compound annual growth rate, CAGR) — how fast a country's production expanded each year on average between 2018 and 2024. Tonnes (t) = metric tons of aquaculture output.</div>
+            <div id="gmCAGRList"></div>
+          </div>
+          <div class="gm-panel">
+            <div class="sdiv-hdr">Emerging producers <span class="sdiv-src">· 2010 → 2024</span></div>
+            <div class="sdiv-sub">Countries that were minor producers in 2010 but have since scaled up significantly. The <strong style="color:#d8e8f6">× bigger</strong> column shows how many times larger their 2024 output is compared to 2010 — e.g. 5× means they produce 5 times more than they did in 2010.</div>
+            <div id="gmEmergingList"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tsec-divider"></div>
+
+      <!-- 07 Environment Shift -->
+      <div class="tsec">
+        <div class="tsec-tag">07</div>
+        <div class="tsec-title">Environment Shift</div>
+        <div class="tsec-sub">Aquaculture happens in three distinct water environments. <strong>Freshwater</strong> = rivers, lakes, and ponds (carp, tilapia, trout). <strong>Marine</strong> = open sea and coastal ocean (seaweed, oysters, salmon). <strong>Brackishwater</strong> = coastal areas where fresh and salt water mix, such as estuaries and shrimp ponds. Each environment has different species, economics, and environmental footprints.</div>
+
+        <div class="tsec-card">
+          <div class="sdiv-hdr">Production by water environment 1950–2024</div>
+          <div class="sdiv-sub">Stacked area — freshwater and marine are neck and neck; brackishwater (shrimp, seaweed) is rising fastest</div>
+          <div class="sdiv-canvas-wrap" style="height:260px">
+            <canvas id="envAreaCanvas"></canvas>
+          </div>
+        </div>
+
+        <div class="sdiv-hdr" style="margin-top:24px">Top species per environment in 2024</div>
+        <div class="sdiv-sub">What actually drives each environment's production numbers</div>
+        <div id="envTopSpeciesGrid" class="env-sp-grid"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- External tooltip for doughnut charts -->
+  <div id="catTooltip"></div>
+
+  <!-- Species pane -->
+  <div id="speciesPane">
+    <div id="speciesHeader">
+      <div id="speciesHeaderTop">
+        <button id="backBtn">← World</button>
+        <div id="speciesCountryName"></div>
+        <div id="scaleBtnGroup">
+          <button class="scale-btn" id="scaleYearBtn" title="Size bubbles relative to this year only">This year</button>
+          <button class="scale-btn" id="scaleAllTimeBtn" title="Size bubbles relative to all-time peak">All-time</button>
+        </div>
+      </div>
+      <div id="speciesYearStat"></div>
+      <div id="speciesLegend"></div>
+    </div>
+    <canvas id="speciesCanvas"></canvas>
+    <div id="speciesCanvasHint">Hover to preview · Click a bubble to explore trends</div>
+    <div id="speciesBubbleTooltip"></div>
+  </div>
+
+</div>
+
+<!-- Year bar -->
+<div id="yearBar">
+  <button id="playBtn" title="Play / pause">▶</button>
+  <div id="yearDisplay">2024</div>
+  <div id="sliderTrack">
+    <input type="range" id="yearSlider" min="0" max="74" value="74" step="1">
+  </div>
+  <div id="yearRange">1950 — 2024</div>
+</div>
+
+<!-- Species detail modal -->
+<div id="speciesModal">
+  <div id="speciesModalBox">
+    <button id="modalCloseBtn">×</button>
+    <div id="modalSpeciesName"></div>
+    <div id="modalSpeciesMeta"></div>
+    <div id="modalValueWarn" style="display:none"></div>
+    <canvas id="modalChartCanvas" width="584" height="210"></canvas>
+    <div id="modalBottomStats"></div>
+  </div>
+  <div id="modalBackdrop"></div>
+</div>
+
+<!-- Dependencies -->
+<script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+<script src="https://unpkg.com/topojson-client@3/dist/topojson-client.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<script>
+// =============================================================================
+// CONSTANTS
+// =============================================================================
+const GRP_COLORS  = ['#00c8ff','#f4a535','#a855f7','#1de9a8','#7c55e8'];
+const GRP_GLOWS   = ['rgba(0,200,255,','rgba(244,165,53,','rgba(168,85,247,','rgba(29,233,168,','rgba(124,85,232,'];
+const ENV_NAMES   = ['Freshwater','Marine','Brackishwater'];
+const MAX_BUBBLES = 90; // max species shown per country
+
+
+// FAO country name → ISO 3166-1 numeric (for D3 world-atlas lookup)
+const FAO_TO_ISO = {
+  'Afghanistan':4,'Albania':8,'Algeria':12,'American Samoa':16,'Angola':24,
+  'Antigua and Barbuda':28,'Argentina':32,'Armenia':51,'Aruba':533,
+  'Australia':36,'Austria':40,'Azerbaijan':31,
+  'Bahamas':44,'Bahrain':48,'Bangladesh':50,'Barbados':52,'Belarus':112,
+  'Belgium':56,'Belize':84,'Benin':204,'Bhutan':64,
+  'Bolivia (Plurinational State of)':68,'Bonaire, Sint Eustatius and Saba':535,
+  'Bosnia and Herzegovina':70,'Botswana':72,'Brazil':76,
+  'British Virgin Islands':92,'Brunei Darussalam':96,'Bulgaria':100,
+  'Burkina Faso':854,'Burundi':108,
+  'Cabo Verde':132,'Cambodia':116,'Cameroon':120,'Canada':124,
+  'Cayman Islands':136,'Central African Republic':140,'Chad':148,
+  'Chile':152,'China':156,'China, Hong Kong SAR':344,'Colombia':170,
+  'Congo':178,'Cook Islands':184,'Costa Rica':188,
+  "C\u00f4te d'Ivoire":384,'Croatia':191,'Cuba':192,
+  'Cura\u00e7ao':531,'Cyprus':196,'Czechia':203,
+  'Denmark':208,"Democratic People's Republic of Korea":408,
+  'Democratic Republic of the Congo':180,'Dominica':212,
+  'Dominican Republic':214,
+  'Ecuador':218,'Egypt':818,'El Salvador':222,'Equatorial Guinea':226,
+  'Eritrea':232,'Eswatini':748,'Estonia':233,'Ethiopia':231,
+  'Falkland Islands (Malvinas)':238,'Faroe Islands':234,'Fiji':242,
+  'Finland':246,'France':250,'French Guiana':254,'French Polynesia':258,
+  'Gabon':266,'Gambia':270,'Georgia':268,'Germany':276,'Ghana':288,
+  'Greece':300,'Greenland':304,'Grenada':308,'Guadeloupe':312,'Guam':316,
+  'Guatemala':320,'Guernsey':831,'Guinea':324,'Guinea-Bissau':624,
+  'Guyana':328,
+  'Haiti':332,'Honduras':340,'Hungary':348,
+  'Iceland':352,'India':356,'Indonesia':360,
+  'Iran (Islamic Republic of)':364,'Iraq':368,'Ireland':372,'Israel':376,
+  'Isle of Man':833,'Italy':380,
+  'Jamaica':388,'Japan':392,'Jersey':832,'Jordan':400,
+  'Kazakhstan':398,'Kenya':404,'Kiribati':296,'Kuwait':414,'Kyrgyzstan':417,
+  "Lao People's Democratic Republic":418,'Latvia':428,'Lebanon':422,
+  'Lesotho':426,'Liberia':430,'Libya':434,'Lithuania':440,'Luxembourg':442,
+  'Madagascar':450,'Malawi':454,'Malaysia':458,'Maldives':462,'Mali':466,
+  'Malta':470,'Marshall Islands':584,'Martinique':474,'Mauritius':480,
+  'Mayotte':175,'Mexico':484,
+  'Micronesia (Federated States of)':583,'Montenegro':499,'Morocco':504,
+  'Mozambique':508,'Myanmar':104,
+  'Namibia':516,'Nauru':520,'Nepal':524,'Netherlands (Kingdom of the)':528,
+  'New Caledonia':540,'New Zealand':554,'Nicaragua':558,'Niger':562,
+  'Nigeria':566,'North Macedonia':807,'Northern Mariana Islands':580,
+  'Norway':578,
+  'Oman':512,
+  'Pakistan':586,'Palau':585,'Palestine':275,'Panama':591,
+  'Papua New Guinea':598,'Paraguay':600,'Peru':604,'Philippines':608,
+  'Poland':616,'Portugal':620,'Puerto Rico':630,
+  'Qatar':634,
+  'Republic of Korea':410,'Republic of Moldova':498,'Romania':642,
+  'Russian Federation':643,'Rwanda':646,
+  'R\u00e9union':638,
+  'Saint Kitts and Nevis':659,'Saint Lucia':662,
+  'Saint Pierre and Miquelon':666,'Saint Vincent and the Grenadines':670,
+  'Samoa':882,'Saudi Arabia':682,'Senegal':686,'Serbia':688,
+  'Seychelles':690,'Sierra Leone':694,'Singapore':702,'Slovakia':703,
+  'Slovenia':705,'Solomon Islands':90,'South Africa':710,'South Sudan':728,
+  'Spain':724,'Sri Lanka':144,'Sudan':729,'Suriname':740,'Sweden':752,
+  'Switzerland':756,'Syrian Arab Republic':760,
+  'Taiwan Province of China':158,'Tajikistan':762,'Thailand':764,
+  'Timor-Leste':626,'Togo':768,'Tonga':776,'Trinidad and Tobago':780,
+  'Tunisia':788,'T\u00fcrkiye':792,'Turkmenistan':795,
+  'Turks and Caicos Islands':796,'Tuvalu':798,
+  'Uganda':800,'Ukraine':804,'United Arab Emirates':784,
+  'United Kingdom of Great Britain and Northern Ireland':826,
+  'United Republic of Tanzania':834,'United Republic of Tanzania, Zanzibar':834,
+  'United States of America':840,'United States Virgin Islands':850,
+  'Uruguay':858,'Uzbekistan':860,
+  'Vanuatu':548,'Venezuela (Bolivarian Republic of)':862,'Viet Nam':704,
+  'Yemen':887,
+  'Zambia':894,'Zimbabwe':716,
+};
+// world-atlas stores IDs as zero-padded 3-digit strings ("036" not 36)
+const ISO_TO_FAO = Object.fromEntries(
+  Object.entries(FAO_TO_ISO).map(([k,v]) => [String(v).padStart(3,'0'), k])
+);
+
+// =============================================================================
+// STATE
+// =============================================================================
+let DATA = null, WORLD = null;
+let currentYearIdx = 74;   // index into DATA.qy (74 = 2024)
+let selectedCountry = null, selectedISO = null;
+let playing = false, playInterval = null;
+let activeEnvs  = new Set([0,1,2]);
+let activeGroups = new Set([0,1,2,3,4]);
+let yearScaleMode = true;   // true = current-year scale (default), false = all-time scale
+
+// Map
+let svgSel, projection, pathGen, colorScale;
+let countryPaths, graticulePath, borderPath;
+let mapZoomG, mapZoom, currentMapZoom = d3.zoomIdentity;
+
+// Species canvas
+let specCanvas, specCtx, canvasW, canvasH;
+let specNodes = [];
+let simulation = null;
+let animId = null;
+let hoveredNode = null;
+
+// Modal chart
+let modalChart = null;
+
+// =============================================================================
+// FORMATTING
+// =============================================================================
+function fmtT(n) {
+  if (!n || n === 0) return '0 t';
+  if (n >= 1e9)  return (n/1e9).toFixed(2)  + 'B t';
+  if (n >= 1e6)  return (n/1e6).toFixed(2)  + 'M t';
+  if (n >= 1e3)  return (n/1e3).toFixed(1)  + 'k t';
+  return n.toFixed(0) + ' t';
+}
+function fmtV(n) {
+  if (!n || n === 0) return '—';
+  if (n >= 1e6) return '$' + (n/1e6).toFixed(1) + 'B';
+  if (n >= 1e3) return '$' + (n/1e3).toFixed(1) + 'M';
+  return '$' + n.toFixed(0) + 'k';
+}
+
+// =============================================================================
+// INIT
+// =============================================================================
+async function init() {
+  try {
+    const [aq, world] = await Promise.all([
+      d3.json('../data/global_aquaculture.json'),
+      d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json'),
+    ]);
+    DATA  = aq;
+    WORLD = world;
+
+    currentYearIdx = DATA.qy.length - 1; // default: latest year
+
+    setupYearControl();
+    setupMap();
+    drawScaleBar();
+    setupFilters();
+    setupSearch();
+    setupModal();
+    setupBackBtn();
+    updateGlobalStats();
+    setupSST();
+
+    document.getElementById('loadOverlay').style.display = 'none';
+  } catch(err) {
+    console.error(err);
+    document.getElementById('loadOverlay').innerHTML =
+      `<div style="color:#ff4757;font-family:'JetBrains Mono',monospace;font-size:12px;padding:20px;text-align:center">
+        Failed to load data.<br>Run: <code>py scripts/transform_global.py</code>
+      </div>`;
+  }
+}
+
+// =============================================================================
+// GLOBAL STATS (world total for current year)
+// =============================================================================
+function updateGlobalStats() {
+  const yi = currentYearIdx;
+  let worldTotal = 0;
+  let uniqueSpecies = new Set();
+  let activeCountries = 0;
+  Object.values(DATA.c).forEach(cd => {
+    const t = cd.t[yi] || 0;
+    if (t > 0) {
+      worldTotal += t;
+      activeCountries++;
+      cd.s.forEach(sp => { if (sp.q[yi] > 0) uniqueSpecies.add(sp.n); });
+    }
+  });
+  document.getElementById('gstatTotal').textContent = fmtT(worldTotal);
+  document.getElementById('gstatCountries').textContent = activeCountries;
+  document.getElementById('gstatSpecies').textContent = uniqueSpecies.size;
+}
+
+// =============================================================================
+// WORLD MAP
+// =============================================================================
+function setupMap() {
+  const pane = document.getElementById('mapPane');
+  const W = pane.clientWidth, H = pane.clientHeight;
+
+  projection = d3.geoNaturalEarth1()
+    .scale(W / 6.3)
+    .translate([W / 2, H / 2]);
+  pathGen = d3.geoPath().projection(projection);
+
+  svgSel = d3.select('#worldSvg');
+  svgSel.attr('width', W).attr('height', H);
+
+  // Ocean base (outside zoom group — always fills viewport)
+  svgSel.append('rect').attr('class','ocean-bg')
+    .attr('width', W).attr('height', H)
+    .attr('fill', '#04091a');
+
+  // All zoomable content goes into this group
+  mapZoomG = svgSel.append('g').attr('id','mapZoomG');
+
+  // Graticule
+  graticulePath = mapZoomG.append('path').attr('class','graticule')
+    .datum(d3.geoGraticule()())
+    .attr('d', pathGen)
+    .attr('fill','none')
+    .attr('stroke','rgba(30,100,210,0.07)')
+    .attr('stroke-width',0.5);
+
+  // Color scale (log so mid-range countries are visible; China can't drown everyone else)
+  const maxT = d3.max(Object.values(DATA.c), c => d3.max(c.t));
+  colorScale = d3.scaleLog().domain([50, maxT]).range([0.05, 1]).clamp(true);
+
+  // Countries
+  const features = topojson.feature(WORLD, WORLD.objects.countries).features;
+  countryPaths = mapZoomG.selectAll('.country')
+    .data(features)
+    .join('path')
+    .attr('class','country')
+    .attr('d', pathGen)
+    .attr('fill', d => fillColor(d.id))
+    .attr('stroke','rgba(30,100,210,0.3)')
+    .attr('stroke-width', 0.4)
+    .on('mouseover', onMapHover)
+    .on('mousemove', onMapMove)
+    .on('mouseout',  onMapOut)
+    .on('click',     onMapClick);
+
+  // Country borders mesh
+  borderPath = mapZoomG.append('path').attr('class','borders')
+    .datum(topojson.mesh(WORLD, WORLD.objects.countries, (a,b)=>a!==b))
+    .attr('d', pathGen)
+    .attr('fill','none')
+    .attr('stroke','rgba(30,100,210,0.18)')
+    .attr('stroke-width',0.4);
+
+
+
+  // ── Zoom behaviour ────────────────────────────────────────────────────────
+  mapZoom = d3.zoom()
+    .scaleExtent([1, 16])
+    .translateExtent([[0, 0], [W, H]])
+    .filter(event => {
+      // Allow wheel zoom; block double-click default (we handle it manually);
+      // block zoom during drag on the svg only if it's not a pan intent
+      return !event.ctrlKey && event.type !== 'dblclick';
+    })
+    .on('zoom', event => {
+      currentMapZoom = event.transform;
+      mapZoomG.attr('transform', event.transform);
+      const k = event.transform.k;
+      countryPaths.attr('stroke-width', Math.max(0.15, 0.4 / k));
+      borderPath.attr('stroke-width', Math.max(0.1, 0.35 / k));
+      scheduleSST();
+    });
+
+  svgSel.call(mapZoom)
+    // Double-click resets to full extent instead of zooming
+    .on('dblclick.zoom', null)
+    .on('dblclick', () => resetMapZoom());
+
+  // Wire zoom buttons
+  document.getElementById('zoomInBtn').addEventListener('click', () => {
+    svgSel.transition().duration(300).call(mapZoom.scaleBy, 1.8);
+  });
+  document.getElementById('zoomOutBtn').addEventListener('click', () => {
+    svgSel.transition().duration(300).call(mapZoom.scaleBy, 1 / 1.8);
+  });
+  document.getElementById('zoomResetBtn').addEventListener('click', resetMapZoom);
+
+  function resetMapZoom() {
+    svgSel.transition().duration(500).call(mapZoom.transform, d3.zoomIdentity);
+  }
+
+  // Intro pulse: briefly highlight top producers
+  setTimeout(() => {
+    const topISOs = Object.entries(DATA.c)
+      .map(([n,d]) => ({ iso: FAO_TO_ISO[n], t: d.t[currentYearIdx]||0 }))
+      .filter(x => x.iso)
+      .sort((a,b)=>b.t-a.t)
+      .slice(0,10)
+      .map(x => String(x.iso).padStart(3,'0'));
+
+    countryPaths.filter(d => topISOs.includes(d.id))
+      .transition().duration(800).delay((_,i)=>i*80)
+      .attr('stroke','rgba(0,200,255,0.7)').attr('stroke-width',1.5)
+      .transition().duration(1400)
+      .attr('stroke','rgba(30,100,210,0.3)').attr('stroke-width',0.4);
+  }, 400);
+}
+
+// Multi-stop perceptual color ramp — dark navy → teal → cyan → green → amber
+// Each stop is [normalised-position, color].  Spread so 1M and 100M land on
+// clearly different hues rather than two similar shades of cyan.
+const MAP_COLOR_STOPS = [
+  [0.00, '#061526'],  // near-background  (< ~500 t)
+  [0.22, '#0a2f5c'],  // dark navy        (~1 000 t)
+  [0.42, '#0d5a7a'],  // deep teal        (~10 000 t)
+  [0.60, '#00a8d8'],  // mid cyan         (~100 000 t)
+  [0.75, '#00c8ff'],  // bright cyan      (~1 000 000 t / 1M)
+  [0.88, '#1de9a8'],  // neon green       (~10 000 000 t / 10M)
+  [1.00, '#f4a535'],  // warm amber       (100M+ / China level)
+];
+
+function mapColor(v) {
+  const s = MAP_COLOR_STOPS;
+  for (let i = 1; i < s.length; i++) {
+    if (v <= s[i][0]) {
+      const t = (v - s[i-1][0]) / (s[i][0] - s[i-1][0]);
+      return d3.interpolateRgb(s[i-1][1], s[i][1])(t);
+    }
+  }
+  return s[s.length-1][1];
+}
+
+function drawScaleBar() {
+  const canvas = document.getElementById('scaleCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const grad = ctx.createLinearGradient(0, 0, W, 0);
+  const steps = 64;
+  for (let i = 0; i <= steps; i++) {
+    const t = i / steps;
+    grad.addColorStop(t, mapColor(t));
+  }
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, W, H);
+}
+
+function fillColor(isoId) {
+  const name = ISO_TO_FAO[isoId];
+  if (!name || !DATA.c[name]) return '#06111f';
+  const t = DATA.c[name].t[currentYearIdx] || 0;
+  if (t < 50) return '#06111f';
+  const v = colorScale(t);
+  return mapColor(v);
+}
+
+function updateMapColors() {
+  countryPaths.transition().duration(200)
+    .attr('fill', d => d.id === selectedISO ? '#00c8ff' : fillColor(d.id));
+  updateGlobalStats();
+}
+
+// Map tooltip
+const mapTip = document.getElementById('mapTooltip');
+let tipVisible = false;
+
+function onMapHover(event, d) {
+  const name = ISO_TO_FAO[d.id];
+  if (!name || !DATA.c[name]) { mapTip.classList.remove('visible'); return; }
+  const cd = DATA.c[name];
+  const total = cd.t[currentYearIdx] || 0;
+  const yr = DATA.qy[currentYearIdx];
+
+  const top3 = [...cd.s]
+    .map(sp => ({ n: sp.n, q: sp.q[currentYearIdx]||0 }))
+    .filter(x => x.q > 0)
+    .sort((a,b)=>b.q-a.q).slice(0,3);
+
+  mapTip.innerHTML = `
+    <div class="tt-country">${name}</div>
+    <div class="tt-total">${fmtT(total)} in ${yr}</div>
+    ${top3.map(s=>`<div class="tt-species">${s.n}: ${fmtT(s.q)}</div>`).join('')}
+    ${total===0 ? '<div class="tt-species" style="opacity:0.5">No data this year</div>' : ''}
+  `;
+  mapTip.classList.add('visible');
+
+  if (d.id !== selectedISO) {
+    d3.select(event.currentTarget)
+      .attr('stroke','rgba(0,200,255,0.7)').attr('stroke-width',1.5);
+  }
+}
+
+function onMapMove(event) {
+  const pane = document.getElementById('mapPane');
+  const rect = pane.getBoundingClientRect();
+  let tx = event.clientX - rect.left + 14;
+  let ty = event.clientY - rect.top - 10;
+  if (tx + 250 > pane.clientWidth)  tx = event.clientX - rect.left - 254;
+  if (ty + 150 > pane.clientHeight) ty = event.clientY - rect.top  - 140;
+  mapTip.style.left = tx + 'px';
+  mapTip.style.top  = ty + 'px';
+}
+
+function onMapOut(event, d) {
+  mapTip.classList.remove('visible');
+  if (d.id !== selectedISO) {
+    d3.select(event.currentTarget)
+      .attr('stroke','rgba(30,100,210,0.3)').attr('stroke-width',0.4);
+  }
+}
+
+function onMapClick(event, d) {
+  const name = ISO_TO_FAO[d.id];
+  if (!name || !DATA.c[name]) return;
+  mapTip.classList.remove('visible');
+  selectCountry(name, d.id);
+}
+
+function resizeMap() {
+  const pane = document.getElementById('mapPane');
+  const W = pane.clientWidth, H = pane.clientHeight;
+  projection.scale(W / 6.3).translate([W/2, H/2]);
+  pathGen.projection(projection);
+  svgSel.attr('width', W).attr('height', H);
+  svgSel.select('.ocean-bg').attr('width', W).attr('height', H);
+  graticulePath.attr('d', pathGen);
+  countryPaths.attr('d', pathGen);
+  borderPath.attr('d', pathGen);
+  // Reset zoom state to identity and update pan bounds for new dimensions
+  if (mapZoom) {
+    currentMapZoom = d3.zoomIdentity;
+    mapZoomG.attr('transform', d3.zoomIdentity);
+    countryPaths.attr('stroke-width', 0.4);
+    borderPath.attr('stroke-width', 0.35);
+    mapZoom.translateExtent([[0, 0], [W, H]]);
+    svgSel.call(mapZoom.transform, d3.zoomIdentity);
+  }
+  scheduleSST();
+}
+
+// =============================================================================
+// SEA SURFACE TEMPERATURE
+// =============================================================================
+let SST_DATA = null;
+let sstVisible = false;
+let sstScheduled = false;
+let WORLD_FEATURES = null;  // cached for land-mask punching
+
+// Color stops: [temperature °C, [R, G, B]]
+// Uses the page's neon palette as anchors
+const SST_STOPS = [
+  [-2,  [6,   24,  80]],   // deep polar — dark navy-blue
+  [4,   [10,  48,  160]],  // cold       — royal blue
+  [10,  [0,   102, 220]],  // cool       — medium blue
+  [16,  [0,   200, 255]],  // temperate  — neon cyan  (--neon-cyan)
+  [22,  [29,  233, 168]],  // warm       — neon green (--neon-green)
+  [27,  [244, 165, 53]],   // hot        — neon amber (--neon-amber)
+  [32,  [255, 71,  87]],   // extreme    — neon red   (--neon-red)
+];
+
+function sstToRGB(t) {
+  const s = SST_STOPS;
+  if (t <= s[0][0])              return s[0][1];
+  if (t >= s[s.length - 1][0])  return s[s.length - 1][1];
+  for (let i = 1; i < s.length; i++) {
+    if (t <= s[i][0]) {
+      const f = (t - s[i-1][0]) / (s[i][0] - s[i-1][0]);
+      const a = s[i-1][1], b = s[i][1];
+      return [
+        Math.round(a[0] + f * (b[0] - a[0])),
+        Math.round(a[1] + f * (b[1] - a[1])),
+        Math.round(a[2] + f * (b[2] - a[2])),
+      ];
+    }
+  }
+}
+
+function lookupSST(lon, lat) {
+  // Bilinear interpolation across the 4 surrounding grid cells
+  const { lat0, lon0, dlat, dlon, nlat, nlon, sst } = SST_DATA;
+
+  let lf  = (lat - lat0) / dlat;
+  let lof = (lon - lon0) / dlon;
+  lf  = Math.max(0, Math.min(nlat - 1.001, lf));
+  lof = ((lof % nlon) + nlon) % nlon;
+
+  const li0  = Math.floor(lf),  li1  = Math.min(li0 + 1, nlat - 1);
+  const loi0 = Math.floor(lof), loi1 = (loi0 + 1) % nlon;
+  const fl   = lf  - li0;
+  const flo  = lof - loi0;
+
+  const v00 = sst[li0 * nlon + loi0];
+  const v01 = sst[li0 * nlon + loi1];
+  const v10 = sst[li1 * nlon + loi0];
+  const v11 = sst[li1 * nlon + loi1];
+
+  const ok00 = v00 !== null && v00 !== undefined;
+  const ok01 = v01 !== null && v01 !== undefined;
+  const ok10 = v10 !== null && v10 !== undefined;
+  const ok11 = v11 !== null && v11 !== undefined;
+  const n = ok00 + ok01 + ok10 + ok11;
+
+  if (n === 0) return null;
+
+  if (n === 4) {
+    // Full bilinear interpolation
+    return (v00*(1-flo) + v01*flo) * (1-fl) +
+           (v10*(1-flo) + v11*flo) * fl;
+  }
+
+  // Partial (coastal pixel): weighted average of available corners
+  return ((ok00 ? v00 : 0) + (ok01 ? v01 : 0) +
+          (ok10 ? v10 : 0) + (ok11 ? v11 : 0)) / n;
+}
+
+function drawSST() {
+  if (!sstVisible || !SST_DATA) return;
+  const pane = document.getElementById('mapPane');
+  const W = pane.clientWidth, H = pane.clientHeight;
+  const canvas = document.getElementById('sstCanvas');
+  canvas.width  = W;
+  canvas.height = H;
+
+  // Render at 1/2 resolution — bilinear interp handles smoothness, upscale fills the rest
+  const STEP = 2;
+  const SW = Math.ceil(W / STEP), SH = Math.ceil(H / STEP);
+  const imgData = new ImageData(SW, SH);
+  const px = imgData.data;
+  const t  = currentMapZoom;
+
+  for (let py = 0; py < SH; py++) {
+    for (let qx = 0; qx < SW; qx++) {
+      // Un-apply zoom transform to get map-space coordinates
+      const mx = (qx * STEP - t.x) / t.k;
+      const my = (py * STEP - t.y) / t.k;
+      const geo = projection.invert([mx, my]);
+      if (!geo) continue;
+
+      const sst = lookupSST(geo[0], geo[1]);
+      if (sst === null) continue;   // land or sea-ice: stay transparent
+
+      const [r, g, b] = sstToRGB(sst);
+      const i = (py * SW + qx) * 4;
+      px[i]   = r;
+      px[i+1] = g;
+      px[i+2] = b;
+      px[i+3] = 145;   // ~57% opacity — countries still visible beneath
+    }
+  }
+
+  // Draw small buffer → scale up to full canvas with bilinear smoothing
+  const offscreen = document.createElement('canvas');
+  offscreen.width = SW; offscreen.height = SH;
+  offscreen.getContext('2d').putImageData(imgData, 0, 0);
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, W, H);
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
+  ctx.drawImage(offscreen, 0, 0, W, H);
+
+  // ── Land mask ─────────────────────────────────────────────────────────────
+  // Punch out land areas using the same D3 country paths as the SVG layer.
+  // destination-out makes drawn pixels fully transparent, so SST is cut away
+  // cleanly wherever land sits — coast edges are pixel-sharp.
+  if (!WORLD_FEATURES) {
+    WORLD_FEATURES = topojson.feature(WORLD, WORLD.objects.countries).features;
+  }
+  ctx.save();
+  ctx.globalCompositeOperation = 'destination-out';
+  // Apply the same zoom transform used by mapZoomG so paths align exactly
+  ctx.translate(t.x, t.y);
+  ctx.scale(t.k, t.k);
+  const landPath = d3.geoPath().projection(projection).context(ctx);
+  ctx.beginPath();
+  WORLD_FEATURES.forEach(f => landPath(f));
+  ctx.fill();
+  ctx.restore();
+}
+
+function scheduleSST() {
+  if (!sstVisible || !SST_DATA || sstScheduled) return;
+  sstScheduled = true;
+  requestAnimationFrame(() => { sstScheduled = false; drawSST(); });
+}
+
+function drawSSTLegendBar() {
+  const c = document.getElementById('sstLegendBar');
+  const ctx = c.getContext('2d');
+  const grd = ctx.createLinearGradient(0, 0, c.width, 0);
+  const tMin = SST_STOPS[0][0], tMax = SST_STOPS[SST_STOPS.length-1][0];
+  SST_STOPS.forEach(([t, [r,g,b]]) => {
+    grd.addColorStop((t - tMin) / (tMax - tMin), `rgb(${r},${g},${b})`);
+  });
+  ctx.fillStyle = grd;
+  ctx.fillRect(0, 0, c.width, c.height);
+}
+
+async function setupSST() {
+  const btn = document.getElementById('sstToggle');
+  btn.classList.add('loading');
+
+  try {
+    SST_DATA = await d3.json('../data/sea_temperature.json');
+    btn.classList.remove('loading');
+    drawSSTLegendBar();
+
+    // Update button title with data month
+    if (SST_DATA.month) btn.title = `Sea surface temperature — ${SST_DATA.month}`;
+  } catch (e) {
+    // Data file doesn't exist yet — disable button gracefully
+    btn.disabled = true;
+    btn.title = 'SST data not found. Run: python scripts/fetch_sst.py';
+    btn.style.opacity = '0.35';
+    btn.style.cursor  = 'not-allowed';
+    return;
+  }
+
+  btn.addEventListener('click', () => {
+    sstVisible = !sstVisible;
+    btn.classList.toggle('active', sstVisible);
+    btn.querySelector('.sst-btn-hint').textContent = sstVisible ? 'Click to remove layer' : 'Click to add layer';
+    document.getElementById('sstLegend').classList.toggle('visible', sstVisible);
+    const canvas = document.getElementById('sstCanvas');
+    if (sstVisible) {
+      drawSST();
+    } else {
+      canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+    }
+  });
+}
+
+// =============================================================================
+// COUNTRY SELECTION
+// =============================================================================
+function selectCountry(name, isoId) {
+  selectedCountry = name;
+  selectedISO     = isoId;
+
+  document.getElementById('mapHint').classList.add('hidden');
+  document.getElementById('speciesCountryName').textContent = name;
+  document.getElementById('mainLayout').classList.add('country-selected');
+
+  // Highlight on map
+  countryPaths
+    .attr('stroke', d => d.id === isoId ? 'rgba(0,200,255,0.9)' : 'rgba(30,100,210,0.3)')
+    .attr('stroke-width', d => d.id === isoId ? 2 : 0.4);
+
+  // Resize map and launch species after transition
+  setTimeout(() => {
+    resizeMap();
+    launchSpecies(name);
+  }, 400);
+}
+
+function deselectCountry() {
+  selectedCountry = null;
+  selectedISO     = null;
+
+  document.getElementById('mainLayout').classList.remove('country-selected');
+  document.getElementById('mapHint').classList.remove('hidden');
+  countryPaths.attr('stroke','rgba(30,100,210,0.3)').attr('stroke-width',0.4);
+
+  stopSpecies();
+  setTimeout(resizeMap, 400);
+}
+
+// =============================================================================
+// SPECIES BUBBLES
+// =============================================================================
+const CLUSTER_POS = [
+  [0.28, 0.30],  // Fish         top-left
+  [0.72, 0.30],  // Crustacean   top-right
+  [0.28, 0.70],  // Mollusc      bottom-left
+  [0.72, 0.70],  // Aquatic plant bottom-right
+  [0.50, 0.50],  // Other        centre
+];
+
+function launchSpecies(name) {
+  const cd = DATA.c[name];
+  if (!cd) return;
+
+  // Cancel any running animation and simulation BEFORE building new nodes
+  if (animId) { cancelAnimationFrame(animId); animId = null; }
+  if (simulation) { simulation.stop(); simulation = null; }
+  specNodes = [];
+  hoveredNode = null;
+
+  specCanvas = document.getElementById('speciesCanvas');
+  specCtx    = specCanvas.getContext('2d');
+
+  const pane   = document.getElementById('speciesPane');
+  const header = document.getElementById('speciesHeader');
+  canvasW = pane.clientWidth;
+  canvasH = pane.clientHeight - header.offsetHeight - 28;
+  specCanvas.width  = canvasW;
+  specCanvas.height = canvasH;
+
+  // Pick species: filter, sort by all-time max production, take top N
+  let pool = cd.s
+    .filter(sp => activeGroups.has(sp.g) && activeEnvs.has(sp.e))
+    .map(sp => ({ sp, peak: Math.max(...sp.q) }))
+    .filter(x => x.peak > 0)
+    .sort((a,b) => b.peak - a.peak)
+    .slice(0, MAX_BUBBLES)
+    .map(x => x.sp);
+
+  const maxQtyAllTime = Math.max(1, ...pool.map(sp => Math.max(...sp.q)));
+  const maxQtyYear    = Math.max(1, ...pool.map(sp => sp.q[currentYearIdx] || 0));
+  const maxR = Math.min(canvasW, canvasH) * 0.15;
+
+  specNodes = pool.map(sp => {
+    const [fx, fy] = CLUSTER_POS[sp.g];
+    const cx = fx * canvasW, cy = fy * canvasH;
+    const curQty = sp.q[currentYearIdx] || 0;
+    const firstYearIdx = sp.q.findIndex(v => v > 0);
+    const active = firstYearIdx !== -1 && currentYearIdx >= firstYearIdx;
+    const denom  = yearScaleMode ? maxQtyYear : maxQtyAllTime;
+    const r = active && curQty > 0
+      ? Math.max(6, Math.sqrt(curQty / denom) * maxR)
+      : active ? 3 : 0;
+    return {
+      x: cx + (Math.random()-.5)*80,
+      y: cy + (Math.random()-.5)*80,
+      vx:0, vy:0,
+      r, targetR: r,
+      sp,
+      firstYearIdx,
+      maxQtyAllTime,
+      maxR,
+    };
+  });
+
+  buildLegend(pool);
+  updateSpeciesStatLine();
+
+  // D3 force simulation (stopped — we tick manually)
+  if (simulation) simulation.stop();
+  simulation = d3.forceSimulation(specNodes)
+    .force('charge', d3.forceManyBody().strength(d => -d.r * 2.5))
+    .force('collide', d3.forceCollide().radius(d => d.r + 3).iterations(2))
+    .force('cx', d3.forceX().x(d => CLUSTER_POS[d.sp.g][0]*canvasW).strength(0.07))
+    .force('cy', d3.forceY().y(d => CLUSTER_POS[d.sp.g][1]*canvasH).strength(0.07))
+    .alphaDecay(0.018)
+    .stop();
+
+  // Warm the simulation so bubbles start roughly in position
+  for (let i = 0; i < 120; i++) simulation.tick();
+
+  animId = requestAnimationFrame(speciesLoop);
+
+  setupCanvasInteraction();
+}
+
+function stopSpecies() {
+  if (animId) { cancelAnimationFrame(animId); animId = null; }
+  if (simulation) { simulation.stop(); }
+  specNodes = [];
+  hoveredNode = null;
+}
+
+function speciesLoop() {
+  animId = requestAnimationFrame(speciesLoop);
+
+  // Lerp radii smoothly toward target
+  for (const n of specNodes) {
+    const delta = n.targetR - n.r;
+    if (Math.abs(delta) > 0.15) n.r += delta * 0.1;
+  }
+
+  // Tick simulation until it cools down, then let it rest
+  if (simulation && simulation.alpha() > simulation.alphaMin()) {
+    simulation.tick();
+  }
+
+  drawSpecies();
+}
+
+function drawSpecies() {
+  if (!specCtx) return;
+  specCtx.clearRect(0, 0, canvasW, canvasH);
+
+  // Draw bubbles (smaller ones first so larger sit on top)
+  const sorted = [...specNodes].sort((a,b) => a.r - b.r);
+  for (const n of sorted) {
+    const col  = GRP_COLORS[n.sp.g];
+    const glow = GRP_GLOWS[n.sp.g];
+    const { x, y, r } = n;
+    const hov  = n === hoveredNode;
+
+    if (r < 1) continue;
+
+    specCtx.save();
+    if (hov) {
+      specCtx.shadowColor  = col;
+      specCtx.shadowBlur   = 20;
+    }
+
+    // Fill gradient
+    const grad = specCtx.createRadialGradient(x-r*0.3, y-r*0.3, 0, x, y, r);
+    grad.addColorStop(0,   glow + (hov ? '0.75)' : '0.55)'));
+    grad.addColorStop(0.6, glow + '0.22)');
+    grad.addColorStop(1,   glow + '0.06)');
+
+    specCtx.beginPath();
+    specCtx.arc(x, y, r, 0, Math.PI*2);
+    specCtx.fillStyle = grad;
+    specCtx.fill();
+
+    // Stroke
+    specCtx.strokeStyle = glow + (hov ? '0.9)' : '0.45)');
+    specCtx.lineWidth   = hov ? 1.8 : 0.8;
+    specCtx.stroke();
+    specCtx.restore();
+
+    // Label
+    if (r > 16) {
+      specCtx.save();
+      specCtx.textAlign    = 'center';
+      specCtx.textBaseline = 'middle';
+      specCtx.fillStyle    = hov ? '#ffffff' : '#cce0f0';
+      const name = n.sp.n.length > 18 ? n.sp.n.slice(0,16)+'…' : n.sp.n;
+      const fs   = Math.min(11, r * 0.38);
+      specCtx.font = `${fs}px Outfit, sans-serif`;
+      specCtx.fillText(name, x, y + (r > 28 ? -5 : 0));
+      if (r > 28) {
+        const qty = n.sp.q[currentYearIdx] || 0;
+        specCtx.font      = `8px JetBrains Mono, monospace`;
+        specCtx.fillStyle = glow+'0.65)';
+        specCtx.fillText(fmtT(qty), x, y + 8);
+      }
+      specCtx.restore();
+    }
+  }
+
+  // Draw group labels ON TOP of bubbles — anchored to fixed corner positions
+  // so they are never hidden inside a bubble
+  const LABEL_ANCHORS = [
+    [0.02, 0.04, 'left'],    // Fish — top-left
+    [0.98, 0.04, 'right'],   // Crustacean — top-right
+    [0.02, 0.97, 'left'],    // Mollusc — bottom-left
+    [0.98, 0.97, 'right'],   // Aquatic plant — bottom-right
+    [0.50, 0.50, 'center'],  // Other — centre (only shown if present)
+  ];
+  const drawnGroups = new Set(specNodes.map(n => n.sp.g));
+  drawnGroups.forEach(g => {
+    const [fx, fy, align] = LABEL_ANCHORS[g];
+    const lx = fx * canvasW;
+    const ly = fy * canvasH;
+    const col  = GRP_COLORS[g];
+    const glow = GRP_GLOWS[g];
+    const label = DATA.g[g].toUpperCase();
+
+    specCtx.save();
+    specCtx.font = '700 11px JetBrains Mono, monospace';
+    specCtx.textAlign    = align;
+    specCtx.textBaseline = fy < 0.5 ? 'top' : 'bottom';
+
+    const metrics = specCtx.measureText(label);
+    const tw = metrics.width;
+    const th = 13;
+    const pad = 7;
+
+    // Pill background
+    const bx = align === 'left'   ? lx - pad :
+               align === 'right'  ? lx - tw - pad :
+                                    lx - tw/2 - pad;
+    const by = fy < 0.5 ? ly - 3 : ly - th - 3;
+
+    specCtx.beginPath();
+    const br = 5;
+    specCtx.roundRect(bx, by, tw + pad*2, th + 6, br);
+    specCtx.fillStyle = glow + '0.18)';
+    specCtx.fill();
+    specCtx.strokeStyle = glow + '0.55)';
+    specCtx.lineWidth = 1;
+    specCtx.stroke();
+
+    // Text
+    specCtx.fillStyle = col;
+    specCtx.fillText(label, lx, fy < 0.5 ? ly + 3 : ly - 3);
+    specCtx.restore();
+  });
+}
+
+function updateSpeciesBubbles() {
+  if (!specNodes.length || !selectedCountry) return;
+  const maxR = Math.min(canvasW, canvasH) * 0.15;
+
+  // In year-scale mode, size relative to the biggest species this year only
+  const maxQtyYear = yearScaleMode
+    ? Math.max(1, ...specNodes.map(n => n.sp.q[currentYearIdx] || 0))
+    : null;
+
+  for (const n of specNodes) {
+    const active = n.firstYearIdx !== -1 && currentYearIdx >= n.firstYearIdx;
+    if (!active) { n.targetR = 0; continue; }
+    const curQty = n.sp.q[currentYearIdx] || 0;
+    const denom  = yearScaleMode ? maxQtyYear : n.maxQtyAllTime;
+    n.targetR = curQty > 0
+      ? Math.max(6, Math.sqrt(curQty / denom) * maxR)
+      : 3;
+  }
+
+  // Update collision radii and restart with gentle alpha
+  if (simulation) {
+    simulation.force('collide').radius(d => d.targetR + 3);
+    simulation.alpha(0.25).restart();
+    setTimeout(() => simulation && simulation.stop(), 2000);
+  }
+
+  updateSpeciesStatLine();
+}
+
+function updateSpeciesStatLine() {
+  if (!specNodes.length) return;
+  const total = specNodes.reduce((s,n) => s + (n.sp.q[currentYearIdx]||0), 0);
+  const yr = DATA.qy[currentYearIdx];
+  document.getElementById('speciesYearStat').textContent =
+    `${fmtT(total)} · ${yr} · ${specNodes.length} species shown`;
+}
+
+function buildLegend(pool) {
+  const counts = Array(5).fill(0);
+  pool.forEach(sp => counts[sp.g]++);
+  document.getElementById('speciesLegend').innerHTML = DATA.g
+    .map((name, i) => counts[i] > 0
+      ? `<span class="leg-item" style="color:${GRP_COLORS[i]}">
+           <span class="leg-dot" style="background:${GRP_COLORS[i]}"></span>${name} (${counts[i]})
+         </span>` : '')
+    .join('');
+}
+
+// Canvas mouse interactions
+function setupCanvasInteraction() {
+  if (!specCanvas) return;
+  const btt = document.getElementById('speciesBubbleTooltip');
+
+  specCanvas.onmousemove = e => {
+    const rect = specCanvas.getBoundingClientRect();
+    // Scale mouse coords to match canvas internal resolution (flex can stretch the element)
+    const sx = specCanvas.width  / rect.width;
+    const sy = specCanvas.height / rect.height;
+    const mx = (e.clientX - rect.left) * sx;
+    const my = (e.clientY - rect.top)  * sy;
+    const hit = specNodes.find(n => {
+      if (n.r < 1) return false;
+      const dx = n.x-mx, dy = n.y-my;
+      return Math.sqrt(dx*dx+dy*dy) <= n.r;
+    }) || null;
+
+    if (hit !== hoveredNode) hoveredNode = hit;
+    specCanvas.style.cursor = hit ? 'pointer' : 'default';
+
+    if (hit) {
+      const curQty = hit.sp.q[currentYearIdx] || 0;
+      const vi  = DATA.vy.indexOf(DATA.qy[currentYearIdx]);
+      const val = vi >= 0 ? hit.sp.v[vi] : 0;
+      btt.innerHTML = `
+        <div class="btt-name">${hit.sp.n}</div>
+        <div class="btt-line">${DATA.g[hit.sp.g]} · ${ENV_NAMES[hit.sp.e]}</div>
+        <div class="btt-line">${fmtT(curQty)} · ${fmtV(val*1000)}</div>
+        <div class="btt-hint">Click for full time series →</div>
+      `;
+      let tx = e.clientX - rect.left + 14;
+      let ty = e.clientY - rect.top  - 10;
+      if (tx + 200 > canvasW) tx = e.clientX - rect.left - 210;
+      if (ty + 110 > canvasH) ty = e.clientY - rect.top  - 110;
+      btt.style.left = tx + 'px';
+      btt.style.top  = ty + 'px';
+      btt.classList.add('visible');
+    } else {
+      btt.classList.remove('visible');
+    }
+  };
+
+  specCanvas.onmouseleave = () => {
+    hoveredNode = null;
+    btt.classList.remove('visible');
+  };
+
+  specCanvas.onclick = () => {
+    if (hoveredNode) openModal(hoveredNode);
+  };
+}
+
+// =============================================================================
+// YEAR CONTROL
+// =============================================================================
+function setupYearControl() {
+  const slider  = document.getElementById('yearSlider');
+  const display = document.getElementById('yearDisplay');
+  const range   = document.getElementById('yearRange');
+
+  slider.max   = DATA.qy.length - 1;
+  slider.value = DATA.qy.length - 1;
+  display.textContent = DATA.qy[currentYearIdx];
+  range.textContent   = DATA.qy[0] + ' — ' + DATA.qy[DATA.qy.length-1];
+  syncSliderFill(slider);
+
+  slider.addEventListener('input', () => {
+    currentYearIdx = +slider.value;
+    display.textContent = DATA.qy[currentYearIdx];
+    syncSliderFill(slider);
+    updateMapColors();
+    updateSpeciesBubbles();
+    refreshTrendsIfOpen();
+  });
+
+  document.getElementById('playBtn').addEventListener('click', togglePlay);
+}
+
+function syncSliderFill(slider) {
+  const pct = (+slider.value / +slider.max * 100).toFixed(1);
+  slider.style.setProperty('--pct', pct + '%');
+}
+
+function togglePlay() {
+  playing = !playing;
+  const btn = document.getElementById('playBtn');
+  btn.textContent = playing ? '⏸' : '▶';
+
+  if (playing) {
+    playInterval = setInterval(() => {
+      const slider = document.getElementById('yearSlider');
+      let next = +slider.value + 1;
+      if (next > +slider.max) next = 0;
+      slider.value = next;
+      currentYearIdx = next;
+      document.getElementById('yearDisplay').textContent = DATA.qy[next];
+      syncSliderFill(slider);
+      updateMapColors();
+      updateSpeciesBubbles();
+      refreshTrendsIfOpen();
+    }, 320);
+  } else {
+    clearInterval(playInterval);
+  }
+}
+
+// =============================================================================
+// FILTERS
+// =============================================================================
+function setupFilters() {
+  document.getElementById('filterToggleBtn').addEventListener('click', () => {
+    document.getElementById('filterPanel').classList.toggle('open');
+  });
+
+  document.querySelectorAll('.env-cb').forEach(cb =>
+    cb.addEventListener('change', () => {
+      activeEnvs = new Set([...document.querySelectorAll('.env-cb:checked')].map(c=>+c.value));
+      if (selectedCountry) launchSpecies(selectedCountry);
+    })
+  );
+
+  document.querySelectorAll('.grp-cb').forEach(cb =>
+    cb.addEventListener('change', () => {
+      activeGroups = new Set([...document.querySelectorAll('.grp-cb:checked')].map(c=>+c.value));
+      if (selectedCountry) launchSpecies(selectedCountry);
+    })
+  );
+}
+
+// =============================================================================
+// SEARCH
+// =============================================================================
+function setupSearch() {
+  const input    = document.getElementById('searchInput');
+  const dropdown = document.getElementById('searchDropdown');
+  const cNames   = Object.keys(DATA.c).sort();
+  const spSet    = new Set();
+  Object.values(DATA.c).forEach(cd => cd.s.forEach(sp => spSet.add(sp.n)));
+  const spNames = [...spSet].sort();
+
+  input.addEventListener('input', () => {
+    const q = input.value.trim().toLowerCase();
+    if (q.length < 2) { dropdown.classList.remove('open'); return; }
+    const cm = cNames.filter(n => n.toLowerCase().includes(q)).slice(0, 5);
+    const sm = spNames.filter(n => n.toLowerCase().includes(q)).slice(0, 4);
+    const items = [
+      ...cm.map(n => `<div class="search-item" data-t="c" data-v="${n}">🌍 ${n}</div>`),
+      ...sm.map(n => `<div class="search-item" data-t="s" data-v="${n}">🐟 ${n}</div>`),
+    ];
+    dropdown.innerHTML = items.join('');
+    dropdown.classList.toggle('open', items.length > 0);
+  });
+
+  dropdown.addEventListener('click', e => {
+    const el = e.target.closest('.search-item');
+    if (!el) return;
+    dropdown.classList.remove('open');
+    input.value = '';
+    if (el.dataset.t === 'c') {
+      const iso = FAO_TO_ISO[el.dataset.v];
+      if (iso) selectCountry(el.dataset.v, String(iso).padStart(3,'0'));
+    } else {
+      // Find top producing country for this species in current year
+      const sn = el.dataset.v;
+      let best = null, bestQ = 0, bestISO = null;
+      Object.entries(DATA.c).forEach(([cn, cd]) => {
+        const sp = cd.s.find(s => s.n === sn);
+        if (sp) {
+          const q = sp.q[currentYearIdx] || Math.max(...sp.q);
+          if (q > bestQ) { bestQ = q; best = cn; bestISO = FAO_TO_ISO[cn]; }
+        }
+      });
+      if (best) selectCountry(best, String(bestISO).padStart(3,'0'));
+    }
+  });
+
+  document.addEventListener('click', e => {
+    if (!e.target.closest('#searchWrap')) dropdown.classList.remove('open');
+  });
+}
+
+// =============================================================================
+// BACK BUTTON
+// =============================================================================
+function setupBackBtn() {
+  document.getElementById('backBtn').addEventListener('click', deselectCountry);
+
+  function setScaleMode(yearMode) {
+    yearScaleMode = yearMode;
+    document.getElementById('scaleYearBtn').classList.toggle('active', yearMode);
+    document.getElementById('scaleAllTimeBtn').classList.toggle('active', !yearMode);
+    updateSpeciesBubbles();
+  }
+
+  document.getElementById('scaleYearBtn').addEventListener('click', () => setScaleMode(true));
+  document.getElementById('scaleAllTimeBtn').addEventListener('click', () => setScaleMode(false));
+
+  // Set initial active state (year mode is default)
+  document.getElementById('scaleYearBtn').classList.add('active');
+}
+
+// =============================================================================
+// SPECIES DETAIL MODAL
+// =============================================================================
+function setupModal() {
+  document.getElementById('modalCloseBtn').addEventListener('click', closeModal);
+  document.getElementById('modalBackdrop').addEventListener('click', closeModal);
+}
+
+function openModal(node) {
+  const sp  = node.sp;
+  const col = GRP_COLORS[sp.g];
+  const modal = document.getElementById('speciesModal');
+
+  document.getElementById('modalSpeciesName').textContent = sp.n;
+  document.getElementById('modalSpeciesMeta').textContent =
+    DATA.g[sp.g] + ' · ' + ENV_NAMES[sp.e] + ' · ' + (selectedCountry || '');
+
+  // Build full value series aligned with qty years
+  const qtyLabels = DATA.qy.map(String);
+  const valFull   = DATA.qy.map((yr, i) => {
+    const vi = DATA.vy.indexOf(yr);
+    return vi >= 0 ? sp.v[vi] : 0;
+  });
+
+  // Value data quality check — warn if FAO didn't report value for this species/country
+  const valWarnEl = document.getElementById('modalValueWarn');
+  const valYearsWithData = valFull.filter(v => v > 0).length;
+  const qtyYearsWithData = sp.q.filter(v => v > 0).length;
+  if (qtyYearsWithData > 5 && valYearsWithData < 5) {
+    valWarnEl.textContent = `Value data not reported by FAO for this species in ${selectedCountry || 'this country'}. The dashed value line reflects incomplete source data — production figures are accurate.`;
+    valWarnEl.style.display = 'flex';
+  } else {
+    valWarnEl.style.display = 'none';
+  }
+
+  if (modalChart) { modalChart.destroy(); modalChart = null; }
+
+  const canvas = document.getElementById('modalChartCanvas');
+  modalChart = new Chart(canvas, {
+    type: 'line',
+    data: {
+      labels: qtyLabels,
+      datasets: [
+        {
+          label: 'Production (t)',
+          data: sp.q,
+          borderColor: col,
+          backgroundColor: col + '18',
+          borderWidth: 2,
+          pointRadius: 1.5,
+          pointHoverRadius: 4,
+          tension: 0.35,
+          fill: true,
+          spanGaps: true,
+          yAxisID: 'y',
+        },
+        {
+          label: 'Value (USD 1k)',
+          data: valFull,
+          borderColor: 'rgba(138,180,208,0.85)',
+          borderWidth: 1.5,
+          borderDash: [4,3],
+          pointRadius: 0,
+          tension: 0.35,
+          fill: false,
+          spanGaps: true,
+          yAxisID: 'y2',
+        },
+      ],
+    },
+    options: {
+      responsive: false,
+      animation: false,
+      plugins: {
+        legend: {
+          display: true,
+          labels: { color:'#8ab4d0', font:{ size:12, family:"'JetBrains Mono',monospace" }, boxWidth:12 }
+        },
+        tooltip: {
+          backgroundColor:'rgba(4,9,26,0.95)',
+          borderColor: col+'55', borderWidth:1,
+          titleColor:'#8ab4d0', bodyColor: col,
+          titleFont:{ family:"'JetBrains Mono',monospace", size:10 },
+          bodyFont:{ family:"'JetBrains Mono',monospace", size:12 },
+        },
+      },
+      scales: {
+        x: {
+          grid:{ color:'rgba(30,100,210,0.1)' },
+          ticks:{ color:'#8ab4d0', font:{ size:11, family:"'JetBrains Mono',monospace" }, maxTicksLimit:10 }
+        },
+        y: {
+          grid:{ color:'rgba(30,100,210,0.1)' },
+          ticks:{ color: col, font:{ size:11, family:"'JetBrains Mono',monospace" } },
+          title:{ display:true, text:'Tonnes', color: col, font:{ size:9 } },
+        },
+        y2: {
+          position:'right',
+          grid:{ display:false },
+          ticks:{ color:'#8ab4d0', font:{ size:11, family:"'JetBrains Mono',monospace" } },
+          title:{ display:true, text:'USD 1k', color:'#8ab4d0', font:{ size:9 } },
+        },
+      },
+    },
+  });
+
+  // Stats row
+  const latestQty = sp.q[currentYearIdx] || 0;
+  const peakQty   = Math.max(...sp.q);
+  const peakYear  = DATA.qy[sp.q.indexOf(peakQty)];
+  const totalQty  = sp.q.reduce((a,b)=>a+b, 0);
+  document.getElementById('modalBottomStats').innerHTML = `
+    <div class="modal-stat">
+      <div class="modal-stat-val" style="color:${col}">${fmtT(latestQty)}</div>
+      <div class="modal-stat-lbl">${DATA.qy[currentYearIdx]}</div>
+    </div>
+    <div class="modal-stat">
+      <div class="modal-stat-val" style="color:${col}">${fmtT(peakQty)}</div>
+      <div class="modal-stat-lbl">Peak year (${peakYear})</div>
+    </div>
+    <div class="modal-stat">
+      <div class="modal-stat-val" style="color:${col}">${fmtT(totalQty)}</div>
+      <div class="modal-stat-lbl">All-time cumulative</div>
+    </div>
+  `;
+
+  modal.classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('speciesModal').classList.remove('open');
+}
+
+// =============================================================================
+// TRENDS EXPLORER
+// =============================================================================
+
+const TREND_CATS = [
+  { id:'fw',    label:'Freshwater Fish',  g:0, e:0,    color:'#4fc3f7' },
+  { id:'mar',   label:'Marine Fish',      g:0, e:1,    color:'#0ea5e9' },
+  { id:'brak',  label:'Brackish Fish',    g:0, e:2,    color:'#818cf8' },
+  { id:'crust', label:'Crustaceans',      g:1, e:null, color:'#f97316' },
+  { id:'mollu', label:'Molluscs',         g:2, e:null, color:'#a855f7' },
+  { id:'plant', label:'Aquatic Plants',   g:3, e:null, color:'#22c55e' },
+  { id:'other', label:'Other Aquatics',   g:4, e:null, color:'#94a3b8' },
+];
+
+// FAO country → continent index  0=Asia 1=Europe 2=Africa 3=N.America 4=S.America 5=Oceania
+const CONTINENT_OF = {
+  'Afghanistan':0,'Armenia':0,'Azerbaijan':0,'Bahrain':0,'Bangladesh':0,'Bhutan':0,
+  'Brunei Darussalam':0,'Cambodia':0,'China':0,'China, Hong Kong SAR':0,'Cyprus':0,
+  'Georgia':0,'India':0,'Indonesia':0,'Iran (Islamic Republic of)':0,'Iraq':0,
+  'Israel':0,'Japan':0,'Jordan':0,'Kazakhstan':0,'Kuwait':0,'Kyrgyzstan':0,
+  "Lao People's Democratic Republic":0,'Lebanon':0,'Malaysia':0,'Maldives':0,
+  'Myanmar':0,'Nepal':0,'Oman':0,'Pakistan':0,'Palestine':0,'Philippines':0,
+  'Qatar':0,'Republic of Korea':0,"Democratic People's Republic of Korea":0,
+  'Saudi Arabia':0,'Singapore':0,'Sri Lanka':0,'Syrian Arab Republic':0,
+  'Taiwan Province of China':0,'Tajikistan':0,'Thailand':0,'Timor-Leste':0,
+  'T\u00fcrkiye':0,'Turkmenistan':0,'United Arab Emirates':0,'Uzbekistan':0,
+  'Viet Nam':0,'Yemen':0,
+  'Albania':1,'Austria':1,'Belarus':1,'Belgium':1,'Bosnia and Herzegovina':1,
+  'Bulgaria':1,'Croatia':1,'Czechia':1,'Denmark':1,'Estonia':1,'Faroe Islands':1,
+  'Finland':1,'France':1,'Germany':1,'Greece':1,'Greenland':1,'Guernsey':1,
+  'Hungary':1,'Iceland':1,'Ireland':1,'Isle of Man':1,'Italy':1,'Jersey':1,
+  'Latvia':1,'Lithuania':1,'Luxembourg':1,'Malta':1,'Montenegro':1,
+  'Netherlands (Kingdom of the)':1,'North Macedonia':1,'Norway':1,'Poland':1,
+  'Portugal':1,'Republic of Moldova':1,'Romania':1,'Russian Federation':1,
+  'Serbia':1,'Slovakia':1,'Slovenia':1,'Spain':1,'Sweden':1,'Switzerland':1,
+  'Ukraine':1,'United Kingdom of Great Britain and Northern Ireland':1,
+  'Algeria':2,'Angola':2,'Benin':2,'Botswana':2,'Burkina Faso':2,'Burundi':2,'Egypt':2,
+  'Cabo Verde':2,'Cameroon':2,'Central African Republic':2,'Chad':2,'Congo':2,
+  'Democratic Republic of the Congo':2,'Equatorial Guinea':2,'Eritrea':2,
+  'Eswatini':2,'Ethiopia':2,'Gabon':2,'Gambia':2,'Ghana':2,'Guinea':2,
+  'Guinea-Bissau':2,'Kenya':2,'Lesotho':2,'Liberia':2,'Libya':2,'Madagascar':2,
+  'Malawi':2,'Mali':2,'Mauritania':2,'Mauritius':2,'Mayotte':2,'Morocco':2,
+  'Mozambique':2,'Namibia':2,'Niger':2,'Nigeria':2,'Rwanda':2,
+  'R\u00e9union':2,'Senegal':2,'Seychelles':2,'Sierra Leone':2,'Somalia':2,
+  'South Africa':2,'South Sudan':2,'Sudan':2,'Togo':2,'Tunisia':2,'Uganda':2,
+  'United Republic of Tanzania':2,'United Republic of Tanzania, Zanzibar':2,
+  'Zambia':2,'Zimbabwe':2,"C\u00f4te d'Ivoire":2,
+  'Antigua and Barbuda':3,'Aruba':3,'Bahamas':3,'Barbados':3,'Belize':3,
+  'Bonaire, Sint Eustatius and Saba':3,'British Virgin Islands':3,'Canada':3,
+  'Cayman Islands':3,'Costa Rica':3,'Cuba':3,'Cura\u00e7ao':3,
+  'Dominican Republic':3,'El Salvador':3,'Grenada':3,'Guadeloupe':3,
+  'Guatemala':3,'Haiti':3,'Honduras':3,'Jamaica':3,'Martinique':3,'Mexico':3,
+  'Nicaragua':3,'Panama':3,'Puerto Rico':3,'Saint Kitts and Nevis':3,
+  'Saint Lucia':3,'Saint Pierre and Miquelon':3,
+  'Saint Vincent and the Grenadines':3,'Trinidad and Tobago':3,
+  'Turks and Caicos Islands':3,'United States of America':3,
+  'United States Virgin Islands':3,'Dominica':3,
+  'Argentina':4,'Bolivia (Plurinational State of)':4,'Brazil':4,'Chile':4,
+  'Colombia':4,'Ecuador':4,'Falkland Islands (Malvinas)':4,'French Guiana':4,
+  'Guyana':4,'Paraguay':4,'Peru':4,'Suriname':4,'Uruguay':4,
+  'Venezuela (Bolivarian Republic of)':4,
+  'American Samoa':5,'Australia':5,'Cook Islands':5,'Fiji':5,
+  'French Polynesia':5,'Guam':5,'Kiribati':5,'Marshall Islands':5,'Nauru':5,
+  'New Caledonia':5,'New Zealand':5,'Northern Mariana Islands':5,'Palau':5,
+  'Papua New Guinea':5,'Samoa':5,'Solomon Islands':5,'Tonga':5,'Tuvalu':5,
+  'Vanuatu':5,
+};
+const CONTINENT_NAMES  = ['Asia','Europe','Africa','N. America','S. America','Oceania'];
+const CONTINENT_COLORS = ['#00c8ff','#1de9a8','#f4a535','#a855f7','#ff6b6b','#4ade80'];
+
+let trendsOpen      = false;
+let excludedCountries = new Set();
+let trendChartInstances = {}; // id → Chart instance
+
+function openTrends() {
+  // Close any selected country first
+  if (selectedCountry) deselectCountry();
+  trendsOpen = true;
+  document.getElementById('mainLayout').classList.add('trends-open');
+  buildTrends();
+}
+
+function closeTrends() {
+  trendsOpen = false;
+  document.getElementById('mainLayout').classList.remove('trends-open');
+  destroyTrendCharts();
+  const tt = document.getElementById('catTooltip');
+  if (tt) tt.classList.remove('visible');
+}
+
+function destroyTrendCharts() {
+  for (const ch of Object.values(trendChartInstances)) {
+    if (ch) ch.destroy();
+  }
+  trendChartInstances = {};
+}
+
+// ── Aggregation helpers ──────────────────────────────────────────────────────
+
+function catIndexOf(sp) {
+  if (sp.g === 0) return sp.e; // 0=fw, 1=mar, 2=brak
+  return 2 + sp.g;             // 3=crust, 4=mollu, 5=plant, 6=other
+}
+
+function aggregateCats() {
+  const totals   = new Array(7).fill(0);
+  const species  = Array.from({length:7}, () => ({}));
+  const worldTot = { q:0 };
+
+  for (const [cn, cd] of Object.entries(DATA.c)) {
+    if (excludedCountries.has(cn)) continue;
+    for (const sp of cd.s) {
+      const qty = sp.q[currentYearIdx] || 0;
+      if (!qty) continue;
+      const ci = catIndexOf(sp);
+      if (ci < 0 || ci > 6) continue;
+      totals[ci] += qty;
+      species[ci][sp.n] = (species[ci][sp.n] || 0) + qty;
+      worldTot.q += qty;
+    }
+  }
+  return { totals, species, worldTotal: worldTot.q };
+}
+
+function aggregateContinents() {
+  const totals = new Array(6).fill(0);
+  for (const [cn, cd] of Object.entries(DATA.c)) {
+    if (excludedCountries.has(cn)) continue;
+    const ci = CONTINENT_OF[cn];
+    if (ci === undefined) continue;
+    totals[ci] += cd.t[currentYearIdx] || 0;
+  }
+  return totals;
+}
+
+function aggregateTopSpecies(n = 20) {
+  const all = {};
+  const vals = {};
+  for (const [cn, cd] of Object.entries(DATA.c)) {
+    if (excludedCountries.has(cn)) continue;
+    for (const sp of cd.s) {
+      const qty = sp.q[currentYearIdx] || 0;
+      if (!qty) continue;
+      all[sp.n]  = (all[sp.n]  || 0) + qty;
+      const vi   = DATA.vy.indexOf(DATA.qy[currentYearIdx]);
+      const val  = vi >= 0 ? (sp.v[vi] || 0) : 0;
+      vals[sp.n] = (vals[sp.n] || 0) + val;
+    }
+  }
+  return Object.entries(all)
+    .sort((a,b) => b[1]-a[1])
+    .slice(0,n)
+    .map(([name,qty]) => ({ name, qty, val: vals[name]||0 }));
+}
+
+// ── Top producer chips ────────────────────────────────────────────────────────
+
+function detectTopProducers(n = 5) {
+  return Object.entries(DATA.c)
+    .map(([name, cd]) => ({ name, q: cd.t[currentYearIdx]||0 }))
+    .sort((a,b) => b.q - a.q)
+    .slice(0, n)
+    .map(x => x.name);
+}
+
+function renderProducerChips(producers) {
+  const wrap = document.getElementById('producerChips');
+  wrap.innerHTML = '';
+  for (const cn of producers) {
+    const chip = document.createElement('span');
+    chip.className = 'producer-chip' + (excludedCountries.has(cn) ? ' excluded' : '');
+    chip.dataset.cn = cn;
+    const short = cn.length > 18 ? cn.slice(0,16)+'…' : cn;
+    chip.innerHTML = `${short} <span class="chip-x">×</span>`;
+    chip.addEventListener('click', () => {
+      if (excludedCountries.has(cn)) excludedCountries.delete(cn);
+      else excludedCountries.add(cn);
+      destroyTrendCharts();
+      buildTrends();
+    });
+    wrap.appendChild(chip);
+  }
+}
+
+// ── Build all trend content ──────────────────────────────────────────────────
+
+function buildTrends() {
+  const producers = detectTopProducers(5);
+  renderProducerChips(producers);
+  buildCatCards();
+  buildContinentSelector();
+  buildSpeciesChart();
+  buildValueVsProduction();
+  buildSpeciesDiversity();
+  buildGrowthMomentum();
+  buildEnvironmentShift();
+}
+
+// ── External tooltip (shared across all doughnut charts) ─────────────────────
+
+function externalCatTooltip({ chart, tooltip }) {
+  const el = document.getElementById('catTooltip');
+  if (!el) return;
+
+  if (tooltip.opacity === 0) {
+    el.classList.remove('visible');
+    return;
+  }
+
+  // Build content
+  const titleLine = tooltip.title?.[0] || '';
+  const ds    = chart.data.datasets[0];
+  const idx   = tooltip.dataPoints?.[0]?.dataIndex ?? -1;
+  const color = idx >= 0 ? ds.backgroundColor[idx] : '#00c8ff';
+  const val   = idx >= 0 ? ds.data[idx] : 0;
+  const isOthers = titleLine === 'Others';
+
+  el.innerHTML = `
+    <div class="ctt-title">${titleLine}</div>
+    <div class="ctt-row">
+      <span class="ctt-swatch" style="background:${color}"></span>
+      <span class="ctt-label">Production</span>
+      <span class="ctt-val">${fmtT(val)}</span>
+    </div>
+    ${isOthers ? `<div class="ctt-others-note">All remaining species in this category combined — only the top 7 are shown individually</div>` : ''}`;
+
+  // Position using canvas bounding rect + caret position
+  const rect = chart.canvas.getBoundingClientRect();
+  let left = rect.left + tooltip.caretX + 12;
+  let top  = rect.top  + tooltip.caretY - 10;
+
+  // Keep inside viewport
+  const tw = 220, th = 70;
+  if (left + tw > window.innerWidth  - 8) left = rect.left + tooltip.caretX - tw - 12;
+  if (top  + th > window.innerHeight - 8) top  = window.innerHeight - th - 8;
+  if (left < 8) left = 8;
+  if (top  < 8) top  = 8;
+
+  el.style.left = left + 'px';
+  el.style.top  = top  + 'px';
+  el.classList.add('visible');
+}
+
+// ── Category cards with doughnut charts ─────────────────────────────────────
+
+// Generate N shades of a hex color for a doughnut chart.
+// Brightest shade first (top species), darkest last.
+// If hasOthers, the final slice gets a neutral muted color.
+function catShades(hex, n, hasOthers) {
+  // Parse hex → H, S (keep hue & saturation, vary lightness)
+  const r = parseInt(hex.slice(1,3),16)/255;
+  const g = parseInt(hex.slice(3,5),16)/255;
+  const b = parseInt(hex.slice(5,7),16)/255;
+  const max = Math.max(r,g,b), min = Math.min(r,g,b), d = max - min;
+  let h = 0, s = 0;
+  const l = (max + min) / 2;
+  if (d > 0) {
+    s = d / (1 - Math.abs(2*l - 1));
+    switch(max) {
+      case r: h = 60 * (((g-b)/d) % 6); break;
+      case g: h = 60 * ((b-r)/d + 2);   break;
+      case b: h = 60 * ((r-g)/d + 4);   break;
+    }
+    if (h < 0) h += 360;
+  }
+  s = Math.round(s * 100);
+
+  // Zigzag lightness so adjacent slices always contrast sharply.
+  // Odd indices go dark, even go light — never two similar neighbours.
+  const L_STOPS = [78, 32, 62, 22, 50, 18, 40, 14];
+  const S_STOPS = [s, Math.max(30,s-10), Math.max(35,s-5), Math.max(25,s-15),
+                   Math.max(30,s-8), Math.max(20,s-20), Math.max(28,s-12), Math.max(18,s-25)];
+
+  const dataSlices = hasOthers ? n - 1 : n;
+  const colors = [];
+  for (let i = 0; i < dataSlices; i++) {
+    const li = i % L_STOPS.length;
+    colors.push(`hsl(${Math.round(h)},${S_STOPS[li]}%,${L_STOPS[li]}%)`);
+  }
+  if (hasOthers) colors.push(`hsl(${Math.round(h)},14%,28%)`); // muted neutral for Others
+  return colors;
+}
+
+function buildCatCards() {
+  const { totals, species, worldTotal } = aggregateCats();
+  const grid = document.getElementById('catGrid');
+  grid.innerHTML = '';
+
+  TREND_CATS.forEach((cat, i) => {
+    const total = totals[i];
+    const share = worldTotal > 0 ? (total / worldTotal * 100).toFixed(1) : 0;
+
+    // Sort species, take top 7, rest → Others
+    const spEntries = Object.entries(species[i]).sort((a,b) => b[1] - a[1]);
+    const top7      = spEntries.slice(0, 7);
+    const otherQty  = spEntries.slice(7).reduce((s,[,q]) => s + q, 0);
+    if (otherQty > 0) top7.push(['Others', otherQty]);
+
+    const labels = top7.map(([n]) => n);
+    const data   = top7.map(([,q]) => q);
+    const hues   = catShades(cat.color, top7.length, top7[top7.length-1]?.[0] === 'Others');
+
+    const card = document.createElement('div');
+    card.className = 'cat-card';
+    card.innerHTML = `
+      <div class="cat-row">
+        <span class="cat-dot" style="background:${cat.color}"></span>
+        <span class="cat-name">${cat.label}</span>
+      </div>
+      <div class="cat-donut-wrap">
+        <canvas class="cat-donut" width="170" height="170"></canvas>
+      </div>
+      <div class="cat-total">${fmtT(total)}</div>
+      <div class="cat-share">${share}% of world</div>`;
+
+    grid.appendChild(card);
+
+    const dCtx = card.querySelector('.cat-donut').getContext('2d');
+    trendChartInstances['donut_' + cat.id] = new Chart(dCtx, {
+      type: 'doughnut',
+      data: {
+        labels,
+        datasets:[{
+          data,
+          backgroundColor: hues,
+          borderWidth: 1,
+          borderColor: 'rgba(4,9,26,0.5)',
+        }]
+      },
+      options: {
+        cutout: '62%',
+        animation: { duration: 500 },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            enabled: false,
+            external: externalCatTooltip,
+          }
+        },
+        layout: { padding: 4 },
+      },
+      plugins: [{
+        id: 'arcPctLabels',
+        afterDatasetsDraw(chart) {
+          const { ctx, data } = chart;
+          const meta = chart.getDatasetMeta(0);
+          const total = data.datasets[0].data.reduce((s, v) => s + v, 0);
+          if (!total) return;
+          meta.data.forEach((arc, j) => {
+            const pct = data.datasets[0].data[j] / total * 100;
+            if (pct < 7) return; // skip slices too small to label
+            const mid = arc.startAngle + (arc.endAngle - arc.startAngle) / 2;
+            const r   = (arc.outerRadius + arc.innerRadius) / 2;
+            const x   = arc.x + Math.cos(mid) * r;
+            const y   = arc.y + Math.sin(mid) * r;
+            ctx.save();
+            ctx.font = 'bold 8px JetBrains Mono, monospace';
+            ctx.fillStyle = 'rgba(255,255,255,0.92)';
+            ctx.shadowColor = 'rgba(0,0,0,0.6)';
+            ctx.shadowBlur  = 3;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(Math.round(pct) + '%', x, y);
+            ctx.restore();
+          });
+        }
+      }]
+    });
+  });
+}
+
+// ── Continent selector ────────────────────────────────────────────────────────
+
+let selectedContinent = null;
+
+function buildContinentSelector() {
+  const sel = document.getElementById('continentSelector');
+  sel.innerHTML = '';
+  const totals = aggregateContinents();
+  CONTINENT_NAMES.forEach((name, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'cont-btn' + (selectedContinent === i ? ' active' : '');
+    btn.textContent = name;
+    btn.style.setProperty('--cc', CONTINENT_COLORS[i]);
+    btn.addEventListener('click', () => {
+      selectedContinent = (selectedContinent === i) ? null : i;
+      // update active state
+      sel.querySelectorAll('.cont-btn').forEach((b, j) => {
+        b.classList.toggle('active', j === selectedContinent);
+      });
+      buildContinentDetail(selectedContinent);
+    });
+    sel.appendChild(btn);
+  });
+  buildContinentDetail(selectedContinent);
+}
+
+function buildContinentDetail(ci) {
+  const box = document.getElementById('continentDetail');
+  if (ci === null) { box.innerHTML = ''; return; }
+
+  // Top 10 countries in continent
+  const countryRows = [];
+  for (const [cn, cd] of Object.entries(DATA.c)) {
+    if (excludedCountries.has(cn)) continue;
+    if (CONTINENT_OF[cn] !== ci) continue;
+    const qty = cd.t[currentYearIdx] || 0;
+    if (qty > 0) countryRows.push({ name: cn, qty });
+  }
+  countryRows.sort((a,b) => b.qty - a.qty);
+  const topCountries = countryRows.slice(0, 10);
+
+  // Top 10 species in continent
+  const specMap = {};
+  for (const [cn, cd] of Object.entries(DATA.c)) {
+    if (excludedCountries.has(cn)) continue;
+    if (CONTINENT_OF[cn] !== ci) continue;
+    for (const sp of cd.s) {
+      const qty = sp.q[currentYearIdx] || 0;
+      if (!qty) continue;
+      specMap[sp.n] = (specMap[sp.n] || 0) + qty;
+    }
+  }
+  const topSpecies = Object.entries(specMap)
+    .sort((a,b) => b[1]-a[1])
+    .slice(0,10)
+    .map(([name,qty]) => ({ name, qty }));
+
+  const color = CONTINENT_COLORS[ci];
+  const maxC = topCountries[0]?.qty || 1;
+  const maxS = topSpecies[0]?.qty || 1;
+
+  function rankRows(items, max) {
+    return items.map(it => {
+      const pct = Math.round((it.qty / max) * 100);
+      const label = it.name.length > 22 ? it.name.slice(0,20)+'…' : it.name;
+      return `<div class="cont-rank-row">
+        <span class="cont-rank-name" title="${it.name}">${label}</span>
+        <div class="cont-rank-track">
+          <div class="cont-rank-bar" style="width:${pct}%;background:${color}99"></div>
+        </div>
+        <span class="cont-rank-val">${fmtT(it.qty)}</span>
+      </div>`;
+    }).join('');
+  }
+
+  box.innerHTML = `
+    <div class="cont-detail-grid">
+      <div class="cont-detail-box">
+        <div class="cont-detail-hdr" style="color:${color}">Top Countries</div>
+        ${topCountries.length ? rankRows(topCountries, maxC) : '<div class="cont-empty">No data for selected year</div>'}
+      </div>
+      <div class="cont-detail-box">
+        <div class="cont-detail-hdr" style="color:${color}">Top Species</div>
+        ${topSpecies.length ? rankRows(topSpecies, maxS) : '<div class="cont-empty">No data for selected year</div>'}
+      </div>
+    </div>`;
+}
+
+// ── Key species chart ─────────────────────────────────────────────────────────
+
+function buildSpeciesChart() {
+  const id = 'species';
+  if (trendChartInstances[id]) trendChartInstances[id].destroy();
+
+  const top = aggregateTopSpecies(20);
+  // Truncate labels for x-axis display; tooltip shows full name
+  const labels = top.map(s => s.name.length > 18 ? s.name.slice(0,16)+'…' : s.name);
+
+  const canvas = document.getElementById('speciesChartCanvas');
+  const BAR_W = 68;
+  canvas.style.width  = (top.length * BAR_W) + 'px';
+  canvas.style.height = '300px';
+  canvas.width  = top.length * BAR_W;
+  canvas.height = 300;
+
+  // Vertical bars — production + value line, scroll horizontally
+  trendChartInstances[id] = new Chart(canvas.getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets:[
+        {
+          label:'Production (t)',
+          data: top.map(s => s.qty),
+          backgroundColor:'rgba(0,200,255,0.55)',
+          borderColor:'rgba(0,200,255,0.9)',
+          borderWidth:1, borderRadius:3,
+          yAxisID:'yQty',
+        },
+        {
+          label:'Value (USD)',
+          data: top.map(s => Math.round(s.val)),
+          type:'line',
+          borderColor:'rgba(244,165,53,0.85)',
+          backgroundColor:'rgba(244,165,53,0.12)',
+          borderWidth:1.5, pointRadius:3, pointHoverRadius:5,
+          tension:0.3,
+          yAxisID:'yVal',
+        }
+      ]
+    },
+    options: {
+      animation:{duration:500},
+      maintainAspectRatio: false,
+      plugins:{
+        legend:{
+          display:true, position:'top',
+          labels:{color:'#8ab4d0', font:{family:'JetBrains Mono',size:11}, boxWidth:10, padding:12}
+        },
+        tooltip:{
+          callbacks:{
+            title: ctx => top[ctx[0].dataIndex]?.name || '',
+            label: ctx => {
+              if (ctx.datasetIndex===0) return ` Production: ${fmtT(ctx.raw)}`;
+              return ` Value: USD ${fmtT(ctx.raw * 1000)} (approx)`;
+            }
+          },
+          backgroundColor:'rgba(4,9,26,0.95)',
+          borderColor:'rgba(0,200,255,0.2)', borderWidth:1,
+          titleColor:'#d8e8f6', bodyColor:'#8ab4d0',
+          bodyFont:{family:'JetBrains Mono',size:12},
+        }
+      },
+      scales:{
+        yQty:{
+          position:'left',
+          ticks:{color:'rgba(138,180,208,0.85)', font:{family:'JetBrains Mono',size:10},
+                 callback: v => fmtT(v)},
+          grid:{color:'rgba(255,255,255,0.04)'}, border:{color:'transparent'},
+        },
+        yVal:{
+          position:'right', display:false,
+          grid:{display:false},
+        },
+        x:{
+          ticks:{
+            color:'#8eafc5', font:{size:9},
+            maxRotation:40, minRotation:40,
+          },
+          grid:{display:false}, border:{color:'transparent'},
+        }
+      },
+      layout:{padding:{top:4, right:8, bottom:4}},
+    }
+  });
+}
+
+// ── Premium vs Food Security ──────────────────────────────────────────────────
+
+// Global species value/tonne — computed from 2022 data, optionally excluding certain continent indices
+function computeGlobalSpeciesVPT(hiddenContinents = new Set(), hiddenGroups = new Set()) {
+  const qy = DATA.qy, vy = DATA.vy;
+  const refYear = vy.includes(2022) ? 2022 : vy[vy.length - 1];
+  const qi = qy.indexOf(refYear) >= 0 ? qy.indexOf(refYear) : qy.length - 1;
+  const vi = vy.indexOf(refYear) >= 0 ? vy.indexOf(refYear) : vy.length - 1;
+
+  const spQty = {}, spVal = {}, spGrp = {};
+  for (const [cn, cd] of Object.entries(DATA.c)) {
+    if (hiddenContinents.size > 0 && hiddenContinents.has(CONTINENT_OF[cn] ?? -1)) continue;
+    for (const sp of cd.s) {
+      if (hiddenGroups.size > 0 && hiddenGroups.has(sp.g)) continue;
+      const q = sp.q[qi] || 0;
+      const v = vi < sp.v.length ? (sp.v[vi] || 0) : 0;
+      spQty[sp.n] = (spQty[sp.n] || 0) + q;
+      spVal[sp.n] = (spVal[sp.n] || 0) + v;
+      spGrp[sp.n] = sp.g;
+    }
+  }
+  const out = {};
+  for (const n of Object.keys(spQty)) {
+    if (spQty[n] >= 500 && spVal[n] > 0) {
+      out[n] = (spVal[n] * 1000) / spQty[n]; // USD/t
+    }
+  }
+  return out; // { speciesName → USD/t }
+}
+
+// Per-country premium shift: % of production in high-value species (>=$5k/t) in earlyYear vs lateYear
+function computeCountryPremiumShift(globalVPT, earlyYear, lateYear, hiddenGroups = new Set()) {
+  const qy = DATA.qy;
+  const qi_late  = qy.indexOf(lateYear)  >= 0 ? qy.indexOf(lateYear)  : qy.length - 1;
+  const qi_early = qy.indexOf(earlyYear) >= 0 ? qy.indexOf(earlyYear) : 0;
+  const PREMIUM_VPT = 5000; // USD/t threshold
+
+  const results = [];
+  for (const [cn, cd] of Object.entries(DATA.c)) {
+    if (excludedCountries.has(cn)) continue;
+
+    function premiumPct(qi) {
+      // Only count species in visible groups
+      const visibleSp = hiddenGroups.size > 0 ? cd.s.filter(sp => !hiddenGroups.has(sp.g)) : cd.s;
+      const total = visibleSp.reduce((s, sp) => s + (sp.q[qi] || 0), 0);
+      if (total < 2000) return null;
+      const premium = visibleSp.reduce((s, sp) => {
+        const vpt = globalVPT[sp.n];
+        return s + (vpt >= PREMIUM_VPT ? (sp.q[qi] || 0) : 0);
+      }, 0);
+      return (premium / total) * 100;
+    }
+
+    const late  = premiumPct(qi_late);
+    const early = premiumPct(qi_early);
+    if (late === null || early === null) continue;
+
+    results.push({
+      name:      cn,
+      early,
+      late,
+      shift:     late - early,
+      qty:       cd.t[qi_late] || 0,
+      continent: CONTINENT_OF[cn] ?? -1,
+    });
+  }
+  return results;
+}
+
+let vvpEarlyYear = 2004, vvpLateYear = 2024;
+let vvpHiddenGroups = new Set(); // group indices (0-4) currently filtered out
+
+function freshCanvas(id, attrs) {
+  const old = document.getElementById(id);
+  const c = document.createElement('canvas');
+  c.id = id;
+  if (attrs) Object.entries(attrs).forEach(([k,v]) => c.setAttribute(k, v));
+  old.parentNode.replaceChild(c, old);
+  return c;
+}
+
+function buildLadders(hiddenContinents, hiddenGroups = vvpHiddenGroups) {
+  ['vvpHigh','vvpLow'].forEach(id => {
+    if (trendChartInstances[id]) { trendChartInstances[id].destroy(); delete trendChartInstances[id]; }
+  });
+
+  const globalVPT = computeGlobalSpeciesVPT(hiddenContinents, hiddenGroups);
+  const spList = Object.entries(globalVPT);
+
+  const qy = DATA.qy;
+  const qi2022 = qy.indexOf(2022) >= 0 ? qy.indexOf(2022) : qy.length - 1;
+  // globalQty filtered to visible continents and groups
+  const globalQty = {};
+  for (const [cn, cd] of Object.entries(DATA.c)) {
+    if (hiddenContinents.size > 0 && hiddenContinents.has(CONTINENT_OF[cn] ?? -1)) continue;
+    for (const sp of cd.s) {
+      if (hiddenGroups.size > 0 && hiddenGroups.has(sp.g)) continue;
+      globalQty[sp.n] = (globalQty[sp.n] || 0) + (sp.q[qi2022] || 0);
+    }
+  }
+
+  const highSp = spList
+    .filter(([n]) => (globalQty[n] || 0) >= 10000)
+    .sort((a,b) => b[1] - a[1])
+    .slice(0, 12);
+
+  const highNames = new Set(highSp.map(([n]) => n));
+  const FOOD_SEC_MAX_VPT = 5000; // USD/t — anything above this is premium, never food-security
+  const lowSp = spList
+    .filter(([n, v]) => (globalQty[n] || 0) >= 50000 && v <= FOOD_SEC_MAX_VPT && !highNames.has(n))
+    .sort((a,b) => a[1] - b[1])
+    .slice(0, 12);
+
+  function ladderChart(canvasId, items, color, maxVal) {
+    const canvas = freshCanvas(canvasId, { height: items.length * 26 + 20 });
+    const labels = items.map(([n]) => n.length > 28 ? n.slice(0,26)+'…' : n);
+    return new Chart(canvas.getContext('2d'), {
+      type: 'bar',
+      data: {
+        labels,
+        datasets:[{
+          data: items.map(([,v]) => v),
+          backgroundColor: color + '88',
+          borderColor: color,
+          borderWidth:1, borderRadius:3,
+          minBarLength: 4,
+        }]
+      },
+      options: {
+        indexAxis:'y', animation:{duration:400},
+        plugins:{
+          legend:{display:false},
+          tooltip:{
+            backgroundColor:'rgba(4,9,26,0.95)',
+            borderColor:'rgba(0,200,255,0.15)', borderWidth:1,
+            titleColor:'#d8e8f6', bodyColor:'#8ab4d0',
+            bodyFont:{family:'JetBrains Mono',size:12},
+            callbacks:{
+              title: ctx => items[ctx[0].dataIndex][0],
+              label: ctx => ` $${Math.round(ctx.raw).toLocaleString()}/t  ·  ${fmtT(globalQty[items[ctx.dataIndex][0]] || 0)} produced`,
+            }
+          }
+        },
+        scales:{
+          x:{
+            min: 0, max: maxVal,
+            ticks:{color:'rgba(138,180,208,0.85)', font:{family:'JetBrains Mono',size:10},
+                   callback: v => v >= 1000 ? '$'+(v/1000).toFixed(0)+'k' : '$'+v},
+            grid:{color:'rgba(255,255,255,0.04)'}, border:{color:'transparent'},
+          },
+          y:{
+            ticks:{color:'#8eafc5', font:{size:11}, padding:4},
+            grid:{display:false}, border:{color:'transparent'},
+          }
+        },
+        layout:{padding:{right:4}},
+      }
+    });
+  }
+
+  const highMax = highSp[0]?.[1] * 1.05 || 30000;
+  trendChartInstances['vvpHigh'] = ladderChart('vvpHighCanvas', highSp, '#f4a535', highMax);
+  trendChartInstances['vvpLow']  = ladderChart('vvpLowCanvas',  lowSp,  '#1de9a8', lowSp[lowSp.length-1]?.[1] * 1.2 || 1000);
+}
+
+function buildValueVsProduction() {
+  if (trendChartInstances['vvpShift']) { trendChartInstances['vvpShift'].destroy(); delete trendChartInstances['vvpShift']; }
+  buildLadders(new Set(), vvpHiddenGroups);
+
+  const earlyYear = vvpEarlyYear, lateYear = vvpLateYear;
+  const globalVPT = computeGlobalSpeciesVPT(new Set(), vvpHiddenGroups);
+
+  // ── Country premium shift scatter ────────────────────────────────────────────
+  document.getElementById('vvpShiftSub').textContent =
+    `Who is chasing premium? — share of national production in high-value species (>$5k/t), ${earlyYear} → ${lateYear}`;
+  const shiftRows = computeCountryPremiumShift(globalVPT, earlyYear, lateYear, vvpHiddenGroups);
+
+  // Deterministic jitter so stacked countries spread into a visible cloud.
+  // Uses country name as seed — same country always lands at the same spot.
+  function nameJitter(name, range) {
+    let h = 5381;
+    for (let i = 0; i < name.length; i++) h = ((h * 33) ^ name.charCodeAt(i)) >>> 0;
+    const dx = (((h & 0xffff) / 0xffff) - 0.5) * range * 2;
+    const dy = ((((h >>> 16) & 0xffff) / 0xffff) - 0.5) * range * 2;
+    return { dx, dy };
+  }
+
+  const datasets = CONTINENT_NAMES.map((cname, ci) => {
+    const pts = shiftRows.filter(r => r.continent === ci);
+    return {
+      label: cname,
+      data: pts.map(r => {
+        const { dx, dy } = nameJitter(r.name, 2.8);
+        return { x: Math.max(0, Math.min(100, r.early + dx)),
+                 y: Math.max(0, Math.min(100, r.late  + dy)), _r: r };
+      }),
+      backgroundColor: CONTINENT_COLORS[ci] + 'aa',
+      borderColor:     CONTINENT_COLORS[ci],
+      borderWidth: 1,
+      pointRadius:      pts.map(r => Math.max(3, Math.min(14, Math.sqrt(r.qty / 80000) * 4))),
+      pointHoverRadius: pts.map(() => 11),
+    };
+  });
+
+  const shiftCanvas = freshCanvas('vvpShiftCanvas', { height: 360 });
+  trendChartInstances['vvpShift'] = new Chart(shiftCanvas.getContext('2d'), {
+    type: 'scatter',
+    data: { datasets },
+    options: {
+      animation:{duration:400},
+      interaction:{ mode:'nearest', intersect:true },
+      plugins:{
+        legend:{
+          display:true, position:'top',
+          labels:{color:'#8ab4d0', font:{family:'JetBrains Mono',size:11}, boxWidth:8, padding:10},
+          onClick(e, legendItem, legend) {
+            // Default toggle
+            Chart.defaults.plugins.legend.onClick.call(this, e, legendItem, legend);
+            // Rebuild ladders with currently hidden continents + current group filter
+            const chart = legend.chart;
+            const hidden = new Set(
+              CONTINENT_NAMES.map((_, i) => i).filter(i => !chart.isDatasetVisible(i))
+            );
+            buildLadders(hidden, vvpHiddenGroups);
+          }
+        },
+        subtitle:{
+          display:true,
+          text:'Click a continent in the legend to filter all charts',
+          color:'rgba(138,180,208,0.8)',
+          font:{family:'JetBrains Mono', size:9, style:'italic'},
+          padding:{bottom:8},
+        },
+        tooltip:{
+          backgroundColor:'rgba(4,9,26,0.95)',
+          borderColor:'rgba(0,200,255,0.2)', borderWidth:1,
+          titleColor:'#d8e8f6', bodyColor:'#8ab4d0',
+          bodyFont:{family:'JetBrains Mono',size:12},
+          callbacks:{
+            title: items => items[0]?.raw?._r?.name || '',
+            label: ctx => {
+              const r = ctx.raw._r;
+              const arrow = r.shift > 0 ? '▲' : '▼';
+              return [
+                ` ${earlyYear}: ${r.early.toFixed(1)}% premium`,
+                ` ${lateYear}: ${r.late.toFixed(1)}% premium  ${arrow}${Math.abs(r.shift).toFixed(1)}pp`,
+                ` Production: ${fmtT(r.qty)}`,
+              ];
+            }
+          }
+        }
+      },
+      scales:{
+        x:{
+          min:0, max:105,
+          title:{display:true, text:`% premium production in ${earlyYear}`, color:'#8ab4d0', font:{family:'JetBrains Mono',size:11}},
+          ticks:{color:'rgba(138,180,208,0.85)', font:{family:'JetBrains Mono',size:10}, callback:v=>v+'%'},
+          grid:{color:'rgba(255,255,255,0.04)'}, border:{color:'transparent'},
+        },
+        y:{
+          min:0, max:105,
+          title:{display:true, text:`% premium production in ${lateYear}`, color:'#8ab4d0', font:{family:'JetBrains Mono',size:11}},
+          ticks:{color:'rgba(138,180,208,0.85)', font:{family:'JetBrains Mono',size:10}, callback:v=>v+'%'},
+          grid:{color:'rgba(255,255,255,0.04)'}, border:{color:'transparent'},
+        }
+      },
+      layout:{padding:{right:8, top:8}},
+    },
+    plugins:[{
+      id:'diag',
+      afterDraw(chart) {
+        const {ctx, chartArea:{left,right,top,bottom}, scales:{x,y}} = chart;
+        // Diagonal = no change line
+        const x0 = x.getPixelForValue(0),  y0 = y.getPixelForValue(0);
+        const x1 = x.getPixelForValue(100),y1 = y.getPixelForValue(100);
+        ctx.save();
+        ctx.setLineDash([5,5]);
+        ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+        ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(x0,y0); ctx.lineTo(x1,y1); ctx.stroke();
+        // Labels
+        ctx.setLineDash([]);
+        ctx.font = '9px JetBrains Mono, monospace';
+        ctx.fillStyle = 'rgba(255,255,255,0.18)';
+        ctx.textAlign = 'left';
+        ctx.fillText('↑ shifting to premium', left + 8, top + 22);
+        ctx.textAlign = 'right';
+        ctx.fillText('shifting to food security ↓', right - 8, bottom - 36);
+        ctx.restore();
+      }
+    }]
+  });
+
+  buildPremiumRankings(shiftRows, earlyYear, lateYear);
+}
+
+function buildPremiumRankings(rows, earlyYear, lateYear) {
+  const wrap = document.getElementById('vvpRankings');
+
+  // Most shifted toward premium, min 10k t
+  const chasers = rows
+    .filter(r => r.qty >= 10000)
+    .sort((a,b) => b.shift - a.shift)
+    .slice(0, 10);
+
+  // Food security anchors: high volume, low late premium %
+  const anchors = rows
+    .filter(r => r.qty >= 50000)
+    .sort((a,b) => a.late - b.late)
+    .slice(0, 10);
+
+  function row(r, right) {
+    return `<div class="vvp-rank-row">
+      <span class="vvp-rank-name">${r.name}</span>${right}
+    </div>`;
+  }
+
+  const colHdr = (labels) => `
+    <div class="vvp-col-hdr">
+      <span style="flex:1"></span>
+      ${labels.map(l => `<span class="vvp-col-label">${l}</span>`).join('')}
+    </div>`;
+
+  wrap.innerHTML = `
+    <div class="vvp-rank-box">
+      <div class="vvp-rank-hdr" style="color:#f4a535">Chasing premium (${earlyYear}→${lateYear})</div>
+      <div style="font-size:12px;color:var(--text-muted);margin-bottom:6px;line-height:1.5">
+        Countries that have most increased their share of premium species (&gt;$5 000/t) — shifting toward higher-value farming
+      </div>
+      ${colHdr(['Production', '% now', 'Change'])}
+      <div class="vvp-col-legend">
+        <span>Production = total farmed tonnes in ${lateYear}</span>
+        <span>% now = share of output in premium species (&gt;$5k/t) in ${lateYear}</span>
+        <span>Change = percentage point shift from ${earlyYear} (pp = percentage points, not %)</span>
+      </div>
+      ${chasers.map(r => row(r,
+        `<span class="vvp-rank-val">${fmtT(r.qty)}</span>
+         <span class="vvp-rank-val" style="color:#f4a535">${r.late.toFixed(0)}%</span>
+         <span class="vvp-rank-sub" style="color:#f4a53599">+${r.shift.toFixed(1)}pp</span>`
+      )).join('')}
+    </div>
+    <div class="vvp-rank-box">
+      <div class="vvp-rank-hdr" style="color:#1de9a8">Food security anchors</div>
+      <div style="font-size:12px;color:var(--text-muted);margin-bottom:6px;line-height:1.5">
+        High-volume producers staying in low-cost, high-nutrition species — the backbone of global food security
+      </div>
+      ${colHdr(['Production', '% now', 'Change'])}
+      <div class="vvp-col-legend">
+        <span>Production = total farmed tonnes in ${lateYear}</span>
+        <span>% now = share of output in premium species (&gt;$5k/t) in ${lateYear} — low means food-security focus</span>
+        <span>Change = percentage point shift from ${earlyYear} — negative means moving further toward food security</span>
+      </div>
+      ${anchors.map(r => row(r,
+        `<span class="vvp-rank-val" style="color:#1de9a8">${fmtT(r.qty)}</span>
+         <span class="vvp-rank-val">${r.late.toFixed(0)}%</span>
+         <span class="vvp-rank-sub" style="color:${r.shift <= 0 ? '#1de9a899' : '#f4a53599'}">${r.shift > 0 ? '+' : ''}${r.shift.toFixed(1)}pp</span>`
+      )).join('')}
+    </div>`;
+}
+
+// ── Species Diversity ─────────────────────────────────────────────────────────
+
+// UN 2023 population estimates (millions) for major aquaculture nations
+const COUNTRY_POP = {
+  'China':1412,'Indonesia':277,'India':1429,'United States of America':340,
+  'Brazil':216,'Japan':124,'Republic of Korea':52,'Spain':47,'France':68,
+  'Malaysia':34,'Taiwan Province of China':23,'Singapore':6,'Italy':59,
+  'Thailand':72,'United Kingdom of Great Britain and Northern Ireland':68,
+  'Australia':26,'Portugal':10,'Norway':5,'Bulgaria':6,'Ukraine':44,
+  'Russian Federation':145,'Mexico':130,'Philippines':115,'Viet Nam':98,
+  'Bangladesh':173,'Egypt':106,'Nigeria':224,'Türkiye':85,'Chile':19,
+  'Ecuador':18,'Canada':38,'Germany':84,'Netherlands (Kingdom of the)':18,
+  'Sweden':10,'Finland':6,'Ireland':5,'Greece':11,'New Zealand':5,
+  'Cuba':11,'Myanmar':55,'Cambodia':17,'United Republic of Tanzania':64,
+  'Morocco':37,'Tunisia':12,'Saudi Arabia':36,'Pakistan':231,'Iran (Islamic Rep. of)':87,
+  'Algeria':45,'Israel':9,'South Africa':60,'Argentina':46,'Colombia':52,
+  'Peru':34,'Venezuela (Bolivarian Republic of)':29,'Honduras':10,
+  'Panama':4,'Costa Rica':5,'Guatemala':18,'Nicaragua':7,'Dominican Republic':11,
+  'Jamaica':3,'Croatia':4,'Slovenia':2,'Malta':1,'Iceland':4,'Faroe Islands':0.05,
+  'New Caledonia':0.3,'French Polynesia':0.3,'Réunion':0.9,'Martinique':0.4,
+};
+
+function computeSpeciesDiversity() {
+  const qy = DATA.qy;
+  const nYears = qy.length;
+
+  // Single pass over all data — build per-year species sets and per-country stats simultaneously
+  const yearSets   = Array.from({length: nYears}, () => new Set());
+  const spFirstYr  = {}; // speciesName → first global year index
+  const recentYis  = [2020,2021,2022,2023,2024].map(y => qy.indexOf(y)).filter(i => i >= 0);
+
+  const countryDiv = [];
+
+  for (const [cn, cd] of Object.entries(DATA.c)) {
+    let ever = 0, recent = 0, established = 0, trial = 0;
+
+    for (const sp of cd.s) {
+      let firstYi = -1, yearsActive = 0, peak = 0;
+      for (let yi = 0; yi < nYears; yi++) {
+        const q = sp.q[yi];
+        if (!q) continue;
+        if (firstYi < 0) firstYi = yi;
+        yearsActive++;
+        if (q > peak) peak = q;
+        yearSets[yi].add(sp.n);
+      }
+      if (firstYi < 0) continue; // never produced
+
+      ever++;
+      if (recentYis.some(i => sp.q[i] > 0)) recent++;
+      if (yearsActive >= 5 && peak >= 10) established++;
+      else trial++;
+
+      // Track first global year
+      if (!(sp.n in spFirstYr) || firstYi < spFirstYr[sp.n]) spFirstYr[sp.n] = firstYi;
+    }
+
+    if (ever < 3) continue;
+    countryDiv.push({ name:cn, ever, recent, established, trial,
+                      qty: cd.t[cd.t.length-1] || 0,
+                      continent: CONTINENT_OF[cn] ?? -1,
+                      pop: COUNTRY_POP[cn] || null });
+  }
+
+  const yearlyCount = yearSets.map(s => s.size);
+
+  const decadeCounts = {};
+  for (const yi of Object.values(spFirstYr)) {
+    const dec = Math.floor(qy[yi] / 10) * 10;
+    decadeCounts[dec] = (decadeCounts[dec] || 0) + 1;
+  }
+
+  countryDiv.sort((a,b) => b.ever - a.ever);
+  return { yearlyCount, decadeCounts, countryDiv };
+}
+
+function buildSpeciesDiversity() {
+  ['sdivTime','sdivDecade','sdivPop'].forEach(id => {
+    if (trendChartInstances[id]) { trendChartInstances[id].destroy(); delete trendChartInstances[id]; }
+  });
+
+  const { yearlyCount, decadeCounts, countryDiv } = computeSpeciesDiversity();
+  const qy = DATA.qy;
+
+  const C = {
+    bg:    'rgba(4,9,26,0.95)',
+    border:'rgba(0,200,255,0.2)',
+    title: '#d8e8f6', body:'#8ab4d0',
+    font:  {family:'JetBrains Mono',size:10},
+    grid:  'rgba(255,255,255,0.04)',
+  };
+
+  // ── 1. Species over time line ────────────────────────────────────────────────
+  const timeCanvas = freshCanvas('sdivTimeCanvas');
+  trendChartInstances['sdivTime'] = new Chart(timeCanvas.getContext('2d'), {
+    type:'line',
+    data:{
+      labels: qy,
+      datasets:[{
+        data: yearlyCount,
+        borderColor:'#00c8ff', backgroundColor:'rgba(0,200,255,0.08)',
+        borderWidth:1.5, pointRadius:0, fill:true, tension:0.3,
+      }]
+    },
+    options:{
+      maintainAspectRatio:false, animation:{duration:400},
+      plugins:{ legend:{display:false},
+        tooltip:{ backgroundColor:C.bg, borderColor:C.border, borderWidth:1,
+          titleColor:C.title, bodyColor:C.body, bodyFont:C.font,
+          callbacks:{ title:i=>`${qy[i[0].dataIndex]}`, label:i=>` ${i.raw} species active` }
+        }
+      },
+      scales:{
+        x:{ ticks:{color:'rgba(138,180,208,0.8)', font:{family:'JetBrains Mono',size:11}, maxTicksLimit:10},
+            grid:{color:C.grid}, border:{color:'transparent'} },
+        y:{ ticks:{color:'rgba(138,180,208,0.8)', font:{family:'JetBrains Mono',size:10}},
+            grid:{color:C.grid}, border:{color:'transparent'} }
+      },
+      layout:{padding:{right:4}}
+    }
+  });
+
+  // ── 2. New species per decade bar ───────────────────────────────────────────
+  const decades = Object.keys(decadeCounts).sort().map(Number);
+  const decCanvas = freshCanvas('sdivDecadeCanvas');
+  trendChartInstances['sdivDecade'] = new Chart(decCanvas.getContext('2d'), {
+    type:'bar',
+    data:{
+      labels: decades.map(d => d+"s"),
+      datasets:[{
+        data: decades.map(d => decadeCounts[d]),
+        backgroundColor:'rgba(29,233,168,0.55)', borderColor:'rgba(29,233,168,0.9)',
+        borderWidth:1, borderRadius:3,
+      }]
+    },
+    options:{
+      maintainAspectRatio:false, animation:{duration:400},
+      plugins:{ legend:{display:false},
+        tooltip:{ backgroundColor:C.bg, borderColor:C.border, borderWidth:1,
+          titleColor:C.title, bodyColor:C.body, bodyFont:C.font,
+          callbacks:{ label:i=>` ${i.raw} new species introduced` }
+        }
+      },
+      scales:{
+        x:{ ticks:{color:'rgba(138,180,208,0.8)', font:{family:'JetBrains Mono',size:10}},
+            grid:{display:false}, border:{color:'transparent'} },
+        y:{ ticks:{color:'rgba(138,180,208,0.8)', font:{family:'JetBrains Mono',size:10}},
+            grid:{color:C.grid}, border:{color:'transparent'} }
+      },
+      layout:{padding:{right:4}}
+    }
+  });
+
+  // ── 3. Country diversity list ────────────────────────────────────────────────
+  const listEl = document.getElementById('sdivCountryList');
+  const top20 = countryDiv.slice(0, 20);
+  const maxEver = top20[0]?.ever || 1;
+  listEl.innerHTML = `
+    <div class="sdiv-legend">
+      <div class="sdiv-legend-item"><div class="sdiv-legend-dot" style="background:#00c8ff88"></div>Established species (farmed ≥5 years, peak ≥10t)</div>
+      <div class="sdiv-legend-item"><div class="sdiv-legend-dot" style="background:#f4a53555"></div>Experimental species (brief trials or tiny volumes)</div>
+    </div>
+    <div class="sdiv-col-hdr">
+      <span style="min-width:180px;flex-shrink:0">Country</span>
+      <span class="sdiv-col-hdr-bar">← Species diversity (wider = more species farmed)</span>
+      <span class="sdiv-col-hdr-nums">Established · Experimental · Population</span>
+    </div>` +
+    top20.map(r => {
+      const estW  = Math.round((r.established / maxEver) * 100);
+      const triW  = Math.round((r.trial       / maxEver) * 100);
+      const popStr = r.pop
+        ? (r.pop >= 1000 ? (r.pop/1000).toFixed(1)+'B people'
+           : r.pop >= 1  ? r.pop.toFixed(0)+'M people'
+           : (r.pop*1000).toFixed(0)+'k people')
+        : '';
+      return `<div class="sdiv-country-row">
+        <span class="sdiv-c-name">${r.name}</span>
+        <div class="sdiv-c-bar-wrap">
+          <div class="sdiv-c-bar-est" style="width:${estW}%"></div>
+          <div class="sdiv-c-bar-tri" style="width:${triW}%"></div>
+        </div>
+        <span class="sdiv-c-nums">
+          <span style="color:#00c8ffcc">${r.established} est</span>
+          <span style="color:#6a9ab8"> · ${r.trial} exp</span>
+          ${popStr ? `<span style="color:#6a9ab8"> · ${popStr}</span>` : ''}
+        </span>
+      </div>`;
+    }).join('');
+
+  // ── 4. Diversity vs population bubble ───────────────────────────────────────
+  const withPop = countryDiv.filter(r => r.pop && r.pop > 0 && r.established > 0);
+  const popDatasets = CONTINENT_NAMES.map((cname, ci) => {
+    const pts = withPop.filter(r => r.continent === ci);
+    return {
+      label: cname,
+      data: pts.map(r => ({
+        x: Math.log10(r.pop * 1e6),
+        y: r.established,
+        _r: r,
+      })),
+      backgroundColor: CONTINENT_COLORS[ci] + 'aa',
+      borderColor:     CONTINENT_COLORS[ci],
+      borderWidth:1,
+      pointRadius:      pts.map(r => Math.max(3, Math.min(13, Math.sqrt(r.qty / 80000) * 4))),
+      pointHoverRadius: pts.map(() => 10),
+    };
+  });
+
+  const popCanvas = freshCanvas('sdivPopCanvas');
+  trendChartInstances['sdivPop'] = new Chart(popCanvas.getContext('2d'), {
+    type:'scatter',
+    data:{ datasets: popDatasets },
+    options:{
+      maintainAspectRatio:false, animation:{duration:400},
+      interaction:{ mode:'nearest', intersect:true },
+      plugins:{
+        legend:{ display:true, position:'top',
+          labels:{color:'#8ab4d0', font:{family:'JetBrains Mono',size:11}, boxWidth:8, padding:10} },
+        tooltip:{ backgroundColor:C.bg, borderColor:C.border, borderWidth:1,
+          titleColor:C.title, bodyColor:C.body, bodyFont:C.font,
+          callbacks:{
+            title: i => i[0]?.raw?._r?.name || '',
+            label: i => {
+              const r = i.raw._r;
+              const popStr = r.pop >= 1 ? r.pop.toFixed(0)+'M' : (r.pop*1000).toFixed(0)+'k';
+              return [
+                ` Established species: ${r.established}`,
+                ` Experimental: ${r.trial}`,
+                ` Population: ${popStr}`,
+                ` Production: ${fmtT(r.qty)}`,
+              ];
+            }
+          }
+        }
+      },
+      scales:{
+        x:{ title:{display:true, text:'Population (log scale)', color:'#8ab4d0', font:{family:'JetBrains Mono',size:11}},
+            ticks:{color:'rgba(138,180,208,0.85)', font:{family:'JetBrains Mono',size:10},
+                   callback: v => { const p=Math.pow(10,v); return p>=1e6?Math.round(p/1e6)+'M':Math.round(p/1e3)+'k'; }},
+            grid:{color:C.grid}, border:{color:'transparent'} },
+        y:{ title:{display:true, text:'Established species farmed', color:'#8ab4d0', font:{family:'JetBrains Mono',size:11}},
+            ticks:{color:'rgba(138,180,208,0.85)', font:{family:'JetBrains Mono',size:10}},
+            grid:{color:C.grid}, border:{color:'transparent'} }
+      },
+      layout:{padding:{right:8, top:8}}
+    },
+    plugins:[{
+      id:'sdivDiag',
+      afterDraw(chart) {
+        // Annotate outliers (high diversity relative to population)
+        const {ctx, scales:{x,y}} = chart;
+        ctx.save();
+        ctx.font = '8px JetBrains Mono, monospace';
+        ctx.fillStyle = 'rgba(255,255,255,0.45)';
+        ctx.textAlign = 'left';
+        // Label top 8 points
+        const allPts = popDatasets.flatMap(ds => ds.data);
+        allPts.sort((a,b) => b._r.established - a._r.established);
+        allPts.slice(0,8).forEach(pt => {
+          const px = x.getPixelForValue(pt.x) + 7;
+          const py = y.getPixelForValue(pt.y) - 5;
+          const lbl = pt._r.name.length > 16 ? pt._r.name.slice(0,14)+'…' : pt._r.name;
+          ctx.fillText(lbl, px, py);
+        });
+        ctx.restore();
+      }
+    }]
+  });
+}
+
+// ── Section 06: Growth & Momentum ────────────────────────────────────────────
+
+function buildGrowthMomentum() {
+  const qy = DATA.qy;
+  const nYears = qy.length;
+  const years = Array.from({length: nYears}, (_, i) => qy[i]);
+
+  // ── Concentration time series ────────────────────────────────────────────
+  const TOP_N = [3, 5, 10];
+  const TOP_COLORS = ['#00c8ff', '#1de9a8', '#f4a535'];
+  const concSeries = TOP_N.map(() => Array(nYears).fill(0));
+
+  for (let yi = 0; yi < nYears; yi++) {
+    const ctots = [];
+    for (const cd of Object.values(DATA.c)) {
+      const q = cd.t[yi] || 0;
+      if (q > 0) ctots.push(q);
+    }
+    ctots.sort((a, b) => b - a);
+    const total = ctots.reduce((s, v) => s + v, 0);
+    if (!total) continue;
+    TOP_N.forEach((n, ni) => {
+      concSeries[ni][yi] = ctots.slice(0, n).reduce((s, v) => s + v, 0) / total * 100;
+    });
+  }
+
+  const concCtx = freshCanvas('gmConcentrationCanvas').getContext('2d');
+  new Chart(concCtx, {
+    type: 'line',
+    data: {
+      labels: years,
+      datasets: TOP_N.map((n, ni) => ({
+        label: `Top ${n}`,
+        data: concSeries[ni],
+        borderColor: TOP_COLORS[ni],
+        backgroundColor: TOP_COLORS[ni] + '18',
+        borderWidth: ni === 0 ? 2 : 1.5,
+        pointRadius: 0,
+        tension: 0.35,
+        fill: false,
+      }))
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, animation: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: {
+          display: true,
+          labels: { color: '#8ab4d0', font: { size: 10, family: "'JetBrains Mono',monospace" }, boxWidth: 14 }
+        },
+        tooltip: {
+          backgroundColor: 'rgba(4,9,26,0.95)',
+          borderColor: 'rgba(0,200,255,0.2)', borderWidth: 1,
+          titleColor: '#8ab4d0', bodyColor: '#e8f4f8',
+          titleFont: { family: "'JetBrains Mono',monospace", size: 10 },
+          bodyFont: { family: "'JetBrains Mono',monospace", size: 11 },
+          callbacks: {
+            label: ctx => ` Top ${TOP_N[ctx.datasetIndex]}: ${ctx.parsed.y.toFixed(1)}%`
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: { color: 'rgba(30,100,210,0.1)' },
+          ticks: { color: '#8ab4d0', font: { size: 9, family: "'JetBrains Mono',monospace" }, maxTicksLimit: 12 }
+        },
+        y: {
+          min: 40, max: 100,
+          grid: { color: 'rgba(30,100,210,0.1)' },
+          ticks: {
+            color: '#8ab4d0', font: { size: 9, family: "'JetBrains Mono',monospace" },
+            callback: v => v + '%'
+          },
+          title: { display: true, text: '% of global production', color: '#8ab4d0', font: { size: 9 } }
+        }
+      }
+    }
+  });
+
+  // ── CAGR 2018-2024 ────────────────────────────────────────────────────────
+  const yi2018 = years.indexOf(2018);
+  const yi2024 = years.indexOf(2024);
+  const cagrResults = [];
+  for (const [cn, cd] of Object.entries(DATA.c)) {
+    const t18 = cd.t[yi2018] || 0;
+    const t24 = cd.t[yi2024] || 0;
+    if (t18 >= 10000 && t24 >= 10000) {
+      cagrResults.push({ name: cn, cagr: Math.pow(t24 / t18, 1 / 6) - 1, t18, t24 });
+    }
+  }
+  cagrResults.sort((a, b) => b.cagr - a.cagr);
+  const topCAGR = cagrResults.slice(0, 12);
+  const maxCAGR = topCAGR[0]?.cagr || 1;
+
+  const cagrEl = document.getElementById('gmCAGRList');
+  const cagrHdr = `<div class="gm-col-hdr">
+    <span class="gm-col-hdr-rank"></span>
+    <span class="gm-col-hdr-name">Country</span>
+    <span class="gm-col-hdr-bar">Growth</span>
+    <span class="gm-col-hdr-val">Avg %/yr</span>
+    <span class="gm-col-hdr-sub">2018 → 2024 (t)</span>
+  </div>`;
+  cagrEl.innerHTML = cagrHdr + topCAGR.map((r, i) => {
+    const pct = r.cagr * 100;
+    const barW = Math.round((r.cagr / maxCAGR) * 100);
+    const col = pct > 20 ? '#1de9a8' : pct > 10 ? '#00c8ff' : '#8ab4d0';
+    return `<div class="gm-row">
+      <span class="gm-rank">${i + 1}</span>
+      <span class="gm-name">${r.name}</span>
+      <div class="gm-bar-wrap"><div class="gm-bar" style="width:${barW}%;background:${col}"></div></div>
+      <span class="gm-val" style="color:${col}">+${pct.toFixed(1)}%/yr</span>
+      <span class="gm-sub-val">${fmtT(r.t18)} → ${fmtT(r.t24)}</span>
+    </div>`;
+  }).join('');
+
+  // ── Emerging producers ────────────────────────────────────────────────────
+  const yi2010 = years.indexOf(2010);
+  const emergingResults = [];
+  for (const [cn, cd] of Object.entries(DATA.c)) {
+    const t10 = cd.t[yi2010] || 0;
+    const t24 = cd.t[yi2024] || 0;
+    if (t10 >= 1000 && t24 >= 5000 && t24 >= 3 * t10) {
+      emergingResults.push({ name: cn, t10, t24, mult: t24 / t10 });
+    }
+  }
+  emergingResults.sort((a, b) => b.mult - a.mult);
+  const topEmerging = emergingResults.slice(0, 12);
+  const maxMult = topEmerging[0]?.mult || 1;
+
+  const emergEl = document.getElementById('gmEmergingList');
+  const emergHdr = `<div class="gm-col-hdr">
+    <span class="gm-col-hdr-rank"></span>
+    <span class="gm-col-hdr-name">Country</span>
+    <span class="gm-col-hdr-bar">Scale</span>
+    <span class="gm-col-hdr-val">× bigger</span>
+    <span class="gm-col-hdr-sub">2010 → 2024 (t)</span>
+  </div>`;
+  emergEl.innerHTML = emergHdr + topEmerging.map((r, i) => {
+    const barW = Math.round((r.mult / maxMult) * 100);
+    const col = r.mult > 10 ? '#f4a535' : r.mult > 5 ? '#00c8ff' : '#1de9a8';
+    return `<div class="gm-row">
+      <span class="gm-rank">${i + 1}</span>
+      <span class="gm-name">${r.name}</span>
+      <div class="gm-bar-wrap"><div class="gm-bar" style="width:${barW}%;background:${col}"></div></div>
+      <span class="gm-val" style="color:${col}">${r.mult.toFixed(1)}×</span>
+      <span class="gm-sub-val">${fmtT(r.t10)} → ${fmtT(r.t24)}</span>
+    </div>`;
+  }).join('');
+}
+
+// ── Section 07: Environment Shift ────────────────────────────────────────────
+
+function buildEnvironmentShift() {
+  const qy   = DATA.qy;
+  const nYears = qy.length;
+  const years  = Array.from({length: nYears}, (_, i) => qy[i]);
+  const envNames  = DATA.e;  // ['Freshwater','Marine','Brackishwater']
+  const ENV_COLORS = ['#1de9a8', '#00c8ff', '#f4a535'];
+
+  // ── Per-environment tonnage per year ──────────────────────────────────────
+  const envTotals = envNames.map(() => new Float64Array(nYears));
+  const envSpecies2024 = envNames.map(() => ({}));
+  const yi2024 = nYears - 1;
+
+  for (const cd of Object.values(DATA.c)) {
+    for (const sp of cd.s) {
+      const ei = sp.e;
+      const row = envTotals[ei];
+      for (let yi = 0; yi < nYears; yi++) {
+        const q = sp.q[yi];
+        if (q) row[yi] += q;
+      }
+      // 2024 species aggregation
+      const q24 = sp.q[yi2024];
+      if (q24) {
+        envSpecies2024[ei][sp.n] = (envSpecies2024[ei][sp.n] || 0) + q24;
+      }
+    }
+  }
+
+  // ── Stacked area chart ────────────────────────────────────────────────────
+  const areaCtx = freshCanvas('envAreaCanvas').getContext('2d');
+  new Chart(areaCtx, {
+    type: 'line',
+    data: {
+      labels: years,
+      datasets: envNames.map((name, ei) => ({
+        label: name,
+        data: Array.from(envTotals[ei]).map(v => v / 1e6),
+        borderColor: ENV_COLORS[ei],
+        backgroundColor: ENV_COLORS[ei] + '28',
+        borderWidth: 2,
+        pointRadius: 0,
+        tension: 0.35,
+        fill: true,
+      }))
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, animation: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: {
+          display: true,
+          labels: { color: '#8ab4d0', font: { size: 10, family: "'JetBrains Mono',monospace" }, boxWidth: 14 }
+        },
+        tooltip: {
+          backgroundColor: 'rgba(4,9,26,0.95)',
+          borderColor: 'rgba(0,200,255,0.2)', borderWidth: 1,
+          titleColor: '#8ab4d0', bodyColor: '#e8f4f8',
+          titleFont: { family: "'JetBrains Mono',monospace", size: 10 },
+          bodyFont: { family: "'JetBrains Mono',monospace", size: 11 },
+          callbacks: {
+            label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y.toFixed(1)} Mt`
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: { color: 'rgba(30,100,210,0.1)' },
+          ticks: { color: '#8ab4d0', font: { size: 9, family: "'JetBrains Mono',monospace" }, maxTicksLimit: 12 }
+        },
+        y: {
+          stacked: true,
+          grid: { color: 'rgba(30,100,210,0.1)' },
+          ticks: {
+            color: '#8ab4d0', font: { size: 9, family: "'JetBrains Mono',monospace" },
+            callback: v => v + ' Mt'
+          },
+          title: { display: true, text: 'Million tonnes', color: '#8ab4d0', font: { size: 9 } }
+        }
+      }
+    }
+  });
+
+  // ── Top species cards ─────────────────────────────────────────────────────
+  const total2024 = envNames.reduce((s, _, ei) => s + envTotals[ei][yi2024], 0);
+  const grid = document.getElementById('envTopSpeciesGrid');
+  grid.innerHTML = envNames.map((name, ei) => {
+    const envTotal = envTotals[ei][yi2024];
+    const top5 = Object.entries(envSpecies2024[ei])
+      .sort((a, b) => b[1] - a[1]).slice(0, 5);
+    const maxQ = top5[0]?.[1] || 1;
+    const col = ENV_COLORS[ei];
+    const rows = top5.map(([sp, q], i) => {
+      const barW = Math.round((q / maxQ) * 100);
+      const lbl = sp.length > 28 ? sp.slice(0, 26) + '…' : sp;
+      return `<div class="env-sp-row">
+        <span class="env-sp-rank">${i + 1}</span>
+        <span class="env-sp-name" title="${sp}">${lbl}</span>
+        <div class="env-sp-bar-wrap"><div class="env-sp-bar" style="width:${barW}%;background:${col}88"></div></div>
+        <span class="env-sp-val">${fmtT(q)}</span>
+      </div>`;
+    }).join('');
+    return `<div class="env-sp-card" style="border-color:${col}22">
+      <div class="env-sp-card-hdr">
+        <div class="env-sp-dot" style="background:${col}"></div>
+        <span class="env-sp-env-name">${name}</span>
+        <span class="env-sp-total">${fmtT(envTotal)} · ${(envTotal / total2024 * 100).toFixed(0)}% of 2024</span>
+      </div>
+      ${rows}
+    </div>`;
+  }).join('');
+}
+
+// ── Wire up buttons ───────────────────────────────────────────────────────────
+
+document.getElementById('exploreTrendsBtn').addEventListener('click', openTrends);
+document.getElementById('closeTrendsBtn').addEventListener('click', closeTrends);
+
+document.getElementById('vvpPeriodBtns').addEventListener('click', e => {
+  const btn = e.target.closest('.vvp-period-btn');
+  if (!btn) return;
+  document.querySelectorAll('.vvp-period-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  vvpEarlyYear = parseInt(btn.dataset.early);
+  vvpLateYear  = parseInt(btn.dataset.late);
+  buildValueVsProduction();
+});
+
+document.getElementById('vvpGroupBtns').addEventListener('click', e => {
+  const btn = e.target.closest('.vvp-group-btn');
+  if (!btn) return;
+  const g = parseInt(btn.dataset.g);
+  if (vvpHiddenGroups.has(g)) {
+    vvpHiddenGroups.delete(g);
+    btn.classList.add('active');
+  } else {
+    // Keep at least one group visible
+    if (vvpHiddenGroups.size >= 4) return;
+    vvpHiddenGroups.add(g);
+    btn.classList.remove('active');
+  }
+  buildValueVsProduction();
+});
+
+// Rebuild trends when year slider changes while trends are open
+const _origUpdateMapColors = updateMapColors;
+// Hook year changes to refresh trends
+function refreshTrendsIfOpen() {
+  if (!trendsOpen) return;
+  destroyTrendCharts();
+  buildTrends();
+  if (selectedContinent !== null) buildContinentDetail(selectedContinent);
+}
+
+// =============================================================================
+// RESIZE HANDLING
+// =============================================================================
+let resizeTimer;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => {
+    resizeMap();
+    if (selectedCountry) launchSpecies(selectedCountry);
+  }, 200);
+});
+
+// =============================================================================
+// START
+// =============================================================================
+init();
+</script>
+</body>
+</html>

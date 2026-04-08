@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -c \"import pandas; import openpyxl; print\\(''''OK''''\\)\")",
+      "Bash(pip install:*)",
+      "Bash(python -c \"import openpyxl; print\\(''openpyxl OK''\\)\")",
+      "Bash(python:*)",
+      "Bash(python3 -c \":*)",
+      "Bash(py --version)",
+      "Bash(PYTHON=\"/c/Users/Miiro/AppData/Local/Programs/Python/Python312/python.exe\")",
+      "Bash(\"$PYTHON\" -c \":*)",
+      "Bash(py:*)",
+      "Bash(for f:*)",
+      "Bash(do)",
+      "Bash(echo \"=== $f ===\")",
+      "Read(//c/Users/Miiro/Projects/LaksAtlas/**)",
+      "Bash(done)",
+      "Bash(node:*)",
+      "Bash(python3:*)",
+      "Bash(grep -c '\"\"escapes\"\": 0' data/health_history.json)",
+      "Bash(grep -c '\"\"escapes_weekly\"\"' data/health_history.json)",
+      "Bash(python3.exe -c \"print\\('test'\\)\")",
+      "Bash(grep -l \"nav-links\\\\|nav_links\" C:/Users/Miiro/Projects/LaksAtlas/site/*.html)",
+      "Bash(grep:*)"
+    ]
+  }
+}

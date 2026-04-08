@@ -1,0 +1,86 @@
+{
+  "weeks": [
+    {
+      "year": 2026,
+      "week": 13,
+      "fetched_at": "2026-03-30T19:19:52.161258",
+      "total_localities": null
+    },
+    {
+      "year": 2026,
+      "week": 12,
+      "fetched_at": "2026-03-30T19:25:45.065586",
+      "total_localities": 1771
+    },
+    {
+      "year": 2026,
+      "week": 11,
+      "fetched_at": "2026-03-30T19:25:43.854088",
+      "total_localities": 1771
+    },
+    {
+      "year": 2026,
+      "week": 10,
+      "fetched_at": "2026-03-30T19:25:42.579080",
+      "total_localities": 1775
+    },
+    {
+      "year": 2026,
+      "week": 9,
+      "fetched_at": "2026-03-07T09:19:45.680726",
+      "total_localities": 1778
+    },
+    {
+      "year": 2026,
+      "week": 8,
+      "fetched_at": "2026-03-30T19:25:41.364179",
+      "total_localities": 1779
+    },
+    {
+      "year": 2026,
+      "week": 7,
+      "fetched_at": "2026-03-30T19:25:40.211973",
+      "total_localities": 1779
+    },
+    {
+      "year": 2026,
+      "week": 6,
+      "fetched_at": "2026-03-30T19:25:39.051668",
+      "total_localities": 1780
+    },
+    {
+      "year": 2026,
+      "week": 5,
+      "fetched_at": "2026-03-30T19:25:37.871058",
+      "total_localities": 1778
+    },
+    {
+      "year": 2026,
+      "week": 4,
+      "fetched_at": "2026-03-30T19:25:36.550706",
+      "total_localities": 1777
+    },
+    {
+      "year": 2026,
+      "week": 3,
+      "fetched_at": "2026-03-30T19:25:35.304139",
+      "total_localities": 1777
+    },
+    {
+      "year": 2026,
+      "week": 2,
+      "fetched_at": "2026-03-30T19:25:34.119984",
+      "total_localities": 1778
+    },
+    {
+      "year": 2026,
+      "week": 1,
+      "fetched_at": "2026-03-30T19:25:32.928103",
+      "total_localities": 1778
+    }
+  ],
+  "latest": {
+    "year": 2026,
+    "week": 13
+  }
+}

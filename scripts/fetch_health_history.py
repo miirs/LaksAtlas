@@ -12,29 +12,43 @@ Output: data/health_history.json
 =============================================================================
 """
 
+import os
 import requests
 import json
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 
 # =============================================================================
 # SECTION 1: CONFIGURATION
 # =============================================================================
 
-def load_env():
+def load_credentials():
+    """
+    Load CLIENT_ID and CLIENT_SECRET.
+    Priority: environment variables (GitHub Actions / CI) -> .env file (local dev).
+    """
+    client_id = os.environ.get("CLIENT_ID")
+    client_secret = os.environ.get("CLIENT_SECRET")
+    if client_id and client_secret:
+        return client_id, client_secret
+
     env_path = Path(__file__).parent.parent / ".env"
+    if not env_path.exists():
+        raise RuntimeError(
+            "No credentials found. Set CLIENT_ID and CLIENT_SECRET environment "
+            "variables, or create a .env file in the project root."
+        )
     env = {}
     with open(env_path, "r") as f:
         for line in f:
-            if "=" in line:
-                key, value = line.strip().split("=", 1)
-                env[key] = value
-    return env
+            line = line.strip()
+            if "=" in line and not line.startswith("#"):
+                key, value = line.split("=", 1)
+                env[key.strip()] = value.strip()
+    return env["CLIENT_ID"], env["CLIENT_SECRET"]
 
-env = load_env()
-CLIENT_ID = env["CLIENT_ID"]
-CLIENT_SECRET = env["CLIENT_SECRET"]
+CLIENT_ID, CLIENT_SECRET = load_credentials()
 TOKEN_URL = "https://id.barentswatch.no/connect/token"
 API_BASE = "https://www.barentswatch.no/bwapi"
 
@@ -60,8 +74,14 @@ def get_token():
 # =============================================================================
 
 def fetch_year_summary(token, year):
+    current_year = datetime.now().year
+    if year == current_year:
+        # Week 52 doesn't exist yet — use the most recently completed week instead
+        week = (datetime.now() - timedelta(days=7)).isocalendar()[1]
+    else:
+        week = 52
     response = requests.post(
-        f"{API_BASE}/v2/geodata/fishhealth/{year}/52",
+        f"{API_BASE}/v2/geodata/fishhealth/{year}/{week}",
         headers={
             "Authorization": f"Bearer {token}",
             "Content-Type": "application/json"
@@ -69,7 +89,7 @@ def fetch_year_summary(token, year):
         json={}
     )
     if response.status_code != 200:
-        print(f"    Warning: {year} returned status {response.status_code}")
+        print(f"    Warning: {year} w{week} returned status {response.status_code}")
         return None
     return response.json()
 
@@ -83,7 +103,8 @@ def parse_year(year, data):
         "diseases": {},
         "lice_violations_total": 0,
         "lice_violations_weekly": {},
-        "escapes": 0
+        "escapes": 0,
+        "escapes_weekly": {}
     }
 
     # --- DISEASES ---
@@ -129,21 +150,35 @@ def parse_year(year, data):
         }
 
     # --- ESCAPES ---
+    # The API returns annualEscapeStatistics.escapeStatistics as a plain dict
+    # {"count": N}, NOT a list — earlier versions assumed a list and always got 0.
     annual_escapes = data.get("annualEscapeStatistics", {})
     if isinstance(annual_escapes, dict):
-        escape_stats = annual_escapes.get("escapeStatistics", [])
-        if isinstance(escape_stats, list):
+        escape_stats = annual_escapes.get("escapeStatistics", {})
+        if isinstance(escape_stats, dict):
+            result["escapes"] = escape_stats.get("count", 0) or 0
+        elif isinstance(escape_stats, list):
             for es in escape_stats:
                 if isinstance(es, dict):
-                    result["escapes"] += es.get("count", 0)
-        if result["escapes"] == 0:
-            weekly_esc = annual_escapes.get("weeklyEscapeStatistics", {})
-            if isinstance(weekly_esc, dict):
-                for week_num, esc_list in weekly_esc.items():
-                    if isinstance(esc_list, list):
-                        for e in esc_list:
-                            if isinstance(e, dict):
-                                result["escapes"] += e.get("count", 0)
+                    result["escapes"] += es.get("count", 0) or 0
+
+        # Weekly breakdown — each entry is a dict {"count": N}, not a list
+        weekly_esc = annual_escapes.get("weeklyEscapeStatistics", {})
+        if isinstance(weekly_esc, dict):
+            for week_num, esc_data in weekly_esc.items():
+                if isinstance(esc_data, dict):
+                    c = esc_data.get("count", 0) or 0
+                    if c:
+                        result["escapes_weekly"][week_num] = c
+                elif isinstance(esc_data, list):
+                    # Older API format fallback
+                    for e in esc_data:
+                        if isinstance(e, dict):
+                            result["escapes_weekly"][week_num] = result["escapes_weekly"].get(week_num, 0) + (e.get("count", 0) or 0)
+
+        # If escapeStatistics.count was missing, sum from weekly
+        if result["escapes"] == 0 and result["escapes_weekly"]:
+            result["escapes"] = sum(result["escapes_weekly"].values())
 
     return result
 

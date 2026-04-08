@@ -138,9 +138,18 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
-# Secrets
+# Secrets — NEVER commit real credentials
 .env
+.env.local
+.env.production
 
 # Python
 __pycache__/
 *.pyc
+*.pyo
+.python-version
+
+# Local development artifacts
+_deploy/
+venv/
+.venv/

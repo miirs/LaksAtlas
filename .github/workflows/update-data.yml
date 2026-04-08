@@ -1,0 +1,84 @@
+name: Weekly Data Update
+
+# Runs every Tuesday at 08:00 UTC — Norwegian lice reports are typically
+# published by Monday/Tuesday of the following week.
+# Also supports manual triggering from the GitHub Actions UI.
+on:
+  schedule:
+    - cron: '0 8 * * 2'
+  workflow_dispatch:
+
+# Only allow one run at a time; cancel any in-progress run when a new one starts.
+concurrency:
+  group: update-data
+  cancel-in-progress: true
+
+jobs:
+  fetch-and-commit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # needed to push the updated data files
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      # ── Lice & summary data (weekly) ──────────────────────────────────────
+      - name: Fetch locality and summary data
+        env:
+          CLIENT_ID: ${{ secrets.CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+        run: python scripts/fetch_data.py
+
+      # ── Health history (yearly aggregates) ────────────────────────────────
+      - name: Fetch health history
+        env:
+          CLIENT_ID: ${{ secrets.CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+        run: python scripts/fetch_health_history.py
+
+      # ── Sea surface temperature (monthly) ─────────────────────────────────
+      # Only re-fetch if we're on the first Tuesday of the month (day 1-7).
+      - name: Fetch sea surface temperature
+        if: ${{ github.event_name == 'workflow_dispatch' || (github.event_name == 'schedule' && contains(fromJSON('["1","2","3","4","5","6","7"]'), format('{0}', github.event.schedule)) ) }}
+        run: python scripts/fetch_sst.py
+        continue-on-error: true   # SST fetch failure should not block lice data
+
+      # ── Commit only if something changed ──────────────────────────────────
+      - name: Commit updated data files
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Stage only data files — never stage scripts, site, or secrets
+          git add data/localities.json \
+                  data/summary.json \
+                  data/health_history.json \
+                  data/available_weeks.json \
+                  data/sea_temperature.json || true
+
+          # Stage any newly-created week-specific snapshot files
+          git add "data/localities_*.json" "data/summary_*.json" || true
+
+          # Only commit if there are staged changes
+          if git diff --staged --quiet; then
+            echo "No data changes — nothing to commit."
+          else
+            WEEK=$(python - <<'EOF'
+          from datetime import datetime, timedelta
+          d = datetime.utcnow() - timedelta(days=7)
+          print(f"{d.isocalendar()[0]}-W{d.isocalendar()[1]:02d}")
+          EOF
+          )
+            git commit -m "Auto-update: data for ${WEEK}"
+            git push
+          fi

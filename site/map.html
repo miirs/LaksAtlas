@@ -11,59 +11,82 @@
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
 <style>
 :root {
-  --bg: #08090d;
-  --bg-card: rgba(255,255,255,0.03);
-  --bg-card-hover: rgba(255,255,255,0.06);
-  --border: rgba(255,255,255,0.06);
-  --border-hover: rgba(255,255,255,0.12);
-  --text: #e8e9ed;
-  --text-dim: #6b7084;
-  --text-muted: #3d4156;
-  --neon-cyan: #00f0ff;
-  --neon-magenta: #ff2d78;
-  --neon-green: #39ff8e;
-  --neon-amber: #ffb020;
-  --neon-red: #ff3b4a;
-  --neon-purple: #a855f7;
-  --glow-cyan: 0 0 20px rgba(0,240,255,0.3), 0 0 60px rgba(0,240,255,0.1);
+  /* Ocean depth palette */
+  --bg: #04091a;
+  --bg-soft: #071425;
+  --bg-card: rgba(4,28,68,0.52);
+  --bg-card-hover: rgba(6,38,88,0.70);
+  --border: rgba(30,100,210,0.18);
+  --border-hover: rgba(55,145,255,0.34);
+  --text: #d8e8f6;
+  --text-dim: #5e88aa;
+  --text-muted: #2a4560;
+  --neon-cyan: #00c8ff;
+  --neon-magenta: #a855f7;
+  --neon-green: #1de9a8;
+  --neon-amber: #f4a535;
+  --neon-red: #ff4757;
+  --neon-purple: #7c55e8;
+  --glow-cyan: 0 0 14px rgba(0,200,255,0.22), 0 0 40px rgba(0,200,255,0.08);
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { background: var(--bg); color: var(--text); font-family: 'Outfit', sans-serif; overflow: hidden; height: 100vh; }
 
-header { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; padding: 14px 24px; display: flex; justify-content: space-between; align-items: center; background: rgba(8,9,13,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
-.logo { display: flex; align-items: center; gap: 12px; }
-.logo-mark { width: 32px; height: 32px; border: 2px solid var(--neon-cyan); border-radius: 7px; display: flex; align-items: center; justify-content: center; box-shadow: var(--glow-cyan); }
-.logo-mark::after { content: ''; width: 7px; height: 7px; background: var(--neon-cyan); border-radius: 50%; box-shadow: var(--glow-cyan); }
-.logo-text { font-weight: 800; font-size: 18px; letter-spacing: 4px; text-transform: uppercase; background: linear-gradient(135deg, var(--neon-cyan), var(--text)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-.logo-sub { font-size: 9px; letter-spacing: 2.5px; color: var(--text-dim); text-transform: uppercase; }
-.header-meta { display: flex; align-items: center; gap: 20px; }
+header { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; padding: 0 24px; height: 66px; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; background: rgba(4,9,26,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+.scope-toggle { display: flex; background: rgba(255,255,255,0.04); border: 1px solid rgba(30,100,210,0.18); border-radius: 999px; padding: 3px; }
+.scope-btn { padding: 7px 18px; border-radius: 999px; font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; text-decoration: none; color: #5e88aa; transition: all .2s; white-space: nowrap; }
+.scope-btn:hover { color: #d8e8f6; }
+.scope-no.active { background: linear-gradient(135deg, #00c8ff, #a8d8f8); color: #04091a; box-shadow: 0 0 12px rgba(0,200,255,0.2); }
+.scope-gl.active { background: linear-gradient(135deg, #1de9a8, #00c8ff); color: #04091a; box-shadow: 0 0 12px rgba(0,200,255,0.2); }
+.logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+.logo-img { height: 40px; width: auto; display: block; border-radius: 8px; padding: 3px 10px; background: rgba(255,255,255,0.96); box-shadow: 0 2px 12px rgba(0,0,0,0.35); }
+.logo-text { font-weight: 800; font-size: 15px; letter-spacing: 2.6px; text-transform: uppercase; background: linear-gradient(135deg,#00c8ff,#dbe7ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.header-meta { display: flex; align-items: center; gap: 12px; justify-self: end; }
 .meta-badge { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-dim); background: var(--bg-card); border: 1px solid var(--border); padding: 5px 12px; border-radius: 6px; }
 .meta-badge strong { color: var(--neon-cyan); }
+.week-nav { display: flex; align-items: center; gap: 6px; }
+.week-nav-btn { background: var(--bg-card); border: 1px solid var(--border); color: var(--text-dim); border-radius: 6px; width: 28px; height: 28px; cursor: pointer; font-size: 15px; display: flex; align-items: center; justify-content: center; transition: all .2s; line-height: 1; padding: 0; }
+.week-nav-btn:hover:not(:disabled) { border-color: var(--neon-cyan); color: var(--neon-cyan); }
+.week-nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.week-display { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-dim); background: var(--bg-card); border: 1px solid var(--border); padding: 5px 12px; border-radius: 6px; white-space: nowrap; min-width: 120px; text-align: center; }
+.week-display strong { color: var(--neon-cyan); }
+.week-no-data { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--neon-amber); padding: 4px 10px; background: rgba(244,165,53,0.08); border: 1px solid rgba(244,165,53,0.22); border-radius: 6px; display: none; }
+.week-no-data.visible { display: block; }
 
-.layout { display: grid; grid-template-columns: 280px 1fr 300px; height: 100vh; padding-top: 57px; }
+.chip{display:inline-flex;align-items:center;padding:2px 9px;border-radius:999px;font-size:10px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;font-family:'JetBrains Mono',monospace;vertical-align:middle;white-space:nowrap}
+.chip-isa{background:rgba(255,71,87,0.12);color:#ff4757;border:1px solid rgba(255,71,87,0.28)}
+.chip-pd{background:rgba(244,165,53,0.12);color:#f4a535;border:1px solid rgba(244,165,53,0.28)}
+.chip-lice{background:rgba(168,85,247,0.12);color:#a855f7;border:1px solid rgba(168,85,247,0.28)}
 
-.panel { padding: 20px 16px; display: flex; flex-direction: column; gap: 12px; overflow-y: auto; border-right: 1px solid var(--border); }
+.layout { display: grid; grid-template-columns: 340px 1fr 360px; height: 100vh; padding-top: 57px; }
+
+.panel { padding: 20px 20px; display: flex; flex-direction: column; gap: 14px; overflow-y: auto; border-right: 1px solid var(--border); }
 .panel:last-child { border-right: none; border-left: 1px solid var(--border); }
 .panel::-webkit-scrollbar { width: 4px; }
 .panel::-webkit-scrollbar-track { background: transparent; }
 .panel::-webkit-scrollbar-thumb { background: var(--border-hover); border-radius: 2px; }
 .panel-title { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--text-dim); font-weight: 600; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
 
-.stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; transition: all 0.3s ease; opacity: 0; transform: translateY(8px); animation: fadeIn 0.5s ease forwards; }
+.stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; transition: all 0.3s ease; opacity: 0; transform: translateY(8px); animation: fadeIn 0.5s ease forwards; }
 .stat-card:hover { background: var(--bg-card-hover); border-color: var(--border-hover); transform: translateY(-1px); }
-.stat-label { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-dim); font-weight: 500; margin-bottom: 6px; font-family: 'JetBrains Mono', monospace; }
-.stat-value { font-size: 26px; font-weight: 700; line-height: 1; margin-bottom: 3px; }
+.stat-label { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-dim); font-weight: 500; margin-bottom: 7px; font-family: 'JetBrains Mono', monospace; display:flex; align-items:center; gap:5px; }
+.stat-value { font-size: 28px; font-weight: 700; line-height: 1; margin-bottom: 4px; }
 .stat-value.cyan { color: var(--neon-cyan); text-shadow: 0 0 15px rgba(0,240,255,0.25); }
 .stat-value.green { color: var(--neon-green); }
 .stat-value.amber { color: var(--neon-amber); }
 .stat-value.red { color: var(--neon-red); }
 .stat-value.magenta { color: var(--neon-magenta); }
-.stat-sub { font-size: 11px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace; }
+.stat-sub { font-size: 12px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace; }
+/* Info icon tooltip */
+.stat-info { display:inline-flex; align-items:center; justify-content:center; width:14px; height:14px; border-radius:50%; border:1px solid rgba(94,136,170,0.35); color:rgba(94,136,170,0.55); font-size:8px; font-style:normal; font-family:'JetBrains Mono',monospace; cursor:help; position:relative; flex-shrink:0; transition:all .15s; }
+.stat-info:hover { border-color:var(--neon-cyan); color:var(--neon-cyan); }
+.stat-chart-info { margin-top:12px; padding-top:10px; border-top:1px solid rgba(0,200,255,0.1); font-size:10px; line-height:1.6; color:rgba(94,136,170,0.7); font-family:'JetBrains Mono',monospace; display:none; }
+.stat-chart-info.has-info { display:block; }
 .stat-bar { height: 3px; background: rgba(255,255,255,0.04); border-radius: 2px; margin-top: 10px; overflow: hidden; }
 .stat-bar-fill { height: 100%; border-radius: 2px; transition: width 1.5s ease; }
 .stat-bar-fill.cyan { background: var(--neon-cyan); }
@@ -82,7 +105,7 @@ header { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; padding: 14p
 /* =========================================================================
    SECTION: FILTER PANEL — Checkboxes to show/hide categories
 ========================================================================= */
-.filter-panel { position: absolute; top: 70px; right: 12px; z-index: 800; background: rgba(8,9,13,0.94); backdrop-filter: blur(12px); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; min-width: 210px; }
+.filter-panel { border-bottom: 1px solid var(--border); padding-bottom: 14px; margin-bottom: 4px; }
 .filter-title { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
 .filter-item { display: flex; align-items: center; gap: 8px; padding: 5px 0; cursor: pointer; font-size: 11px; font-family: 'JetBrains Mono', monospace; color: var(--text-dim); transition: color 0.2s; user-select: none; }
 .filter-item:hover { color: var(--text); }
@@ -105,14 +128,19 @@ header { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; padding: 14p
 /* =========================================================================
    SECTION: MAP LEGEND
 ========================================================================= */
-.map-legend { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 800; display: flex; gap: 16px; background: rgba(8,9,13,0.92); backdrop-filter: blur(12px); border: 1px solid var(--border); border-radius: 10px; padding: 10px 20px; }
-.legend-item { display: flex; align-items: center; gap: 6px; font-size: 10px; font-family: 'JetBrains Mono', monospace; color: var(--text-dim); }
-.legend-dot { width: 8px; height: 8px; border-radius: 50%; }
-.legend-dot.green { background: var(--neon-green); box-shadow: 0 0 6px rgba(57,255,142,0.4); }
-.legend-dot.cyan { background: var(--neon-cyan); box-shadow: 0 0 6px rgba(0,240,255,0.4); }
-.legend-dot.amber { background: var(--neon-amber); box-shadow: 0 0 6px rgba(255,176,32,0.4); }
-.legend-dot.red { background: var(--neon-red); box-shadow: 0 0 6px rgba(255,59,74,0.4); }
-.legend-dot.grey { background: #444; }
+.map-legend { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 800; display: flex; gap: 8px; background: rgba(4,9,26,0.92); backdrop-filter: blur(12px); border: 1px solid var(--border); border-radius: 10px; padding: 10px 16px; }
+.legend-item { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-family: 'JetBrains Mono', monospace; font-weight: 600; letter-spacing: 0.5px; padding: 3px 10px; border-radius: 999px; }
+.legend-item.green { color: var(--neon-green); background: rgba(29,233,168,0.10); border: 1px solid rgba(29,233,168,0.22); }
+.legend-item.cyan  { color: var(--neon-cyan);  background: rgba(0,200,255,0.10);  border: 1px solid rgba(0,200,255,0.22); }
+.legend-item.amber { color: var(--neon-amber); background: rgba(244,165,53,0.12); border: 1px solid rgba(244,165,53,0.28); }
+.legend-item.red   { color: var(--neon-red);   background: rgba(255,71,87,0.12);  border: 1px solid rgba(255,71,87,0.28); }
+.legend-item.grey  { color: #5e88aa;            background: rgba(68,68,80,0.20);   border: 1px solid rgba(80,80,100,0.28); }
+.legend-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.legend-item.green .legend-dot { background: var(--neon-green); box-shadow: 0 0 5px rgba(29,233,168,0.5); }
+.legend-item.cyan  .legend-dot { background: var(--neon-cyan);  box-shadow: 0 0 5px rgba(0,200,255,0.5); }
+.legend-item.amber .legend-dot { background: var(--neon-amber); box-shadow: 0 0 5px rgba(244,165,53,0.5); }
+.legend-item.red   .legend-dot { background: var(--neon-red);   box-shadow: 0 0 5px rgba(255,71,87,0.5); }
+.legend-item.grey  .legend-dot { background: #5e88aa; }
 
 /* Leaflet popup styling */
 .leaflet-popup-content-wrapper { background: rgba(12,13,20,0.96) !important; color: var(--text) !important; border: 1px solid var(--border-hover) !important; border-radius: 12px !important; box-shadow: 0 20px 60px rgba(0,0,0,0.5) !important; padding: 0 !important; }
@@ -124,8 +152,19 @@ header { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; padding: 14p
 .popup-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .popup-stat-label { font-size: 8px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
 .popup-stat-value { font-size: 17px; font-weight: 700; margin-top: 1px; }
-.popup-diseases { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); font-size: 11px; color: var(--neon-red); font-family: 'JetBrains Mono', monospace; }
+.popup-diseases { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); display: flex; flex-wrap: wrap; gap: 4px; }
 .popup-fallow { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); font-size: 11px; color: var(--text-muted); font-style: italic; }
+.temp-tooltip.leaflet-tooltip { background: rgba(4,9,26,0.92); border: 1px solid var(--border-hover); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 6px; box-shadow: none; }
+
+/* =========================================================================
+   SECTION: STAT CHART POPUP
+========================================================================= */
+.stat-card { cursor: default; }
+.stat-card[data-metric] { cursor: pointer; }
+.stat-chart-popup { position: fixed; z-index: 2000; background: rgba(4,9,26,0.97); border: 1px solid var(--border-hover); border-radius: 14px; padding: 16px 18px; width: 640px; pointer-events: none; opacity: 0; transform: translateY(6px); transition: opacity 0.18s ease, transform 0.18s ease; box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 30px rgba(0,200,255,0.05); backdrop-filter: blur(16px); }
+.stat-chart-popup.visible { opacity: 1; transform: translateY(0); }
+.stat-chart-title { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-dim); font-family: 'JetBrains Mono', monospace; margin-bottom: 12px; }
+.stat-chart-loading { font-size: 10px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; text-align: center; padding: 20px 0; }
 
 .loading-overlay { position: fixed; inset: 0; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; transition: opacity 0.5s; }
 .loading-overlay.hidden { opacity: 0; pointer-events: none; }
@@ -146,9 +185,111 @@ header { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; padding: 14p
   .panel { max-height: 50vh; border: none !important; border-bottom: 1px solid var(--border) !important; }
   #map { height: 60vh; }
 }
+
+/* =========================================================================
+   SECTION: 5-YEAR BUBBLE VIEW
+========================================================================= */
+#bubbleOverlay{position:fixed;inset:0;z-index:3000;background:var(--bg);display:none;flex-direction:column}
+.bv-header{height:57px;display:flex;align-items:center;gap:16px;padding:0 24px;background:rgba(4,9,26,0.94);border-bottom:1px solid var(--border);flex-shrink:0;backdrop-filter:blur(12px)}
+.bv-exit-btn{background:var(--bg-card);border:1px solid var(--border);color:var(--text-dim);padding:5px 14px;border-radius:8px;font-size:11px;font-family:'JetBrains Mono',monospace;cursor:pointer;transition:all .2s}
+.bv-exit-btn:hover{border-color:var(--neon-cyan);color:var(--neon-cyan)}
+.bv-title{font-weight:800;font-size:13px;letter-spacing:2.5px;color:var(--text)}
+.bv-sub{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted);margin-left:12px}
+#bvArena{flex:1;position:relative;overflow:hidden;background:radial-gradient(ellipse at 50% 46%,rgba(0,60,180,0.08),transparent 70%)}
+
+/* Backdrop — dims + blurs the bubble field when the metric modal is open */
+#bvModalBackdrop{position:absolute;inset:0;z-index:10;background:rgba(4,9,26,0.55);backdrop-filter:blur(5px);opacity:0;pointer-events:none;transition:opacity .32s ease}
+#bvModalBackdrop.active{opacity:1;pointer-events:auto}
+
+/* Placeholder shown before any bubble is clicked */
+#bvPlaceholder{position:absolute;inset:0;z-index:9;display:flex;align-items:center;justify-content:center;pointer-events:none}
+#bvPlaceholder .bv-ph-inner{width:min(800px,calc(100vw - 32px));border:1px dashed rgba(94,136,170,0.18);border-radius:20px;padding:28px 32px;box-sizing:border-box;display:flex;flex-direction:column;gap:10px}
+#bvPlaceholder .bv-ph-chart{height:300px;border-radius:10px;background:rgba(94,136,170,0.04);display:flex;align-items:center;justify-content:center}
+#bvPlaceholder .bv-ph-chart span{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.12em;color:rgba(94,136,170,0.3);text-transform:uppercase}
+#bvPlaceholder .bv-ph-slider{height:20px;border-radius:4px;background:rgba(94,136,170,0.04)}
+
+/* Centered metric chart modal */
+#bvModal{position:absolute;inset:0;z-index:11;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transform:scale(0.93) translateY(18px);transition:opacity .3s cubic-bezier(.25,.46,.45,.94),transform .3s cubic-bezier(.25,.46,.45,.94)}
+#bvModal.open{opacity:1;pointer-events:auto;transform:scale(1) translateY(0)}
+.bv-modal-inner{position:relative;background:rgba(5,10,32,0.98);border:1px solid rgba(0,200,255,0.2);border-radius:20px;padding:28px 32px 26px;width:min(800px,calc(100vw - 32px));box-shadow:0 40px 100px rgba(0,0,0,0.75),0 0 0 1px rgba(0,200,255,0.06),inset 0 1px 0 rgba(255,255,255,0.03)}
+.bv-modal-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.bv-modal-title{font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--text)}
+.bv-modal-close{background:none;border:1px solid var(--border);color:var(--text-muted);width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:17px;line-height:1;display:flex;align-items:center;justify-content:center;transition:all .2s;padding:0;flex-shrink:0}
+.bv-modal-close:hover{border-color:var(--neon-cyan);color:var(--text)}
+#bvChartCanvas{width:100%;height:300px;display:block}
+.bv-slider-row{display:flex;align-items:center;gap:10px;margin-top:14px}
+.bv-slider-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-dim);white-space:nowrap;min-width:36px;text-align:center}
+.bv-range-wrap{position:relative;flex:1;height:20px}
+.bv-range-wrap::before{content:'';position:absolute;top:50%;transform:translateY(-50%);left:0;right:0;height:3px;background:var(--border-hover);border-radius:2px;pointer-events:none}
+.bv-range-fill{position:absolute;top:50%;transform:translateY(-50%);height:3px;background:var(--neon-cyan);opacity:0.35;border-radius:2px;pointer-events:none}
+.bv-range-wrap input[type=range]{position:absolute;top:50%;transform:translateY(-50%);width:100%;margin:0;padding:0;-webkit-appearance:none;appearance:none;height:3px;background:transparent;outline:none;cursor:pointer;pointer-events:none}
+.bv-range-wrap input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--neon-cyan);cursor:pointer;box-shadow:0 0 10px rgba(0,200,255,0.45);pointer-events:all}
+.bv-range-wrap input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--neon-cyan);cursor:pointer;box-shadow:0 0 10px rgba(0,200,255,0.45);pointer-events:all;border:none}
+/* Disease pills */
+.disease-pills{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.disease-pill{display:inline-flex;align-items:center;padding:4px 10px;border-radius:20px;font-size:9px;font-family:'JetBrains Mono',monospace;font-weight:700;letter-spacing:0.06em;cursor:pointer;border:1px solid;transition:all .2s;text-transform:uppercase;white-space:nowrap;background:none}
+.dp-isa{color:#ff4757;border-color:rgba(255,71,87,0.3)}.dp-isa:hover{background:rgba(255,71,87,0.15);border-color:#ff4757;box-shadow:0 0 8px rgba(255,71,87,0.25)}
+.dp-pd{color:#f4a535;border-color:rgba(244,165,53,0.3)}.dp-pd:hover{background:rgba(244,165,53,0.15);border-color:#f4a535;box-shadow:0 0 8px rgba(244,165,53,0.25)}
+.dp-franc{color:#e879f9;border-color:rgba(232,121,249,0.3)}.dp-franc:hover{background:rgba(232,121,249,0.15);border-color:#e879f9;box-shadow:0 0 8px rgba(232,121,249,0.25)}
+.dp-bkd{color:#a855f7;border-color:rgba(168,85,247,0.3)}.dp-bkd:hover{background:rgba(168,85,247,0.15);border-color:#a855f7;box-shadow:0 0 8px rgba(168,85,247,0.25)}
+.dp-other{color:#5e88aa;border-color:rgba(94,136,170,0.3)}.dp-other:hover{background:rgba(94,136,170,0.15);border-color:#5e88aa}
+.disease-pill.dp-active{outline:2px solid currentColor;outline-offset:2px;filter:brightness(1.3)}
+/* Health Overview panel button */
+.bv-panel-btn{display:flex;flex-direction:column;gap:3px;width:100%;background:linear-gradient(135deg,rgba(0,200,255,0.09),rgba(168,85,247,0.07));border:1px solid rgba(0,200,255,0.28);border-radius:10px;padding:12px 14px;cursor:pointer;transition:all .25s;text-align:left;margin-top:4px;box-sizing:border-box}
+.bv-panel-btn:hover{background:linear-gradient(135deg,rgba(0,200,255,0.18),rgba(168,85,247,0.14));border-color:rgba(0,200,255,0.55);box-shadow:0 0 14px rgba(0,200,255,0.18),0 0 28px rgba(168,85,247,0.09)}
+.bv-panel-btn-title{font-size:13px;font-weight:700;letter-spacing:0.08em;color:var(--neon-cyan);font-family:'JetBrains Mono',monospace}
+.bv-panel-btn-sub{font-size:10px;font-weight:400;letter-spacing:0.04em;color:rgba(94,136,170,0.75);font-family:'JetBrains Mono',monospace}
 </style>
 </head>
 <body>
+
+<div class="stat-chart-popup" id="statChartPopup">
+  <div class="stat-chart-title" id="statChartTitle"></div>
+  <div class="stat-chart-loading" id="statChartLoading">Loading week data...</div>
+  <canvas id="statChartCanvas" width="604" height="260" style="display:none"></canvas>
+  <div class="stat-chart-info" id="statChartInfo"></div>
+</div>
+
+<!-- 5-Year Bubble View Overlay -->
+<div id="bubbleOverlay">
+  <div class="bv-header">
+    <button class="bv-exit-btn" id="bvExitBtn">&#8592; Live Map</button>
+    <div>
+      <span class="bv-title">5 YEAR VIEW</span>
+      <span class="bv-sub">2020&ndash;2024 national averages &middot; click any bubble to explore</span>
+    </div>
+  </div>
+  <!-- Full-screen bubble canvas is injected here by JS -->
+  <div id="bvArena"></div>
+  <!-- Placeholder visible before any bubble is clicked -->
+  <div id="bvPlaceholder">
+    <div class="bv-ph-inner">
+      <div class="bv-ph-chart"><span>click a bubble for graph</span></div>
+      <div class="bv-ph-slider"></div>
+    </div>
+  </div>
+  <!-- Backdrop dims the bubble field while a metric chart is open -->
+  <div id="bvModalBackdrop"></div>
+  <!-- Centered metric chart modal — fades + scales in on bubble click -->
+  <div id="bvModal">
+    <div class="bv-modal-inner">
+      <div class="bv-modal-hdr">
+        <span class="bv-modal-title" id="bvModalTitle"></span>
+        <button class="bv-modal-close" id="bvChartClose">&#215;</button>
+      </div>
+      <canvas id="bvChartCanvas"></canvas>
+      <div class="bv-slider-row">
+        <span class="bv-slider-lbl" id="bvSliderA"></span>
+        <div class="bv-range-wrap" id="bvRangeWrap">
+          <div class="bv-range-fill" id="bvRangeFill"></div>
+          <input type="range" id="bvSliderMin">
+          <input type="range" id="bvSliderMax">
+        </div>
+        <span class="bv-slider-lbl" id="bvSliderB"></span>
+      </div>
+    </div>
+  </div>
+</div>
 
 <div class="loading-overlay" id="loadingOverlay">
   <div class="loading-spinner"></div>
@@ -156,42 +297,45 @@ header { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; padding: 14p
 </div>
 
 <header>
-  <div class="logo">
-    <div class="logo-mark"></div>
-    <div>
-      <div class="logo-text">LaksAtlas</div>
-      <div class="logo-sub">Salmon farming transparency</div>
-    </div>
+  <a href="index.html" class="logo">
+    <img src="../logo/logo.png" alt="LaksAtlas" class="logo-img">
+    <span class="logo-text">LAKSATLAS</span>
+  </a>
+  <div class="scope-toggle">
+    <a href="index.html" class="scope-btn scope-no active">Norway</a>
+    <a href="global.html" class="scope-btn scope-gl">Global</a>
   </div>
   <div class="header-meta">
-    <div class="meta-badge" id="weekBadge">Week <strong>—</strong> / <strong>—</strong></div>
+    <div class="week-nav">
+      <button class="week-nav-btn" id="weekPrev" title="Previous week" disabled>&#8249;</button>
+      <div class="week-display" id="weekDisplay">Week <strong>—</strong> / <strong>—</strong></div>
+      <button class="week-nav-btn" id="weekNext" title="Next week" disabled>&#8250;</button>
+    </div>
     <div class="meta-badge" id="countBadge"><strong>—</strong> localities</div>
+    <div class="week-no-data" id="weekNoData">Run fetch_data.py for this week</div>
   </div>
 </header>
 
 <div class="layout">
   <div class="panel" id="leftPanel">
     <div class="panel-title">Norway Overview</div>
+    <div class="filter-panel" id="filterPanel">
+      <div class="filter-title">Filter Localities</div>
+      <label class="filter-item"><input type="checkbox" id="filterGood" checked><div class="filter-dot" style="background:#39ff8e;box-shadow:0 0 4px rgba(57,255,142,0.4)"></div>Below 0.2<span class="filter-count" id="countGood">—</span></label>
+      <label class="filter-item"><input type="checkbox" id="filterModerate" checked><div class="filter-dot" style="background:#00f0ff;box-shadow:0 0 4px rgba(0,240,255,0.4)"></div>0.2 – 0.5<span class="filter-count" id="countModerate">—</span></label>
+      <label class="filter-item"><input type="checkbox" id="filterAbove" checked><div class="filter-dot" style="background:#ffb020;box-shadow:0 0 4px rgba(255,176,32,0.4)"></div>Above 0.5 limit<span class="filter-count" id="countAbove">—</span></label>
+      <label class="filter-item"><input type="checkbox" id="filterDisease" checked><div class="filter-dot" style="background:#ff3b4a;box-shadow:0 0 4px rgba(255,59,74,0.4)"></div>Disease active<span class="filter-count" id="countDisease">—</span></label>
+      <div class="filter-divider"></div>
+      <label class="filter-item"><input type="checkbox" id="filterFallow"><div class="filter-dot" style="background:#555"></div>Fallow / Not reporting<span class="filter-count" id="countFallow">—</span></label>
+      <div class="filter-divider"></div>
+      <label class="filter-item"><input type="checkbox" id="filterTemp"><div class="filter-dot" style="background:linear-gradient(135deg,#1a1aff,#ff3b4a);width:10px;height:10px"></div>Sea temperature layer</label>
+    </div>
+    <div id="leftPanelStats"></div>
   </div>
   <div id="map"></div>
   <div class="panel" id="rightPanel">
     <div class="panel-title">Environmental Impact</div>
   </div>
-</div>
-
-<!-- =====================================================================
-  SECTION: FILTER CONTROLS — Fallow unchecked by default
-====================================================================== -->
-<div class="filter-panel" id="filterPanel">
-  <div class="filter-title">Filter Localities</div>
-  <label class="filter-item"><input type="checkbox" id="filterGood" checked><div class="filter-dot" style="background:#39ff8e;box-shadow:0 0 4px rgba(57,255,142,0.4)"></div>Below 0.2<span class="filter-count" id="countGood">—</span></label>
-  <label class="filter-item"><input type="checkbox" id="filterModerate" checked><div class="filter-dot" style="background:#00f0ff;box-shadow:0 0 4px rgba(0,240,255,0.4)"></div>0.2 – 0.5<span class="filter-count" id="countModerate">—</span></label>
-  <label class="filter-item"><input type="checkbox" id="filterAbove" checked><div class="filter-dot" style="background:#ffb020;box-shadow:0 0 4px rgba(255,176,32,0.4)"></div>Above 0.5 limit<span class="filter-count" id="countAbove">—</span></label>
-  <label class="filter-item"><input type="checkbox" id="filterDisease" checked><div class="filter-dot" style="background:#ff3b4a;box-shadow:0 0 4px rgba(255,59,74,0.4)"></div>Disease active<span class="filter-count" id="countDisease">—</span></label>
-  <div class="filter-divider"></div>
-  <label class="filter-item"><input type="checkbox" id="filterFallow"><div class="filter-dot" style="background:#555"></div>Fallow / Not reporting<span class="filter-count" id="countFallow">—</span></label>
-  <div class="filter-divider"></div>
-  <label class="filter-item"><input type="checkbox" id="filterTemp"><div class="filter-dot" style="background:linear-gradient(135deg,#1a1aff,#ff3b4a);width:10px;height:10px"></div>Sea temperature layer</label>
 </div>
 
 <div class="temp-legend" id="tempLegend">
@@ -201,11 +345,11 @@ header { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; padding: 14p
 </div>
 
 <div class="map-legend">
-  <div class="legend-item"><div class="legend-dot green"></div> Below 0.2</div>
-  <div class="legend-item"><div class="legend-dot cyan"></div> 0.2 – 0.5</div>
-  <div class="legend-item"><div class="legend-dot amber"></div> Above 0.5 limit</div>
-  <div class="legend-item"><div class="legend-dot red"></div> Disease active</div>
-  <div class="legend-item"><div class="legend-dot grey"></div> Fallow</div>
+  <div class="legend-item green"><div class="legend-dot"></div> Below 0.2</div>
+  <div class="legend-item cyan"><div class="legend-dot"></div> 0.2 – 0.5</div>
+  <div class="legend-item amber"><div class="legend-dot"></div> Above limit</div>
+  <div class="legend-item red"><div class="legend-dot"></div> Disease</div>
+  <div class="legend-item grey"><div class="legend-dot"></div> Fallow</div>
 </div>
 
 <script>
@@ -222,37 +366,432 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.p
 // SECTION: GLOBAL STATE — Markers grouped by status for filtering
 // =========================================================================
 let allLocalityData = [];
+let currentSummary = {};
+let activeDiseaseFilter = null;
 let markersByStatus = { good: [], moderate: [], above_limit: [], disease: [], fallow: [] };
 let layerGroups = {};
 let heatLayer = null;
 let allMarkersForZoom = [];
 
 // =========================================================================
+// SECTION: WEEK NAVIGATION STATE
+// =========================================================================
+let availableWeeks = [];   // sorted newest → oldest
+let currentWeekIdx = 0;
+
+// =========================================================================
+// SECTION: WEEKLY STATS CACHE — lightweight per-week aggregates
+// =========================================================================
+const weeklyStatsCache = {};  // key: "YYYY_WW" → { totalLocalities, reporting, fallow, aboveLimit, aboveModerate, avgLice, avgTemp, diseaseCount, municipalities }
+let chartInstance = null;
+
+function computeWeekStats(localities) {
+  const reporting = localities.filter(l => l.liceReport?.hasReported && !l.liceReport?.isFallow);
+  const allLice = reporting.map(l => l.liceReport?.adultFemaleLice?.average).filter(v => v != null);
+  const temps = localities.map(l => l.liceReport?.seaTemperature).filter(t => t != null && t > 0);
+  return {
+    totalLocalities: localities.length,
+    reporting: localities.filter(l => l.liceReport?.hasReported).length,
+    fallow: localities.filter(l => l.liceReport?.isFallow).length,
+    aboveLimit: reporting.filter(l => (l.liceReport?.adultFemaleLice?.average || 0) > 0.5).length,
+    aboveModerate: reporting.filter(l => { const a = l.liceReport?.adultFemaleLice?.average || 0; return a > 0.2 && a <= 0.5; }).length,
+    avgLice: allLice.length > 0 ? parseFloat((allLice.reduce((a,b)=>a+b,0)/allLice.length).toFixed(3)) : null,
+    avgTemp: temps.length > 0 ? parseFloat((temps.reduce((a,b)=>a+b,0)/temps.length).toFixed(1)) : null,
+    diseaseCount: localities.filter(l => (l.diseases||[]).length > 0).length,
+    municipalities: new Set(localities.map(l => l.municipality?.name).filter(Boolean)).size,
+  };
+}
+
+async function prefetchWeekStats() {
+  // Load all available weeks in the background, skip the current one (already loaded)
+  for (const { year, week } of availableWeeks) {
+    const key = `${year}_${String(week).padStart(2,'0')}`;
+    if (weeklyStatsCache[key]) continue;
+    try {
+      const res = await fetch(`../data/localities_${key}.json`);
+      if (!res.ok) continue;
+      const data = await res.json();
+      weeklyStatsCache[key] = computeWeekStats(data.localities);
+      // If a chart popup is open, refresh it with the newly loaded data
+      const popup = document.getElementById('statChartPopup');
+      if (popup.classList.contains('visible')) {
+        const openMetric = popup.dataset.openMetric;
+        if (openMetric) refreshOpenChart(openMetric);
+      }
+    } catch(_) {}
+    // Small yield between requests to avoid blocking
+    await new Promise(r => setTimeout(r, 80));
+  }
+}
+
+// =========================================================================
+// SECTION: STAT CHART POPUP
+// =========================================================================
+const METRIC_CONFIG = {
+  totalLocalities: { label: 'Total Localities',        color: '#00c8ff', extract: s => s.totalLocalities,  fmt: v => v.toLocaleString() },
+  reporting:       { label: 'Reporting This Week',     color: '#00c8ff', extract: s => s.reporting,        fmt: v => v.toLocaleString() },
+  fallow:          { label: 'Currently Fallow',        color: '#f4a535', extract: s => s.fallow,           fmt: v => v.toLocaleString() },
+  municipalities:  { label: 'Municipalities',          color: '#00c8ff', extract: s => s.municipalities,   fmt: v => v.toLocaleString() },
+  avgTemp:         { label: 'Avg Sea Temperature (°C)',color: '#1de9a8', extract: s => s.avgTemp,          fmt: v => v != null ? v.toFixed(1)+'°' : '—' },
+  aboveLimit:      { label: 'Above 0.5 Lice Limit',   color: '#ff4757', extract: s => s.aboveLimit,       fmt: v => v.toLocaleString() },
+  avgLice:         { label: 'Avg Lice / Fish',         color: '#f4a535', extract: s => s.avgLice,          fmt: v => v != null ? v.toFixed(3) : '—' },
+  aboveModerate:   { label: 'Elevated Lice (0.2–0.5)',color: '#f4a535', extract: s => s.aboveModerate,    fmt: v => v.toLocaleString() },
+  diseaseCount:    { label: 'Active Disease Cases',    color: '#ff4757', extract: s => s.diseaseCount,     fmt: v => v.toLocaleString() },
+};
+
+function showStatChart(metric, anchorEl) {
+  const cfg = METRIC_CONFIG[metric];
+  if (!cfg) return;
+
+  const popup = document.getElementById('statChartPopup');
+  const titleEl = document.getElementById('statChartTitle');
+  const loadingEl = document.getElementById('statChartLoading');
+  const canvas = document.getElementById('statChartCanvas');
+
+  titleEl.textContent = cfg.label + ' — week by week';
+
+  // Position popup to the left of the panel card
+  const rect = anchorEl.getBoundingClientRect();
+  const popupW = 640;
+  let left = rect.left - popupW - 12;
+  if (left < 8) left = rect.right + 12;
+  let top = rect.top;
+  if (top + 200 > window.innerHeight) top = window.innerHeight - 210;
+  popup.style.left = left + 'px';
+  popup.style.top = top + 'px';
+
+  popup.dataset.openMetric = metric;
+  popup.classList.add('visible');
+
+  // Populate info text below chart if available
+  const infoEl = document.getElementById('statChartInfo');
+  const infoText = anchorEl ? anchorEl.dataset.info : '';
+  if (infoText) {
+    infoEl.textContent = infoText;
+    infoEl.classList.add('has-info');
+  } else {
+    infoEl.textContent = '';
+    infoEl.classList.remove('has-info');
+  }
+
+  // Build chart from cached data
+  renderChartFromCache(metric, cfg, canvas, loadingEl);
+}
+
+function renderChartFromCache(metric, cfg, canvas, loadingEl) {
+  const sorted = [...availableWeeks].reverse(); // chronological order
+  const labels = sorted.map(w => `W${w.week}`);
+  const values = sorted.map(w => {
+    const key = `${w.year}_${String(w.week).padStart(2,'0')}`;
+    const s = weeklyStatsCache[key];
+    return s ? cfg.extract(s) : null;
+  });
+
+  const hasData = values.some(v => v != null);
+
+  if (!hasData) {
+    loadingEl.textContent = 'Loading week data...';
+    loadingEl.style.display = 'block';
+    canvas.style.display = 'none';
+    return;
+  }
+
+  loadingEl.style.display = 'none';
+  canvas.style.display = 'block';
+
+  if (chartInstance) { chartInstance.destroy(); chartInstance = null; }
+
+  chartInstance = new Chart(canvas, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        data: values,
+        borderColor: cfg.color,
+        backgroundColor: cfg.color + '18',
+        borderWidth: 2,
+        pointBackgroundColor: cfg.color,
+        pointRadius: 3,
+        pointHoverRadius: 5,
+        tension: 0.35,
+        fill: true,
+        spanGaps: true,
+      }]
+    },
+    options: {
+      responsive: false,
+      animation: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: 'rgba(4,9,26,0.95)',
+          borderColor: cfg.color + '55',
+          borderWidth: 1,
+          titleFont: { family: "'JetBrains Mono', monospace", size: 10 },
+          bodyFont:  { family: "'JetBrains Mono', monospace", size: 11 },
+          titleColor: '#5e88aa',
+          bodyColor: cfg.color,
+          callbacks: { label: ctx => cfg.fmt(ctx.raw) }
+        }
+      },
+      scales: {
+        x: { grid: { color: 'rgba(30,100,210,0.12)' }, ticks: { color: '#5e88aa', font: { family: "'JetBrains Mono', monospace", size: 9 }, maxRotation: 0 } },
+        y: { grid: { color: 'rgba(30,100,210,0.12)' }, ticks: { color: '#5e88aa', font: { family: "'JetBrains Mono', monospace", size: 9 } }, beginAtZero: false }
+      }
+    }
+  });
+}
+
+function hideStatChart() {
+  const popup = document.getElementById('statChartPopup');
+  popup.classList.remove('visible');
+  const infoEl = document.getElementById('statChartInfo');
+  infoEl.textContent = '';
+  infoEl.classList.remove('has-info');
+}
+
+function showDiseaseChart(code, anchorEl) {
+  const popup   = document.getElementById('statChartPopup');
+  const titleEl = document.getElementById('statChartTitle');
+  const loadEl  = document.getElementById('statChartLoading');
+  const canvas  = document.getElementById('statChartCanvas');
+  const color   = diseasePillColor(code);
+
+  titleEl.textContent = diseaseName(code) + ' — weekly cases this year';
+
+  const rect = anchorEl.getBoundingClientRect();
+  const popupW = 640;
+  let left = rect.left - popupW - 12;
+  if(left < 8) left = rect.right + 12;
+  let top = rect.top;
+  if(top + 220 > window.innerHeight) top = window.innerHeight - 225;
+  popup.style.left = left + 'px';
+  popup.style.top  = top  + 'px';
+  popup.classList.add('visible');
+
+  const weekly  = currentSummary.annualDiseaseStatistics?.weeklyDiseaseStatistics || {};
+  const curWeek = availableWeeks[0]?.week || 52;
+  const labels  = [], values = [];
+  for(let w = 1; w <= curWeek; w++){
+    const entries = weekly[String(w)];
+    const entry   = Array.isArray(entries) ? entries.find(e => e.name === code) : null;
+    labels.push('W' + w);
+    values.push(entry ? entry.count : 0);
+  }
+
+  loadEl.style.display  = 'none';
+  canvas.style.display  = 'block';
+  if(chartInstance){ chartInstance.destroy(); chartInstance = null; }
+
+  chartInstance = new Chart(canvas, {
+    type: 'bar',
+    data: { labels, datasets: [{
+      data: values,
+      backgroundColor: color + '55', borderColor: color, borderWidth: 1, borderRadius: 3,
+    }]},
+    options: { responsive: false, animation: false,
+      plugins: { legend: { display: false },
+        tooltip: { backgroundColor:'rgba(4,9,26,0.95)', borderColor: color+'55', borderWidth:1,
+          titleFont:{family:"'JetBrains Mono',monospace",size:10}, bodyFont:{family:"'JetBrains Mono',monospace",size:11},
+          titleColor:'#5e88aa', bodyColor: color,
+          callbacks: { label: ctx => ctx.raw + ' case' + (ctx.raw !== 1 ? 's' : '') }
+        }
+      },
+      scales: {
+        x:{ grid:{color:'rgba(30,100,210,0.12)'}, ticks:{color:'#5e88aa',font:{family:"'JetBrains Mono',monospace",size:9},maxRotation:0} },
+        y:{ grid:{color:'rgba(30,100,210,0.12)'}, ticks:{color:'#5e88aa',font:{family:"'JetBrains Mono',monospace",size:9}}, beginAtZero:true, ticks:{stepSize:1} }
+      }
+    }
+  });
+}
+
+function applyDiseaseFilter(code) {
+  // Toggle off if same pill clicked again
+  activeDiseaseFilter = activeDiseaseFilter === code ? null : code;
+
+  // Update pill active states
+  document.querySelectorAll('.disease-pill').forEach(p => {
+    p.classList.toggle('dp-active', p.dataset.diseaseCode === activeDiseaseFilter);
+  });
+
+  const filtering = activeDiseaseFilter !== null;
+
+  // Dim/restore all non-disease layers
+  ['good','moderate','above_limit','fallow'].forEach(s => {
+    (markersByStatus[s] || []).forEach(m => m.setStyle({ fillOpacity: filtering ? 0.12 : 0.9, opacity: filtering ? 0.08 : 0.35 }));
+  });
+
+  // Highlight matching disease markers, dim the rest
+  (markersByStatus.disease || []).forEach(m => {
+    const match = !filtering || (m._diseaseCodes || []).includes(activeDiseaseFilter);
+    m.setStyle({ fillOpacity: match ? 0.95 : 0.1, opacity: match ? 0.6 : 0.06,
+                 radius: match ? m.options.radius * (filtering ? 1 : 1) : m.options.radius });
+    if(match && filtering) m.bringToFront();
+  });
+
+  // Fit map to matching markers when filter activates
+  if(filtering){
+    const pts = (markersByStatus.disease || []).filter(m => (m._diseaseCodes||[]).includes(activeDiseaseFilter)).map(m => m.getLatLng());
+    if(pts.length > 0) map.fitBounds(L.latLngBounds(pts).pad(0.4), { maxZoom: 9 });
+  }
+}
+
+function refreshOpenChart(metric) {
+  const popup = document.getElementById('statChartPopup');
+  if (!popup.classList.contains('visible')) return;
+  const cfg = METRIC_CONFIG[metric];
+  if (!cfg) return;
+  const canvas = document.getElementById('statChartCanvas');
+  const loadingEl = document.getElementById('statChartLoading');
+  renderChartFromCache(metric, cfg, canvas, loadingEl);
+}
+
+// =========================================================================
 // SECTION: LOAD DATA FROM JSON
 // =========================================================================
 async function loadData() {
   try {
-    const [locResponse, sumResponse] = await Promise.all([
-      fetch('../data/localities.json'),
-      fetch('../data/summary.json')
-    ]);
-    const locData = await locResponse.json();
-    const sumData = await sumResponse.json();
+    // Try to load the manifest of available weeks first
+    let manifestOk = false;
+    try {
+      const mRes = await fetch('../data/available_weeks.json');
+      if (mRes.ok) {
+        const manifest = await mRes.json();
+        availableWeeks = manifest.weeks || [];
+        manifestOk = true;
+      }
+    } catch (_) {}
 
-    document.getElementById('weekBadge').innerHTML = `Week <strong>${locData.metadata.week}</strong> / <strong>${locData.metadata.year}</strong>`;
-    document.getElementById('countBadge').innerHTML = `<strong>${locData.metadata.total_localities}</strong> localities`;
+    if (manifestOk && availableWeeks.length > 0) {
+      // Load latest week from manifest
+      currentWeekIdx = 0;
+      await loadWeek(availableWeeks[0].year, availableWeeks[0].week);
+      setupWeekNav();
+    } else {
+      // Fallback: load localities.json directly (no nav controls)
+      await loadWeekFile('../data/localities.json', '../data/summary.json');
+    }
 
-    allLocalityData = locData.localities;
-    plotLocalities(allLocalityData);
-    buildTemperatureLayer(allLocalityData);
-    buildLeftPanel(allLocalityData, sumData.summary);
-    buildRightPanel(allLocalityData, sumData.summary);
     setupFilters();
     document.getElementById('loadingOverlay').classList.add('hidden');
+    prefetchWeekStats(); // background load all weeks for chart popups
   } catch (error) {
     console.error('Failed to load data:', error);
-    document.querySelector('.loading-text').textContent = 'Error loading data.';
+    document.querySelector('.loading-text').textContent = 'Error loading data. Try running fetch_data.py.';
   }
+}
+
+function weekFile(year, week) {
+  const w = String(week).padStart(2, '0');
+  return [`../data/localities_${year}_${w}.json`, `../data/summary_${year}_${w}.json`];
+}
+
+async function loadWeek(year, week) {
+  const [locFile, sumFile] = weekFile(year, week);
+  const noDataEl = document.getElementById('weekNoData');
+  try {
+    await loadWeekFile(locFile, sumFile);
+    noDataEl.classList.remove('visible');
+  } catch (_) {
+    // Week file missing — try falling back to localities.json if it matches
+    try {
+      await loadWeekFile('../data/localities.json', '../data/summary.json');
+      noDataEl.classList.remove('visible');
+    } catch (__) {
+      noDataEl.classList.add('visible');
+    }
+  }
+}
+
+async function loadWeekFile(locUrl, sumUrl) {
+  hideStatChart();
+  // Clear existing markers
+  Object.values(layerGroups).forEach(lg => { if (map.hasLayer(lg)) map.removeLayer(lg); });
+  if (heatLayer && map.hasLayer(heatLayer)) map.removeLayer(heatLayer);
+  document.getElementById('leftPanelStats').innerHTML = '';
+  document.getElementById('rightPanel').querySelectorAll('.stat-card, .bv-panel-btn').forEach(el => el.remove());
+
+  const [locRes, sumRes] = await Promise.all([fetch(locUrl), fetch(sumUrl)]);
+  if (!locRes.ok) throw new Error('locality file not found');
+  const locData = await locRes.json();
+  const sumData = sumRes.ok ? await sumRes.json() : { summary: {} };
+  currentSummary = sumData.summary;
+  activeDiseaseFilter = null;
+
+  const { year, week, total_localities } = locData.metadata;
+  document.getElementById('weekDisplay').innerHTML = `Week <strong>${week}</strong> / <strong>${year}</strong>`;
+  document.getElementById('countBadge').innerHTML = `<strong>${total_localities}</strong> localities`;
+
+  allLocalityData = locData.localities;
+
+  // Cache stats for this week immediately
+  const cacheKey = `${year}_${String(week).padStart(2,'0')}`;
+  weeklyStatsCache[cacheKey] = computeWeekStats(allLocalityData);
+
+  plotLocalities(allLocalityData);
+  buildTemperatureLayer(allLocalityData);
+  buildLeftPanel(allLocalityData, sumData.summary);
+  buildRightPanel(allLocalityData, sumData.summary);
+}
+
+function setupWeekNav() {
+  const prevBtn = document.getElementById('weekPrev');
+  const nextBtn = document.getElementById('weekNext');
+
+  function updateButtons() {
+    prevBtn.disabled = currentWeekIdx >= availableWeeks.length - 1;
+    nextBtn.disabled = currentWeekIdx <= 0;
+  }
+
+  prevBtn.addEventListener('click', async () => {
+    if (currentWeekIdx >= availableWeeks.length - 1) return;
+    currentWeekIdx++;
+    const { year, week } = availableWeeks[currentWeekIdx];
+    await loadWeek(year, week);
+    updateButtons();
+  });
+
+  nextBtn.addEventListener('click', async () => {
+    if (currentWeekIdx <= 0) return;
+    currentWeekIdx--;
+    const { year, week } = availableWeeks[currentWeekIdx];
+    await loadWeek(year, week);
+    updateButtons();
+  });
+
+  updateButtons();
+}
+
+// =========================================================================
+// SECTION: DISEASE NAME MAPPING
+// =========================================================================
+const DISEASE_NAMES = {
+  'INFEKSIOES_LAKSEANEMI': 'ISA',
+  'PANKREASSYKDOM': 'PD',
+  'FRANCISELLOSE': 'Francisellose',
+  'BAKTERIELL_NYRESYKE': 'BKD',
+};
+function diseaseName(code) {
+  return DISEASE_NAMES[code] || code;
+}
+function diseasePillClass(code) {
+  if(code === 'INFEKSIOES_LAKSEANEMI') return 'dp-isa';
+  if(code === 'PANKREASSYKDOM') return 'dp-pd';
+  if(code === 'FRANCISELLOSE') return 'dp-franc';
+  if(code === 'BAKTERIELL_NYRESYKE') return 'dp-bkd';
+  return 'dp-other';
+}
+function diseasePillColor(code) {
+  if(code === 'INFEKSIOES_LAKSEANEMI') return '#ff4757';
+  if(code === 'PANKREASSYKDOM') return '#f4a535';
+  if(code === 'FRANCISELLOSE') return '#e879f9';
+  if(code === 'BAKTERIELL_NYRESYKE') return '#a855f7';
+  return '#5e88aa';
+}
+function diseaseChipClass(code) {
+  if (code === 'INFEKSIOES_LAKSEANEMI') return 'chip-isa';
+  if (code === 'PANKREASSYKDOM') return 'chip-pd';
+  return 'chip-lice'; // neutral purple for others
 }
 
 // =========================================================================
@@ -331,22 +870,26 @@ function plotLocalities(localities) {
       p += `</div>`;
     }
     if (diseases.length > 0) {
-      p += `<div class="popup-diseases">⚠ ${diseases.map(d => d.name || 'Unknown').join(', ')}</div>`;
+      const disChips = diseases.map(d => {
+        return `<span class="chip ${diseaseChipClass(d)}">${diseaseName(d)}</span>`;
+      }).join('');
+      p += `<div class="popup-diseases">${disChips}</div>`;
     }
     p += `</div>`;
     marker.bindPopup(p, { maxWidth: 280 });
 
+    marker._diseaseCodes = diseases;
     markersByStatus[status.status].push(marker);
   });
 
   // Create layer groups
   Object.keys(markersByStatus).forEach(s => { layerGroups[s] = L.layerGroup(markersByStatus[s]); });
 
-  // Add all EXCEPT fallow by default
-  layerGroups.good.addTo(map);
-  layerGroups.moderate.addTo(map);
-  layerGroups.above_limit.addTo(map);
-  layerGroups.disease.addTo(map);
+  // Add layers according to current checkbox state (respects user's active filters)
+  const filterMap = { good: 'filterGood', moderate: 'filterModerate', above_limit: 'filterAbove', disease: 'filterDisease', fallow: 'filterFallow' };
+  Object.entries(filterMap).forEach(([status, id]) => {
+    if (document.getElementById(id).checked) layerGroups[status].addTo(map);
+  });
 
   // Update counts in filter panel
   document.getElementById('countGood').textContent = markersByStatus.good.length;
@@ -362,31 +905,36 @@ function plotLocalities(localities) {
 }
 
 // =========================================================================
-// SECTION: SEA TEMPERATURE HEATMAP LAYER
-// Uses leaflet.heat to show temperature gradient across the coast
-// Blue (cold) → Cyan → Green → Amber → Red (warm)
+// SECTION: SEA TEMPERATURE LAYER
+// Each farm shown as a circle coloured by its actual reported temperature.
+// Blue (cold, <4°C) → Cyan → Green → Amber → Red (warm, >14°C)
 // =========================================================================
+function getTempColor(t) {
+  if (t < 4)  return '#1a1aff';
+  if (t < 7)  return '#00ccff';
+  if (t < 10) return '#39ff8e';
+  if (t < 13) return '#ffb020';
+  return '#ff3b4a';
+}
+
 function buildTemperatureLayer(localities) {
-  const heatData = [];
+  const group = L.layerGroup();
   localities.forEach(loc => {
     const geo = loc.geometry;
     if (!geo?.coordinates || geo.coordinates.length < 2) return;
     const [lng, lat] = geo.coordinates;
     const temp = loc.liceReport?.seaTemperature;
     if (temp != null && temp > 0) {
-      const intensity = Math.max(0.05, Math.min(1, (temp - 1) / 13));
-      heatData.push([lat, lng, intensity]);
+      L.circleMarker([lat, lng], {
+        radius: 7,
+        fillColor: getTempColor(temp),
+        color: 'rgba(0,0,0,0.3)',
+        weight: 1,
+        fillOpacity: 0.82
+      }).bindTooltip(`${temp.toFixed(1)}°C`, { permanent: false, direction: 'top', className: 'temp-tooltip' }).addTo(group);
     }
   });
-
-  heatLayer = L.heatLayer(heatData, {
-    radius: 35,
-    blur: 40,
-    maxZoom: 10,
-    max: 1.0,
-    minOpacity: 0.3,
-    gradient: { 0.0: '#1a1aff', 0.25: '#00ccff', 0.5: '#39ff8e', 0.75: '#ffb020', 1.0: '#ff3b4a' }
-  });
+  heatLayer = group;
 }
 
 // =========================================================================
@@ -413,7 +961,7 @@ function setupFilters() {
 // SECTION: LEFT PANEL — National overview stats
 // =========================================================================
 function buildLeftPanel(localities, summary) {
-  const panel = document.getElementById('leftPanel');
+  const panel = document.getElementById('leftPanelStats');
   const total = localities.length;
   const reporting = localities.filter(l => l.liceReport?.hasReported).length;
   const fallow = localities.filter(l => l.liceReport?.isFallow).length;
@@ -423,14 +971,22 @@ function buildLeftPanel(localities, summary) {
   const municipalities = new Set(localities.map(l => l.municipality?.name).filter(Boolean));
 
   const cards = [
-    { label: 'Total Localities', value: total.toLocaleString(), sub: `${withSalmonoid} with salmonoid license`, color: 'cyan' },
-    { label: 'Reporting This Week', value: reporting.toLocaleString(), sub: `${((reporting/total)*100).toFixed(0)}% of all localities`, color: 'cyan', bar: { width: ((reporting/total)*100), color: 'cyan' } },
-    { label: 'Currently Fallow', value: fallow.toLocaleString(), sub: 'no fish in water', color: 'amber' },
-    { label: 'Municipalities', value: municipalities.size.toLocaleString(), sub: 'with active farms', color: 'cyan' },
-    { label: 'Avg Sea Temperature', value: avgTemp + '°', sub: 'across reporting sites', color: 'cyan' },
+    { label: 'Total Localities', value: total.toLocaleString(), sub: `${withSalmonoid} with salmonoid license`, color: 'cyan', metric: 'totalLocalities' },
+    { label: 'Reporting This Week', value: reporting.toLocaleString(), sub: `${(((reporting)/(total-fallow))*100).toFixed(0)}% of active localities`, color: 'cyan', bar: { width: ((reporting/(total-fallow))*100), color: 'cyan' }, metric: 'reporting' },
+    { label: 'Currently Fallow', value: fallow.toLocaleString(), sub: 'no fish in water', color: 'amber', metric: 'fallow', info: 'Fallow (brakklgging) means the pen has no fish. After each production cycle Norwegian regulations require a minimum rest period — typically 2 months for standard farms, and up to 6 months in coordinated fallowing zones. This breaks the sea lice lifecycle and reduces disease pressure for neighbouring farms.' },
+    { label: 'Municipalities', value: municipalities.size.toLocaleString(), sub: 'with active farms', color: 'cyan', metric: 'municipalities' },
+    { label: 'Avg Sea Temperature', value: avgTemp + '°', sub: 'across reporting sites', color: 'cyan', metric: 'avgTemp' },
   ];
   cards.forEach(c => {
-    panel.innerHTML += `<div class="stat-card"><div class="stat-label">${c.label}</div><div class="stat-value ${c.color}">${c.value}</div><div class="stat-sub">${c.sub}</div>${c.bar ? `<div class="stat-bar"><div class="stat-bar-fill ${c.bar.color}" style="width:${c.bar.width}%"></div></div>` : ''}</div>`;
+    const el = document.createElement('div');
+    el.className = 'stat-card';
+    el.dataset.metric = c.metric;
+    const infoIcon = c.info ? `<span class="stat-info" data-tip="${c.info.replace(/"/g,"'")}" title="">i</span>` : '';
+    el.innerHTML = `<div class="stat-label">${c.label}${infoIcon}</div><div class="stat-value ${c.color}">${c.value}</div><div class="stat-sub">${c.sub}</div>${c.bar ? `<div class="stat-bar"><div class="stat-bar-fill ${c.bar.color}" style="width:${c.bar.width}%"></div></div>` : ''}`;
+    if (c.info) el.dataset.info = c.info;
+    el.addEventListener('mouseenter', () => showStatChart(c.metric, el));
+    el.addEventListener('mouseleave', hideStatChart);
+    panel.appendChild(el);
   });
 }
 
@@ -445,22 +1001,646 @@ function buildRightPanel(localities, summary) {
   const allLice = reporting.map(l => l.liceReport?.adultFemaleLice?.average).filter(v => v != null);
   const avgLice = allLice.length > 0 ? (allLice.reduce((a, b) => a + b, 0) / allLice.length).toFixed(3) : '—';
   const withDisease = localities.filter(l => (l.diseases || []).length > 0);
-  const dc = {}; localities.forEach(l => { (l.diseases || []).forEach(d => { const n = d.name || 'Unknown'; dc[n] = (dc[n] || 0) + 1; }); });
-  let med = 0, nonMed = 0, cleaner = 0;
-  localities.forEach(l => { const t = l.liceTreatments || {}; if (Array.isArray(t.medicinalTreatments) && t.medicinalTreatments.length) med++; if (Array.isArray(t.nonMedicinalTreatments) && t.nonMedicinalTreatments.length) nonMed++; if (t.cleanerFishTreatment?.hasDeployed) cleaner++; });
+  // Build disease count by raw code (needed for pill charts)
+  const dcByCode = {};
+  localities.forEach(l => { (l.diseases || []).forEach(d => { dcByCode[d] = (dcByCode[d] || 0) + 1; }); });
 
   const cards = [
-    { label: 'Above 0.5 Lice Limit', value: aboveLimit.length.toString(), sub: `of ${reporting.length} reporting`, color: 'red', bar: { width: Math.min((aboveLimit.length / Math.max(reporting.length, 1)) * 1000, 100), color: 'red' } },
-    { label: 'Avg Lice / Fish', value: avgLice, sub: 'adult females, all sites', color: 'amber' },
-    { label: 'Elevated Lice (0.2–0.5)', value: aboveModerate.length.toString(), sub: 'approaching limit', color: 'amber', bar: { width: (aboveModerate.length / Math.max(reporting.length, 1)) * 100, color: 'amber' } },
-    { label: 'Active Disease Cases', value: withDisease.length.toString(), sub: Object.entries(dc).map(([k,v]) => `${k}: ${v}`).join(' · ') || 'none', color: 'red' },
-    { label: 'Medicinal Treatments', value: med.toString(), sub: 'this week', color: 'magenta' },
-    { label: 'Non-Medicinal Treatments', value: nonMed.toString(), sub: 'mechanical / thermal / freshwater', color: 'amber' },
-    { label: 'Cleaner Fish Deployed', value: cleaner.toString(), sub: 'wrasse / lumpfish', color: 'green' },
+    { label: 'Above 0.5 Lice Limit', value: aboveLimit.length.toString(), sub: `of ${reporting.length} reporting`, color: 'red', bar: { width: Math.min((aboveLimit.length / Math.max(reporting.length, 1)) * 100, 100), color: 'red' }, metric: 'aboveLimit',
+      info: 'Norwegian law sets 0.5 adult female sea lice per fish as the treatment threshold. Farms exceeding this must treat immediately using medicines or non-medicinal methods (e.g. thermal or mechanical delousing). Adult females are counted because they reproduce — each carries two egg strings and can release hundreds of thousands of larvae.' },
+    { label: 'Avg Lice / Fish', value: avgLice, sub: 'adult females, all sites', color: 'amber', metric: 'avgLice',
+      info: 'Sea lice (Lepeophtheirus salmonis) pass through several life stages: nauplius → copepodid → chalimus → pre-adult → adult. Only adult females are officially counted in Norwegian lice reports. They are visible to inspectors, carry egg strings, and drive population growth. A value above 0.2 triggers increased monitoring; above 0.5 requires treatment.' },
+    { label: 'Elevated Lice (0.2–0.5)', value: aboveModerate.length.toString(), sub: 'approaching limit', color: 'amber', bar: { width: (aboveModerate.length / Math.max(reporting.length, 1)) * 100, color: 'amber' }, metric: 'aboveModerate',
+      info: 'The 0.2 threshold is a precautionary monitoring level, not a legal limit. Farms in this range face increased inspection frequency and must report more often. It signals that lice pressure is building and treatment may soon be needed. The legal treatment threshold is 0.5 adult female lice per fish.' },
   ];
   cards.forEach(c => {
-    panel.innerHTML += `<div class="stat-card"><div class="stat-label">${c.label}</div><div class="stat-value ${c.color}">${c.value}</div><div class="stat-sub">${c.sub}</div>${c.bar ? `<div class="stat-bar"><div class="stat-bar-fill ${c.bar.color}" style="width:${c.bar.width}%"></div></div>` : ''}</div>`;
+    const el = document.createElement('div');
+    el.className = 'stat-card';
+    el.dataset.metric = c.metric;
+    const infoIcon = c.info ? `<span class="stat-info" data-tip="${c.info.replace(/"/g,"'")}" title="">i</span>` : '';
+    el.innerHTML = `<div class="stat-label">${c.label}${infoIcon}</div><div class="stat-value ${c.color}">${c.value}</div><div class="stat-sub">${c.sub}</div>${c.bar ? `<div class="stat-bar"><div class="stat-bar-fill ${c.bar.color}" style="width:${c.bar.width}%"></div></div>` : ''}`;
+    if (c.info) el.dataset.info = c.info;
+    el.addEventListener('mouseenter', () => showStatChart(c.metric, el));
+    el.addEventListener('mouseleave', hideStatChart);
+    panel.appendChild(el);
   });
+
+  // Disease card with pill breakdown
+  const diseaseCard = document.createElement('div');
+  diseaseCard.className = 'stat-card';
+  diseaseCard.dataset.metric = 'diseaseCount';
+  diseaseCard.innerHTML = `<div class="stat-label">Active Disease Cases</div><div class="stat-value red">${withDisease.length}</div><div class="disease-pills" id="diseasePillsRow"></div><div style="margin-top:10px;font-size:11px;font-family:'JetBrains Mono',monospace;color:rgba(94,136,170,0.7);line-height:1.6">Click a pill to highlight farms on map.<br>Only works if cases are registered this week.</div>`;
+  diseaseCard.addEventListener('mouseenter', () => showStatChart('diseaseCount', diseaseCard));
+  diseaseCard.addEventListener('mouseleave', hideStatChart);
+  panel.appendChild(diseaseCard);
+
+  const pillsRow = document.getElementById('diseasePillsRow');
+  if(Object.keys(dcByCode).length === 0){
+    pillsRow.innerHTML = '<span style="font-size:9px;color:#5e88aa;font-family:\'JetBrains Mono\',monospace;opacity:0.6">none this week</span>';
+  } else {
+    Object.entries(dcByCode).forEach(([code, count]) => {
+      const pill = document.createElement('button');
+      pill.className = 'disease-pill ' + diseasePillClass(code);
+      pill.dataset.diseaseCode = code;
+      pill.textContent = `${diseaseName(code)} · ${count}`;
+      pill.addEventListener('mouseenter', e => { e.stopPropagation(); showDiseaseChart(code, pill); });
+      pill.addEventListener('mouseleave', e => { e.stopPropagation(); hideStatChart(); });
+      pill.addEventListener('click', e => { e.stopPropagation(); applyDiseaseFilter(code); });
+      pillsRow.appendChild(pill);
+    });
+  }
+
+  // Health Overview button block
+  const bvBtn = document.createElement('button');
+  bvBtn.className = 'bv-panel-btn';
+  bvBtn.id = 'bvViewBtn';
+  bvBtn.innerHTML = '<span class="bv-panel-btn-title">&#9670; Health Overview</span><span class="bv-panel-btn-sub">lice &middot; disease &middot; escapes &middot; trends</span><span style="margin-top:4px;font-size:10px;font-family:\'JetBrains Mono\',monospace;color:rgba(0,200,255,0.55);letter-spacing:0.05em">&#8599; click to explore</span>';
+  panel.appendChild(bvBtn);
+}
+
+// =========================================================================
+// SECTION: 5-YEAR BUBBLE VIEW
+// All bubbles are drawn on a single <canvas> each physics frame.
+// No DOM mutations occur per animation frame, so Chart.js inside the
+// modal never receives spurious resize events from the physics loop.
+// =========================================================================
+
+// ---- Idle positions (normalized 0–1 relative to canvas size) ------------
+// Nine entries matching BV_METRICS order. Arranged in a loose 3×3 grid.
+// Tweak x/y values here to shift individual bubbles on screen.
+const BV_IDLE = [
+  [0.16, 0.18],  // Lice Violations  — top-left
+  [0.50, 0.12],  // Avg Lice/Fish    — top-center
+  [0.84, 0.18],  // Above Limit      — top-right
+  [0.90, 0.52],  // Other Disease    — mid-right
+  [0.80, 0.84],  // Escapees         — bottom-right
+  [0.50, 0.88],  // PD Outbreaks     — bottom-center
+  [0.20, 0.84],  // ISA Outbreaks    — bottom-left
+  [0.10, 0.52],  // Sea Temp         — mid-left
+  [0.22, 0.44],  // Temp×Lice corr  — satellite (inner, near Sea Temp)
+  [0.66, 0.22],  // Week×Lice corr  — satellite (inner, right of Avg Lice/Fish)
+];
+
+// ---- Pearson correlation helper ------------------------------------------
+function _pearsonR(xs, ys){
+  const n = xs.length;
+  if(n < 2) return null;
+  const mx = xs.reduce((a,b)=>a+b)/n, my = ys.reduce((a,b)=>a+b)/n;
+  let num=0, dx2=0, dy2=0;
+  for(let i=0;i<n;i++){ const dx=xs[i]-mx, dy=ys[i]-my; num+=dx*dy; dx2+=dx*dx; dy2+=dy*dy; }
+  return dx2&&dy2 ? num/Math.sqrt(dx2*dy2) : null;
+}
+
+// ---- Metric definitions --------------------------------------------------
+// r: base radius in px at 1920×1080.
+// source: 'history' uses health_history.json (multi-year); 'weekly' uses weeklyStatsCache (current year).
+// annualExtract: function(yearObj) → value used for the per-year bar/line chart.
+const BV_METRICS = [
+  // ── Multi-year metrics (source: history) ──────────────────────────────────
+  { key:'liceViolations', label:'Lice Violations', unit:'farms/yr · 5yr avg', color:'#a855f7', r:148,
+    source:'history', chartType:'weekly-by-year',
+    annualExtract: y => y.lice_violations_total || 0,
+    val: d => Math.round(d.filter(y=>y.year>=2020&&y.year<=2024).reduce((s,y)=>s+(y.lice_violations_total||0),0)/5) },
+
+  // ── Multi-year weekly metrics (source: 5year) ─────────────────────────────
+  { key:'avgLice', label:'Avg Lice/Fish', unit:'\u2640 lice/fish \u00b7 5yr avg', color:'#f4a535', r:124,
+    source:'5year', chartType:'weekly-by-year-5yr',
+    val: d => { const vs=d.filter(w=>w.year>=2021&&w.year<=2024&&w.avgLice!=null).map(w=>w.avgLice); return vs.length?(vs.reduce((a,b)=>a+b)/vs.length).toFixed(3):'—'; } },
+
+  { key:'aboveLimit', label:'Above Limit', unit:'farms/wk \u00b7 5yr avg', color:'#ff4757', r:115,
+    source:'5year', chartType:'weekly-by-year-5yr',
+    val: d => { const vs=d.filter(w=>w.year>=2021&&w.year<=2024).map(w=>w.aboveLimit); return vs.length?Math.round(vs.reduce((a,b)=>a+b)/vs.length):'—'; } },
+
+  // Francisellose, BKD, Flavobacterium — rarer bacterial diseases, stacked breakdown in chart
+  { key:'otherDisease', label:'Other Disease', unit:'Franc · BKD · Flavobac · 5yr avg', color:'#e879f9', r:102,
+    source:'history', chartType:'other-disease',
+    annualExtract: y => Object.entries(y.diseases||{}).filter(([k])=>!_SKIP_DIS.has(k)).reduce((s,[,v])=>s+v,0),
+    val: d => {
+      const tots = d.filter(y=>y.year>=2020&&y.year<=2024)
+        .map(y=>Object.entries(y.diseases||{}).filter(([k])=>!_SKIP_DIS.has(k)).reduce((s,[,v])=>s+v,0));
+      return tots.length ? +(tots.reduce((a,b)=>a+b)/tots.length).toFixed(1) : '—';
+    } },
+
+  // Escaped fish events per year — requires re-running fetch_health_history.py
+  { key:'escapes', label:'Escapees', unit:'events/yr · 5yr avg', color:'#22d3ee', r:118,
+    source:'history', chartType:'annual',
+    annualExtract: y => y.escapes || 0,
+    val: d => Math.round(d.filter(y=>y.year>=2020&&y.year<=2024).reduce((s,y)=>s+(y.escapes||0),0)/5) },
+
+  { key:'pd', label:'PD Outbreaks', unit:'cases/yr · 5yr avg', color:'#f4a535', r:127,
+    source:'history', chartType:'annual',
+    annualExtract: y => y.diseases?.PANKREASSYKDOM || 0,
+    val: d => +(d.filter(y=>y.year>=2020&&y.year<=2024).reduce((s,y)=>s+(y.diseases?.PANKREASSYKDOM||0),0)/5).toFixed(1) },
+
+  { key:'isa', label:'ISA Outbreaks', unit:'cases/yr · 5yr avg', color:'#ff4757', r:109,
+    source:'history', chartType:'annual',
+    annualExtract: y => y.diseases?.INFEKSIOES_LAKSEANEMI || 0,
+    val: d => +(d.filter(y=>y.year>=2020&&y.year<=2024).reduce((s,y)=>s+(y.diseases?.INFEKSIOES_LAKSEANEMI||0),0)/5).toFixed(1) },
+
+  { key:'seaTemp', label:'Sea Temp', unit:'\u00b0C \u00b7 5yr avg', color:'#1de9a8', r:118,
+    source:'5year', chartType:'weekly-by-year-5yr',
+    val: d => { const vs=d.filter(w=>w.year>=2021&&w.year<=2024&&w.avgTemp!=null).map(w=>w.avgTemp); return vs.length?(vs.reduce((a,b)=>a+b)/vs.length).toFixed(1)+'\u00b0':'—'; } },
+
+  // Satellite: Sea Temp vs Avg Lice scatter
+  { key:'tempLiceCorr', label:'Temp \u00d7 Lice', unit:'correlation \u00b7 weekly data', color:'#1de9a8', r:100,
+    source:'5year', chartType:'correlation', satellite:'seaTemp',
+    corrX:'avgTemp', corrXLabel:'Sea Temp (\u00b0C)', corrXFmt: v=>`${v.toFixed(1)}\u00b0C`,
+    val: d => { const pts=d.filter(w=>w.year>=2021&&w.year<=2024&&w.avgTemp!=null&&w.avgLice!=null); const r=_pearsonR(pts.map(p=>p.avgTemp),pts.map(p=>p.avgLice)); return r!=null?'r\u200a=\u200a'+r.toFixed(2):'—'; } },
+
+  // Satellite: Week-of-year vs Avg Lice (seasonality)
+  { key:'weekLiceCorr', label:'Week \u00d7 Lice', unit:'seasonality \u00b7 weekly data', color:'#f4a535', r:100,
+    source:'5year', chartType:'correlation', satellite:'avgLice',
+    corrX:'week', corrXLabel:'Week of Year', corrXFmt: v=>`W${v}`,
+    val: d => { const pts=d.filter(w=>w.year>=2021&&w.year<=2024&&w.avgLice!=null); const r=_pearsonR(pts.map(p=>p.week),pts.map(p=>p.avgLice)); return r!=null?'r\u200a=\u200a'+r.toFixed(2):'—'; } },
+];
+
+const YEAR_COLORS = ['#5e88aa','#3a7bbf','#1da8d4','#00c8ff','#1de9a8','#f4a535','#ff4757','#a855f7','#ff9933','#ff4d94'];
+
+// Disease code → human label mapping for the Other Disease stacked chart
+const OTHER_DIS_DEFS = [
+  { key:'FRANCISELLOSE',                                          label:'Francisellose', color:'#e879f9' },
+  { key:'BAKTERIELL_NYRESYKE',                                   label:'BKD',           color:'#a855f7' },
+  { key:'SYSTEMISK_INFEKSJON_MED_FLAVOBACTERIUM_PSYCHROPHILUM',  label:'Flavobacterium',color:'#c026d3' },
+];
+// Set of disease keys excluded from "Other" (they have their own bubbles)
+const _SKIP_DIS = new Set(['PANKREASSYKDOM','INFEKSIOES_LAKSEANEMI']);
+
+let _bvActive=false, _bvBubbles=[], _bvSel=null, _bvHistData=null, _bv5YearData=null, _bvAnim=null, _bvChart=null, _bvHovered=null;
+
+// ---- Entry points --------------------------------------------------------
+
+document.getElementById('rightPanel').addEventListener('click', e => { if(!e.target.closest('#bvViewBtn')) return;
+  const t = Date.now();
+  Promise.all([
+    fetch('../data/health_history.json?t='     + t).then(r=>r.json()).catch(()=>null),
+    fetch('../data/5year_weekly_stats.json?t=' + t).then(r=>r.json()).catch(()=>null),
+  ]).then(([hist, stats]) => {
+    _bvHistData   = hist  ? hist.years  : null;
+    _bv5YearData  = stats ? stats.weeks : null;
+    _bvStart();
+  });
+});
+document.getElementById('bvExitBtn').addEventListener('click', _bvExit);
+document.getElementById('bvChartClose').addEventListener('click', _bvCloseChart);
+// Clicking the dimmed backdrop also closes the modal
+document.getElementById('bvModalBackdrop').addEventListener('click', _bvCloseChart);
+// Clicking anywhere on the modal overlay outside the card also closes it
+document.getElementById('bvModal').addEventListener('click', e => { if(e.target === document.getElementById('bvModal')) _bvCloseChart(); });
+// Escape key closes modal
+document.addEventListener('keydown', e => { if(e.key === 'Escape' && _bvActive) _bvCloseChart(); });
+
+function _bvStart(){
+  _bvActive = true;
+  document.getElementById('bubbleOverlay').style.display = 'flex';
+  _bvInitBubbles();
+  _bvDraw();  // initial render immediately at fixed positions
+  requestAnimationFrame(_bvTick);  // then keep loop alive for hover lerp
+}
+
+function _bvExit(){
+  _bvActive = false;
+  document.getElementById('bubbleOverlay').style.display = 'none';
+  if(_bvAnim) cancelAnimationFrame(_bvAnim);
+  _bvCloseChart();
+  _bvBubbles = []; _bvSel = null; _bvHovered = null;
+  document.getElementById('bvArena').innerHTML = '';
+}
+
+// ---- Canvas bubble initialisation ----------------------------------------
+
+function _bvInitBubbles(){
+  const arena = document.getElementById('bvArena');
+  arena.innerHTML = ''; _bvBubbles = [];
+
+  const cvs = document.createElement('canvas');
+  cvs.id = 'bvCanvas';
+  cvs.style.cssText = 'position:absolute;inset:0;display:block;';
+  cvs.width  = arena.clientWidth  || window.innerWidth;
+  cvs.height = arena.clientHeight || (window.innerHeight - 57);
+  arena.appendChild(cvs);
+
+  const W = cvs.width, H = cvs.height;
+
+  // Hit-test clicks against current display radius (accounts for hover scaling)
+  cvs.addEventListener('click', e => {
+    const rect = cvs.getBoundingClientRect();
+    const sx = cvs.width / rect.width, sy = cvs.height / rect.height;
+    const mx = (e.clientX - rect.left) * sx, my = (e.clientY - rect.top) * sy;
+    for(const b of _bvBubbles){
+      if(Math.hypot(b.x - mx, b.y - my) <= b.dr){ _bvSelect(b.key); return; }
+    }
+    if(_bvSel) _bvCloseChart();
+  });
+
+  // Hover: update cursor and tracked hovered bubble key
+  cvs.addEventListener('mousemove', e => {
+    const rect = cvs.getBoundingClientRect();
+    const sx = cvs.width / rect.width, sy = cvs.height / rect.height;
+    const mx = (e.clientX - rect.left) * sx, my = (e.clientY - rect.top) * sy;
+    let found = null;
+    for(const b of _bvBubbles){ if(Math.hypot(b.x - mx, b.y - my) <= b.dr){ found = b.key; break; } }
+    if(found !== _bvHovered){ _bvHovered = found; cvs.style.cursor = found ? 'pointer' : 'default'; _bvDraw(); }
+  });
+  cvs.addEventListener('mouseleave', () => { _bvHovered = null; });
+
+  // Initialise bubbles at fixed idle positions — no movement
+  BV_METRICS.forEach((m, i) => {
+    const v = m.source === 'history' && _bvHistData ? m.val(_bvHistData)
+            : m.source === '5year'   && _bv5YearData ? m.val(_bv5YearData)
+            : m.val();
+    const [nx, ny] = BV_IDLE[i % BV_IDLE.length];
+    const ix = nx * W, iy = ny * H;
+    _bvBubbles.push({
+      ...m,
+      displayVal: String(v),
+      x: ix, y: iy,
+      dr: m.r,  // display radius — lerped smoothly on hover
+    });
+  });
+}
+
+// ---- Canvas draw ---------------------------------------------------------
+
+function _bvDraw(){
+  const cvs = document.getElementById('bvCanvas'); if(!cvs) return;
+  const ctx  = cvs.getContext('2d');
+  ctx.clearRect(0, 0, cvs.width, cvs.height);
+
+  // Draw satellite connection lines first (behind bubbles)
+  _bvBubbles.forEach(b => {
+    if(!b.satellite) return;
+    const parent = _bvBubbles.find(p => p.key === b.satellite);
+    if(!parent) return;
+    const active = _bvSel === b.key || _bvSel === b.satellite || _bvHovered === b.key || _bvHovered === b.satellite;
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(parent.x, parent.y);
+    ctx.lineTo(b.x, b.y);
+    ctx.strokeStyle = _bvSel && !active ? 'rgba(29,233,168,0.05)' : 'rgba(29,233,168,0.22)';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([5, 6]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.restore();
+  });
+
+  _bvBubbles.forEach(b => {
+    const sel = b.key === _bvSel;
+    const hov = b.key === _bvHovered && !sel;
+    const dr  = b.dr;  // lerped display radius
+
+    ctx.save();
+    // Glow shadow
+    if(sel)      { ctx.shadowColor = b.color; ctx.shadowBlur = 44; }
+    else if(hov) { ctx.shadowColor = b.color; ctx.shadowBlur = 22; }
+
+    // Main circle fill + border
+    ctx.beginPath();
+    ctx.arc(b.x, b.y, dr, 0, Math.PI * 2);
+    ctx.fillStyle   = b.color + (sel ? '28' : hov ? '1e' : '0e');
+    ctx.fill();
+    ctx.strokeStyle = b.color + (sel ? 'cc' : hov ? '77' : '3e');
+    ctx.lineWidth   = sel ? 2.2 : 1.5;
+    ctx.stroke();
+
+    // Outer halo ring when selected
+    if(sel){
+      ctx.beginPath();
+      ctx.arc(b.x, b.y, dr + 16, 0, Math.PI * 2);
+      ctx.strokeStyle = b.color + '1a';
+      ctx.lineWidth   = 1;
+      ctx.stroke();
+    }
+    ctx.restore();
+
+    // Dim non-selected bubbles while one is active
+    ctx.globalAlpha = (_bvSel && !sel) ? 0.28 : 1;
+
+    // Label — small uppercase
+    const lfs = Math.max(7, Math.round(dr * 0.12));
+    ctx.textAlign    = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle    = sel ? '#8ab4d4' : '#5e88aa';
+    ctx.font         = `500 ${lfs}px 'JetBrains Mono', monospace`;
+    _bvTextLine(ctx, b.label.toUpperCase(), b.x, b.y - dr * 0.30, dr * 1.65, lfs);
+
+    // Main value — large bold
+    const vfs = Math.max(16, Math.round(dr * 0.34));
+    ctx.fillStyle = b.color;
+    ctx.font      = `800 ${vfs}px 'Outfit', sans-serif`;
+    ctx.fillText(b.displayVal, b.x, b.y + dr * 0.06);
+
+    // Sub-unit — tiny muted
+    const ufs = Math.max(6, Math.round(dr * 0.095));
+    ctx.fillStyle = sel ? '#3a5878' : '#2a4560';
+    ctx.font      = `400 ${ufs}px 'JetBrains Mono', monospace`;
+    _bvTextLine(ctx, b.unit, b.x, b.y + dr * 0.34, dr * 1.65, ufs);
+
+    ctx.globalAlpha = 1;
+  });
+}
+
+function _bvTextLine(ctx, text, x, y, maxW, fs){
+  if(ctx.measureText(text).width <= maxW){ ctx.fillText(text, x, y); return; }
+  const words = text.split(' '), mid = Math.ceil(words.length / 2);
+  ctx.fillText(words.slice(0, mid).join(' '), x, y - fs * 0.65);
+  ctx.fillText(words.slice(mid).join(' '),    x, y + fs * 0.65);
+}
+
+// ---- Render tick — bubbles are static; only hover scale lerps each frame --
+
+function _bvTick(){
+  if(!_bvActive) return;
+  let needsRedraw = false;
+  _bvBubbles.forEach(b => {
+    const targetDR = b.key === _bvHovered ? b.r * 1.07 : b.r;
+    const next = b.dr + (targetDR - b.dr) * 0.14;
+    if(Math.abs(next - b.dr) > 0.05){ b.dr = next; needsRedraw = true; }
+  });
+  if(needsRedraw) _bvDraw();
+  _bvAnim = requestAnimationFrame(_bvTick);
+}
+
+// ---- Selection & modal ---------------------------------------------------
+
+function _bvSelect(key){
+  if(_bvSel === key){ _bvCloseChart(); return; }
+  _bvSel = key;
+  _bvOpenChart(BV_METRICS.find(m => m.key === key));
+}
+
+function _bvCloseChart(){
+  document.getElementById('bvModal').classList.remove('open');
+  document.getElementById('bvModalBackdrop').classList.remove('active');
+  if(_bvChart){ _bvChart.destroy(); _bvChart = null; }
+  _bvSel = null;
+}
+
+function _bvOpenChart(m){
+  document.getElementById('bvModalTitle').textContent = m.label;
+  document.getElementById('bvModal').classList.add('open');
+  document.getElementById('bvModalBackdrop').classList.add('active');
+
+  const sMin = document.getElementById('bvSliderMin');
+  const sMax = document.getElementById('bvSliderMax');
+  const la   = document.getElementById('bvSliderA');
+  const lb   = document.getElementById('bvSliderB');
+
+  function _syncFill(){
+    const fill = document.getElementById('bvRangeFill');
+    const total = +sMax.max - +sMin.min;
+    if(total <= 0){ fill.style.left='0%'; fill.style.width='100%'; return; }
+    const l = (+sMin.value - +sMin.min) / total * 100;
+    const r = (+sMax.value - +sMin.min) / total * 100;
+    fill.style.left = l + '%';
+    fill.style.width = (r - l) + '%';
+  }
+
+  if(m.source === 'history' && _bvHistData){
+    const minY = Math.min(..._bvHistData.map(y => y.year));
+    const maxY = Math.max(..._bvHistData.map(y => y.year));
+    sMin.min = minY; sMin.max = maxY - 1; sMin.value = minY;
+    sMax.min = minY + 1; sMax.max = maxY; sMax.value = maxY;
+    la.textContent = minY; lb.textContent = maxY; _syncFill();
+    _bvRenderHistory(m, minY, maxY);
+    sMin.oninput = () => { if(+sMin.value >= +sMax.value) sMin.value = +sMax.value - 1; la.textContent = sMin.value; _syncFill(); _bvRenderHistory(m, +sMin.value, +sMax.value); };
+    sMax.oninput = () => { if(+sMax.value <= +sMin.value) sMax.value = +sMin.value + 1; lb.textContent = sMax.value; _syncFill(); _bvRenderHistory(m, +sMin.value, +sMax.value); };
+  } else if(m.source === '5year' && _bv5YearData && m.chartType === 'correlation'){
+    const years = [...new Set(_bv5YearData.map(w => w.year))].sort((a,b)=>a-b);
+    const minY = years[0], maxY = years[years.length - 1];
+    // Allow min == max (single-year selection)
+    sMin.min = minY; sMin.max = maxY; sMin.value = minY;
+    sMax.min = minY; sMax.max = maxY; sMax.value = maxY;
+    la.textContent = minY; lb.textContent = maxY; _syncFill();
+    _bvRenderCorrelation(m, minY, maxY);
+    sMin.oninput = () => { if(+sMin.value > +sMax.value) sMax.value = sMin.value; la.textContent = sMin.value; lb.textContent = sMax.value; _syncFill(); _bvRenderCorrelation(m, +sMin.value, +sMax.value); };
+    sMax.oninput = () => { if(+sMax.value < +sMin.value) sMin.value = sMax.value; la.textContent = sMin.value; lb.textContent = sMax.value; _syncFill(); _bvRenderCorrelation(m, +sMin.value, +sMax.value); };
+  } else if(m.source === '5year' && _bv5YearData){
+    const years = [...new Set(_bv5YearData.map(w => w.year))].sort((a,b)=>a-b);
+    const minY = years[0], maxY = years[years.length - 1];
+    sMin.min = minY; sMin.max = maxY - 1; sMin.value = minY;
+    sMax.min = minY + 1; sMax.max = maxY; sMax.value = maxY;
+    la.textContent = minY; lb.textContent = maxY; _syncFill();
+    _bvRender5YearWeekly(m, minY, maxY);
+    sMin.oninput = () => { if(+sMin.value >= +sMax.value) sMin.value = +sMax.value - 1; la.textContent = sMin.value; _syncFill(); _bvRender5YearWeekly(m, +sMin.value, +sMax.value); };
+    sMax.oninput = () => { if(+sMax.value <= +sMin.value) sMax.value = +sMin.value + 1; lb.textContent = sMax.value; _syncFill(); _bvRender5YearWeekly(m, +sMin.value, +sMax.value); };
+  } else {
+    const wks = [...availableWeeks].reverse();
+    sMin.min = 0; sMin.max = Math.max(0, wks.length - 2); sMin.value = 0;
+    sMax.min = 1; sMax.max = Math.max(1, wks.length - 1); sMax.value = wks.length - 1;
+    la.textContent = wks[0]              ? `W${wks[0].week}`              : '—';
+    lb.textContent = wks[wks.length - 1] ? `W${wks[wks.length - 1].week}` : '—';
+    _syncFill();
+    _bvRenderWeekly(m, wks);
+    sMin.oninput = () => {
+      if(+sMin.value >= +sMax.value) sMin.value = +sMax.value - 1;
+      la.textContent = wks[+sMin.value] ? `W${wks[+sMin.value].week}` : '—';
+      _syncFill(); _bvRenderWeekly(m, wks.slice(+sMin.value, +sMax.value + 1));
+    };
+    sMax.oninput = () => {
+      if(+sMax.value <= +sMin.value) sMax.value = +sMin.value + 1;
+      lb.textContent = wks[+sMax.value] ? `W${wks[+sMax.value].week}` : '—';
+      _syncFill(); _bvRenderWeekly(m, wks.slice(+sMin.value, +sMax.value + 1));
+    };
+  }
+}
+
+// ---- Chart helpers -------------------------------------------------------
+
+// Sets explicit pixel dimensions on the chart canvas before Chart.js renders.
+// responsive:false prevents Chart.js from installing a ResizeObserver, so the
+// physics rAF loop can never trigger chart growth.
+function _bvChartCanvas(){
+  const c     = document.getElementById('bvChartCanvas');
+  const inner = document.querySelector('.bv-modal-inner');
+  c.width  = Math.max(480, inner ? inner.clientWidth - 64 : 716);
+  c.height = 300;
+  return c;
+}
+
+function _bvRenderHistory(m, startY, endY){
+  const canvas = _bvChartCanvas();
+  if(_bvChart){ _bvChart.destroy(); _bvChart = null; }
+  const yrs = _bvHistData.filter(y => y.year >= startY && y.year <= endY);
+
+  if(m.chartType === 'weekly-by-year'){
+    // Multi-year weekly breakdown — one line per year
+    const wNums    = Array.from({length:52}, (_, i) => i + 1);
+    const datasets = yrs.map((y, i) => ({
+      label: String(y.year),
+      data:  wNums.map(w => y.lice_violations_weekly[String(w)] ?? null),
+      borderColor: YEAR_COLORS[i % YEAR_COLORS.length],
+      borderWidth:1.5, pointRadius:0, tension:0.3, fill:false, spanGaps:true,
+    }));
+    _bvChart = new Chart(canvas, { type:'line', data:{ labels:wNums.map(w=>`W${w}`), datasets },
+      options:{ responsive:false, animation:false,
+        plugins:{ legend:{position:'top',labels:{color:'#5e88aa',font:{size:8},boxWidth:10,padding:5}}, tooltip:{mode:'index',intersect:false} },
+        scales:{ x:{grid:{color:'rgba(30,100,210,0.1)'},ticks:{color:'#5e88aa',font:{size:8},maxTicksLimit:13,maxRotation:0}},
+                 y:{grid:{color:'rgba(30,100,210,0.1)'},ticks:{color:'#5e88aa',font:{size:9}},beginAtZero:true} } } });
+
+  } else if(m.chartType === 'compliance'){
+    // Line chart: % farms below lice limit per year at week-52 snapshot
+    const labels = yrs.map(y => y.year);
+    const values = yrs.map(y => m.annualExtract ? m.annualExtract(y) : null);
+    _bvChart = new Chart(canvas, { type:'line', data:{ labels, datasets:[{
+      label:'% Below Limit', data:values,
+      borderColor:m.color, backgroundColor:m.color+'22',
+      borderWidth:2, pointRadius:4, pointBackgroundColor:m.color,
+      tension:0.3, fill:true, spanGaps:true }]},
+      options:{ responsive:false, animation:false,
+        plugins:{ legend:{display:false}, tooltip:{callbacks:{label:ctx=>`${ctx.raw?.toFixed(1) ?? '—'}%`}} },
+        scales:{ x:{grid:{color:'rgba(30,100,210,0.1)'},ticks:{color:'#5e88aa',font:{size:9}}},
+                 y:{grid:{color:'rgba(30,100,210,0.1)'},ticks:{color:'#5e88aa',font:{size:9},callback:v=>v+'%'},
+                    min:80, max:100} } } });
+
+  } else if(m.chartType === 'other-disease'){
+    // Stacked bar chart — one dataset per disease type, so the breakdown is visible per year
+    const labels = yrs.map(y => y.year);
+    // Collect all disease keys present across filtered years (excluding PD and ISA)
+    const foundKeys = [...new Set(yrs.flatMap(y => Object.keys(y.diseases||{}).filter(k=>!_SKIP_DIS.has(k))))];
+    const datasets = foundKeys.map(k => {
+      const def = OTHER_DIS_DEFS.find(d => d.key === k);
+      const label = def ? def.label : k;
+      const color = def ? def.color : '#7c3aed';
+      return {
+        label, data: yrs.map(y => y.diseases?.[k] || 0),
+        backgroundColor: color + 'aa', borderColor: color, borderWidth:1, borderRadius:3,
+      };
+    });
+    if(datasets.length === 0){
+      const ctx2 = canvas.getContext('2d');
+      ctx2.clearRect(0,0,canvas.width,canvas.height);
+      ctx2.fillStyle='#5e88aa'; ctx2.font='13px JetBrains Mono,monospace';
+      ctx2.textAlign='center'; ctx2.textBaseline='middle';
+      ctx2.fillText('No other disease data for this range',canvas.width/2,canvas.height/2);
+      return;
+    }
+    _bvChart = new Chart(canvas, { type:'bar', data:{ labels, datasets },
+      options:{ responsive:false, animation:false,
+        plugins:{ legend:{position:'top',labels:{color:'#5e88aa',font:{size:9},boxWidth:10,padding:6}} },
+        scales:{
+          x:{grid:{color:'rgba(30,100,210,0.1)'},ticks:{color:'#5e88aa',font:{size:9}},stacked:true},
+          y:{grid:{color:'rgba(30,100,210,0.1)'},ticks:{color:'#5e88aa',font:{size:9}},beginAtZero:true,stacked:true}
+        } } });
+
+  } else {
+    // Generic annual bar chart — uses annualExtract(yearObj) per metric
+    const labels = yrs.map(y => y.year);
+    const values = yrs.map(y => m.annualExtract ? m.annualExtract(y) : 0);
+    _bvChart = new Chart(canvas, { type:'bar', data:{ labels, datasets:[{
+      label:m.label, data:values,
+      backgroundColor:m.color+'44', borderColor:m.color, borderWidth:1, borderRadius:4 }]},
+      options:{ responsive:false, animation:false,
+        plugins:{ legend:{display:false} },
+        scales:{ x:{grid:{color:'rgba(30,100,210,0.1)'},ticks:{color:'#5e88aa',font:{size:9}}},
+                 y:{grid:{color:'rgba(30,100,210,0.1)'},ticks:{color:'#5e88aa',font:{size:9}},beginAtZero:true} } } });
+  }
+}
+
+function _bvRenderCorrelation(m, startY, endY){
+  const canvas = _bvChartCanvas();
+  if(_bvChart){ _bvChart.destroy(); _bvChart = null; }
+
+  const xField  = m.corrX      || 'avgTemp';
+  const xLabel  = m.corrXLabel || 'Sea Temp (°C)';
+  const xFmt    = m.corrXFmt   || (v => v.toFixed(1));
+
+  const allPts = _bv5YearData.filter(w =>
+    w.year >= startY && w.year <= endY && w[xField] != null && w.avgLice != null
+  );
+  const years = [...new Set(allPts.map(w => w.year))].sort((a,b)=>a-b);
+
+  const datasets = years.map((yr, i) => ({
+    label: String(yr),
+    data: allPts.filter(w => w.year === yr).map(w => ({x: w[xField], y: w.avgLice})),
+    backgroundColor: YEAR_COLORS[i % YEAR_COLORS.length] + 'bb',
+    pointRadius: 4.5, pointHoverRadius: 6,
+    showLine: false,
+  }));
+
+  const xs = allPts.map(p => p[xField]), ys = allPts.map(p => p.avgLice);
+  const r = _pearsonR(xs, ys);
+  if(xs.length >= 2){
+    const n = xs.length;
+    const mx = xs.reduce((a,b)=>a+b)/n, my = ys.reduce((a,b)=>a+b)/n;
+    let sxy=0, sxx=0;
+    for(let i=0;i<n;i++){ sxy+=(xs[i]-mx)*(ys[i]-my); sxx+=(xs[i]-mx)**2; }
+    const slope=sxy/sxx, intercept=my-slope*mx;
+    const xMin=Math.min(...xs), xMax=Math.max(...xs);
+    datasets.push({
+      label: `Trend  (r\u200a=\u200a${r!=null?r.toFixed(3):'—'})`,
+      data: [{x:xMin, y:slope*xMin+intercept},{x:xMax, y:slope*xMax+intercept}],
+      borderColor: 'rgba(255,255,255,0.35)', backgroundColor: 'transparent',
+      borderWidth: 1.5, pointRadius: 0, pointHoverRadius: 0,
+      showLine: true, fill: false, borderDash: [5,4],
+    });
+  }
+
+  document.getElementById('bvModalTitle').textContent =
+    `${m.label}  \u2014  r\u200a=\u200a${r!=null?r.toFixed(3):'—'}  (${startY}${startY!==endY?'–'+endY:''})`;
+
+  _bvChart = new Chart(canvas, { type:'scatter', data:{ datasets },
+    options:{ responsive:false, animation:false,
+      plugins:{
+        legend:{position:'top',labels:{color:'#5e88aa',font:{size:8},boxWidth:10,padding:5}},
+        tooltip:{callbacks:{label: ctx => `${ctx.dataset.label.startsWith('Trend')?'':ctx.dataset.label+':  '}${xLabel.split(' ')[0]} ${xFmt(ctx.parsed.x)}  Lice ${ctx.parsed.y.toFixed(3)}`}}
+      },
+      scales:{
+        x:{title:{display:true,text:xLabel,color:'#5e88aa',font:{size:9}},
+           grid:{color:'rgba(30,100,210,0.1)'},ticks:{color:'#5e88aa',font:{size:9}}},
+        y:{title:{display:true,text:'Avg Lice / Fish (\u2640)',color:'#5e88aa',font:{size:9}},
+           grid:{color:'rgba(30,100,210,0.1)'},ticks:{color:'#5e88aa',font:{size:9}},beginAtZero:true}
+      }
+    }
+  });
+}
+
+function _bvRender5YearWeekly(m, startY, endY){
+  const canvas = _bvChartCanvas();
+  if(_bvChart){ _bvChart.destroy(); _bvChart = null; }
+  const extr = { avgLice: w=>w.avgLice, aboveLimit: w=>w.aboveLimit, seaTemp: w=>w.avgTemp };
+  const fn = extr[m.key];
+  const wNums = Array.from({length:52}, (_,i)=>i+1);
+  const years = [...new Set(_bv5YearData.filter(w=>w.year>=startY&&w.year<=endY).map(w=>w.year))].sort((a,b)=>a-b);
+  // Include current year (2026) from weeklyStatsCache if available
+  const has2026 = Object.keys(weeklyStatsCache).length > 0;
+  if(has2026 && !years.includes(2026)) years.push(2026);
+  const datasets = years.map((yr, i) => {
+    let data;
+    if(yr === 2026){
+      data = wNums.map(w => { const k=`2026_${String(w).padStart(2,'0')}`; return weeklyStatsCache[k] ? fn(weeklyStatsCache[k]) : null; });
+    } else {
+      const byWeek = Object.fromEntries(_bv5YearData.filter(w=>w.year===yr).map(w=>[w.week, fn(w)]));
+      data = wNums.map(w => byWeek[w] ?? null);
+    }
+    return { label:String(yr), data, borderColor:YEAR_COLORS[i%YEAR_COLORS.length],
+             borderWidth:1.5, pointRadius:0, tension:0.3, fill:false, spanGaps:true };
+  });
+  const yTickCb = m.key==='seaTemp' ? v=>v+'°' : m.key==='avgLice' ? v=>v.toFixed(2) : undefined;
+  _bvChart = new Chart(canvas, { type:'line', data:{ labels:wNums.map(w=>`W${w}`), datasets },
+    options:{ responsive:false, animation:false,
+      plugins:{ legend:{position:'top',labels:{color:'#5e88aa',font:{size:8},boxWidth:10,padding:5}}, tooltip:{mode:'index',intersect:false} },
+      scales:{ x:{grid:{color:'rgba(30,100,210,0.1)'},ticks:{color:'#5e88aa',font:{size:8},maxTicksLimit:13,maxRotation:0}},
+               y:{grid:{color:'rgba(30,100,210,0.1)'},ticks:{color:'#5e88aa',font:{size:9},...(yTickCb?{callback:yTickCb}:{})},beginAtZero:false} } } });
+}
+
+function _bvRenderWeekly(m, wks){
+  const canvas = _bvChartCanvas();
+  if(_bvChart){ _bvChart.destroy(); _bvChart = null; }
+  const extr = { avgLice: s=>s.avgLice, aboveLimit: s=>s.aboveLimit, seaTemp: s=>s.avgTemp };
+  const fn   = extr[m.key];
+  const labels = wks.map(w => `W${w.week}`);
+  const values = wks.map(w => {
+    const k = `${w.year}_${String(w.week).padStart(2,'0')}`;
+    return weeklyStatsCache[k] ? fn(weeklyStatsCache[k]) : null;
+  });
+  _bvChart = new Chart(canvas, { type:'line', data:{ labels, datasets:[{
+    label:m.label, data:values, borderColor:m.color, backgroundColor:m.color+'18',
+    borderWidth:2, pointRadius:3, tension:0.35, fill:true, spanGaps:true }]},
+    options:{ responsive:false, animation:false,
+      plugins:{ legend:{display:false} },
+      scales:{ x:{grid:{color:'rgba(30,100,210,0.1)'},ticks:{color:'#5e88aa',font:{size:9}}},
+               y:{grid:{color:'rgba(30,100,210,0.1)'},ticks:{color:'#5e88aa',font:{size:9}},beginAtZero:false} } } });
 }
 
 // =========================================================================
