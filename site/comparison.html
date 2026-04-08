@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>LaksAtlas — Yearly Comparison</title>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="mobile.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
 <style>
@@ -728,7 +729,20 @@ footer a:hover{
     <a href="comparison.html" class="active">Compare</a>
     <a href="about.html">About</a>
   </div>
+  <button class="nav-hamburger" id="navHamburger" aria-label="Menu" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
+<div class="nav-mobile-menu" id="navMobileMenu">
+  <div class="nav-mobile-scope">
+    <a href="index.html" class="active-no">Norway</a>
+    <a href="global.html">Global</a>
+  </div>
+  <a href="index.html" class="nav-mobile-link">Overview</a>
+  <a href="map.html" class="nav-mobile-link">Live Map</a>
+  <a href="comparison.html" class="nav-mobile-link active">Compare</a>
+  <a href="about.html" class="nav-mobile-link">About</a>
+</div>
 
 <div class="hero">
   <div class="hero-label">Norwegian Salmon & Trout Farming — Multi-Year Comparison</div>
@@ -853,59 +867,7 @@ footer a:hover{
 </div>
 
 <div class="section reveal">
-  <div class="section-label">03 — Disease & Lice</div>
-  <div class="section-title">Disease pressure and lice violations reveal a persistent health burden</div>
-  <div class="section-desc">
-    ISA remains elevated compared with earlier years, PD has fluctuated sharply, and lice
-    limit violations remain a recurring system-level problem. This section lets users compare
-    the relative weight of each issue over time.
-  </div>
-
-  <div class="two-col">
-    <div class="chart-container">
-      <div class="chart-title">Disease Outbreaks Per Year</div>
-      <div class="chart-subtitle">ISA and PD confirmed cases</div>
-      <div class="chart-wrap"><canvas id="diseaseChart"></canvas></div>
-    </div>
-    <div class="chart-container">
-      <div class="chart-title">Lice Limit Violations</div>
-      <div class="chart-subtitle">Weekly instances of localities above the legal threshold</div>
-      <div class="chart-wrap"><canvas id="liceChart"></canvas></div>
-    </div>
-  </div>
-</div>
-
-<div class="section reveal">
-  <div class="section-label">04 — Industry Scale</div>
-  <div class="section-title">More fish in the system means more fish at risk</div>
-  <div class="section-desc">
-    Production growth does not automatically imply welfare improvement. Comparing smolt input,
-    sold biomass, and cleaner fish deployment helps show whether rising scale has been matched
-    by lower losses, or whether losses have expanded alongside production.
-  </div>
-
-  <div class="two-col">
-    <div class="chart-container">
-      <div class="chart-title">Smolt Put to Sea</div>
-      <div class="chart-subtitle">Millions of fish transferred to sea</div>
-      <div class="chart-wrap"><canvas id="smoltInputChart"></canvas></div>
-    </div>
-    <div class="chart-container">
-      <div class="chart-title">Production Sold</div>
-      <div class="chart-subtitle">Million tonnes round weight</div>
-      <div class="chart-wrap"><canvas id="productionChart"></canvas></div>
-    </div>
-  </div>
-
-  <div class="chart-container">
-    <div class="chart-title">Cleaner Fish Deployed</div>
-    <div class="chart-subtitle">Millions of wrasse and lumpfish used as lice control</div>
-    <div class="chart-wrap"><canvas id="cleanerChart"></canvas></div>
-  </div>
-</div>
-
-<div class="section reveal">
-  <div class="section-label">05 — Regional History</div>
+  <div class="section-label">03 — Regional History</div>
   <div class="section-title">Highlight any region's trend over time</div>
   <div class="section-desc">
     Click a region to see its year-by-year loss rate and production. Troms and Finnmark
@@ -921,7 +883,7 @@ footer a:hover{
 </div>
 
 <div class="section reveal">
-  <div class="section-label">07 — Finance &amp; Revenue</div>
+  <div class="section-label">04 — Finance &amp; Revenue</div>
   <div class="section-title">Revenue grew 14x since 1999. Volume only grew 4.6x.</div>
   <div class="section-desc">
     Total first-hand sales value for all farmed salmonids (salmon, rainbow trout, trout)
@@ -953,36 +915,49 @@ footer a:hover{
 </div>
 
 <div class="section reveal">
-  <div class="section-label">08 — Interpretation</div>
-  <div class="section-title">What this comparison page is meant to reveal</div>
+  <div class="section-label">05 — Disease & Lice</div>
+  <div class="section-title">Disease pressure and lice violations reveal a persistent health burden</div>
+
+  <div class="two-col">
+    <div class="chart-container">
+      <div class="chart-title">Disease Outbreaks Per Year</div>
+      <div class="chart-subtitle">ISA and PD confirmed cases</div>
+      <div class="chart-wrap"><canvas id="diseaseChart"></canvas></div>
+    </div>
+    <div class="chart-container">
+      <div class="chart-title">Lice Limit Violations</div>
+      <div class="chart-subtitle">Weekly instances of localities above the legal threshold</div>
+      <div class="chart-wrap"><canvas id="liceChart"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<div class="section reveal">
+  <div class="section-label">06 — Industry Scale</div>
+  <div class="section-title">More fish in the system means more fish at risk</div>
   <div class="section-desc">
-    The key question is not only whether losses rise or fall in a single year, but whether
-    the overall system is trending toward better outcomes. Users should be able to see whether
-    lower losses are sustained, whether disease pressure changes, and whether production growth
-    comes with a proportional welfare cost.
+    Production growth does not automatically imply welfare improvement. Comparing smolt input,
+    sold biomass, and cleaner fish deployment helps show whether rising scale has been matched
+    by lower losses, or whether losses have expanded alongside production.
   </div>
 
-  <div class="stat-grid">
-    <div class="stat-block">
-      <div class="stat-block-label">Core Question</div>
-      <div class="stat-block-value cyan" style="font-size:28px">Trend</div>
-      <div class="stat-block-sub">Are conditions improving over time, or only shifting in form?</div>
+  <div class="two-col">
+    <div class="chart-container">
+      <div class="chart-title">Smolt Put to Sea</div>
+      <div class="chart-subtitle">Millions of fish transferred to sea</div>
+      <div class="chart-wrap"><canvas id="smoltInputChart"></canvas></div>
     </div>
-    <div class="stat-block">
-      <div class="stat-block-label">Main Signal</div>
-      <div class="stat-block-value red" style="font-size:28px">Losses</div>
-      <div class="stat-block-sub">Sea losses remain the clearest welfare indicator at national scale.</div>
+    <div class="chart-container">
+      <div class="chart-title">Production Sold</div>
+      <div class="chart-subtitle">Million tonnes round weight</div>
+      <div class="chart-wrap"><canvas id="productionChart"></canvas></div>
     </div>
-    <div class="stat-block">
-      <div class="stat-block-label">Hidden Burden</div>
-      <div class="stat-block-value magenta" style="font-size:28px">Smolt Loss</div>
-      <div class="stat-block-sub">Large losses occur before sea transfer and deserve equal visibility.</div>
-    </div>
-    <div class="stat-block">
-      <div class="stat-block-label">Pressure Markers</div>
-      <div class="stat-block-value amber" style="font-size:28px">Lice & Disease</div>
-      <div class="stat-block-sub">ISA, PD, and lice violations help explain why losses remain high.</div>
-    </div>
+  </div>
+
+  <div class="chart-container">
+    <div class="chart-title">Cleaner Fish Deployed</div>
+    <div class="chart-subtitle">Millions of wrasse and lumpfish used as lice control</div>
+    <div class="chart-wrap"><canvas id="cleanerChart"></canvas></div>
   </div>
 </div>
 
@@ -2043,5 +2018,6 @@ window.addEventListener('load', () => {
   btn.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});
 })();
 </script>
+<script src="mobile.js"></script>
 </body>
 </html>

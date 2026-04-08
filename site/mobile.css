@@ -4,6 +4,10 @@
  * Breakpoints: 768px (tablet/phone), 420px (small phone)
  */
 
+/* Hidden on desktop, shown only via media query below */
+.nav-hamburger { display: none; }
+.nav-mobile-menu { display: none; }
+
 /* ============================================================
    PREVENT HORIZONTAL OVERFLOW — must be first
    ============================================================ */
