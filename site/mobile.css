@@ -7,6 +7,8 @@
 /* Hidden on desktop, shown only via media query below */
 .nav-hamburger { display: none; }
 .nav-mobile-menu { display: none; }
+.map-filter-btn { display: none; }
+.drawer-backdrop { display: none; }
 
 /* ============================================================
    PREVENT HORIZONTAL OVERFLOW — must be first
@@ -345,59 +347,83 @@
 /* ============================================================
    MAP PAGE (map.html)
    Uses <header> not <nav>, different class names (.logo not .nav-logo)
+   Two-row header on mobile: row1 = logo+hamburger (54px), row2 = week nav (40px)
+   Filter button = full-width bar pinned to bottom (48px)
    ============================================================ */
 @media (max-width: 768px) {
 
-  /* Header */
+  /* Two-row header: row1 logo+hamburger, row2 week nav */
   header {
     display: flex !important;
-    justify-content: space-between !important;
+    flex-wrap: wrap !important;
     align-items: center !important;
     padding: 0 14px !important;
-    height: 54px !important;
+    height: auto !important;
   }
 
   header .scope-toggle { display: none !important; }
 
-  /* Keep week nav visible, hide badge and no-data message */
+  /* Hide badge and no-data message; keep header-meta visible as row 2 */
   .meta-badge   { display: none !important; }
   .week-no-data { display: none !important; }
 
-  .logo     { display: flex; align-items: center; gap: 8px; text-decoration: none; flex-shrink: 0; }
-  .logo-img { height: 28px !important; }
-  .logo-text{ font-size: 11px !important; letter-spacing: 1.6px !important; }
+  /* Row 1: logo fills gap between itself and hamburger */
+  .logo {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    text-decoration: none !important;
+    flex: 1 !important;
+    height: 54px !important;
+  }
+  .logo-img  { height: 28px !important; }
+  .logo-text { font-size: 11px !important; letter-spacing: 1.6px !important; }
 
-  .week-nav {
-    gap: 6px !important;
+  /* Hamburger stays on row 1 */
+  header .nav-hamburger {
+    display: flex !important;
+    height: 54px !important;
+    align-items: center !important;
   }
 
+  /* Row 2: week nav spans full width, centred */
+  .header-meta {
+    display: flex !important;
+    width: 100% !important;
+    justify-content: center !important;
+    align-items: center !important;
+    height: 40px !important;
+    border-top: 1px solid rgba(0,200,255,0.08) !important;
+  }
+
+  .week-nav    { gap: 8px !important; }
   .week-display {
-    font-size: 10px !important;
+    font-size: 11px !important;
     white-space: nowrap !important;
+    min-width: 0 !important;
   }
-
   .week-nav-btn {
-    width: 26px !important;
-    height: 26px !important;
-    font-size: 16px !important;
+    width: 32px !important;
+    height: 32px !important;
+    font-size: 18px !important;
     padding: 0 !important;
   }
 
-  /* Hamburger visible in map header */
-  header .nav-hamburger {
-    display: flex !important;
+  /* nav-mobile-menu on map page must clear the taller header (54+40=94px) */
+  header + .nav-mobile-menu {
+    top: 94px !important;
   }
 
-  /* Full-screen map */
+  /* Full-screen map — header 94px, bottom bar 48px */
   .layout {
     display: block !important;
-    height: calc(100vh - 54px) !important;
-    padding-top: 54px !important;
+    padding-top: 94px !important;
+    height: calc(100vh - 94px) !important;
   }
 
   #map {
     width: 100vw !important;
-    height: calc(100vh - 54px) !important;
+    height: calc(100vh - 94px - 48px) !important;
   }
 
   /* Right panel hidden on mobile */
@@ -408,11 +434,11 @@
     display: flex !important;
     flex-direction: column !important;
     position: fixed !important;
-    top: 54px !important;
+    top: 94px !important;
     left: -100% !important;
     width: 88vw !important;
     max-width: 340px !important;
-    height: calc(100vh - 54px) !important;
+    height: calc(100vh - 94px) !important;
     z-index: 950 !important;
     background: rgba(4,9,26,0.97) !important;
     backdrop-filter: blur(20px) !important;
@@ -437,32 +463,37 @@
   }
   .drawer-backdrop.open { display: block; }
 
-  /* Floating filter button over map */
+  /* Full-width filter bar pinned to bottom */
   .map-filter-btn {
     display: flex !important;
     position: fixed !important;
-    bottom: 80px !important;
-    right: 16px !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    height: 48px !important;
     z-index: 900 !important;
     align-items: center !important;
+    justify-content: center !important;
     gap: 8px !important;
-    background: rgba(4,9,26,0.92) !important;
-    border: 1px solid rgba(0,200,255,0.35) !important;
-    border-radius: 12px !important;
-    padding: 11px 16px !important;
+    background: rgba(4,9,26,0.95) !important;
+    border: none !important;
+    border-top: 1px solid rgba(0,200,255,0.25) !important;
+    border-radius: 0 !important;
+    padding: 0 16px !important;
     color: var(--neon-cyan) !important;
     font-family: 'JetBrains Mono', monospace !important;
-    font-size: 11px !important;
-    letter-spacing: 1px !important;
+    font-size: 12px !important;
+    letter-spacing: 1.2px !important;
     text-transform: uppercase !important;
     cursor: pointer !important;
     backdrop-filter: blur(12px) !important;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.4) !important;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.4) !important;
   }
 
-  /* Legend — smaller and centered */
+  /* Legend — sits above the filter bar */
   .map-legend {
-    bottom: 16px !important;
+    bottom: 56px !important;
     padding: 7px 10px !important;
     gap: 4px !important;
     flex-wrap: wrap !important;
