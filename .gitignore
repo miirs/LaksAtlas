@@ -140,8 +140,7 @@ vite.config.ts.timestamp-*
 
 # Secrets — NEVER commit real credentials
 .env
-.env.local
-.env.production
+.env.*
 
 # Python
 __pycache__/
