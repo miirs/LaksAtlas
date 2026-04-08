@@ -5,13 +5,26 @@
  */
 
 /* ============================================================
+   PREVENT HORIZONTAL OVERFLOW — must be first
+   ============================================================ */
+@media (max-width: 768px) {
+  html, body {
+    overflow-x: hidden !important;
+    max-width: 100% !important;
+  }
+}
+
+/* ============================================================
    NAVIGATION
    ============================================================ */
 @media (max-width: 768px) {
   nav {
-    grid-template-columns: 1fr auto !important;
-    padding: 0 16px !important;
-    height: 56px !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 0 14px !important;
+    height: 54px !important;
+    gap: 10px !important;
   }
 
   /* Hide text nav links — user navigates via year tabs */
@@ -19,18 +32,28 @@
     display: none !important;
   }
 
+  .nav-logo {
+    flex-shrink: 0 !important;
+    gap: 8px !important;
+  }
+
   .nav-logo-img {
-    height: 30px !important;
+    height: 28px !important;
   }
 
   .nav-logo-text {
-    font-size: 12px !important;
-    letter-spacing: 1.8px !important;
+    font-size: 11px !important;
+    letter-spacing: 1.6px !important;
+  }
+
+  .scope-toggle {
+    flex-shrink: 0 !important;
   }
 
   .scope-btn {
     padding: 5px 10px !important;
     font-size: 10px !important;
+    letter-spacing: 0.5px !important;
   }
 }
 
