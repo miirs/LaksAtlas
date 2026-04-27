@@ -392,11 +392,34 @@ footer a:hover{color:var(--neon-cyan)}
     </div>
   </div>
 
+  <!-- SECTION 5: STOCKED VS LOST -->
+  <div class="section reveal">
+    <div class="section-tag">05 — Individuals in, individuals out</div>
+    <div class="section-title">For every fish put to sea, how many never make it?</div>
+    <div class="section-desc">
+      Each bar below represents the total number of fish stocked into sea cages that year.
+      The red portion is what was lost. The grey portion reached harvest.
+      The line shows the loss rate — losses as a percentage of fish put to sea.
+    </div>
+    <div class="chart-container">
+      <div class="chart-title">Fish Put to Sea vs. Sea Phase Losses</div>
+      <div class="chart-subtitle">Millions of individuals · 2001–2024 · loss rate % on right axis</div>
+      <div class="chart-wrap" style="height:400px"><canvas id="stockedLostChart"></canvas></div>
+    </div>
+    <div class="callout callout-red">
+      <div class="callout-label" style="color:var(--neon-red)">Scale of the problem</div>
+      <p>In 2024, <strong>462.8 million fish</strong> were put into Norwegian sea cages.
+      <strong>70.3 million</strong> — roughly 1 in 7 — never reached slaughter.
+      At peak years the loss rate has exceeded 20%, meaning more than 1 in 5 fish stocked did not make it.
+      These are not edge cases or outliers. This is the baseline reality of Norwegian salmon farming at scale.</p>
+    </div>
+  </div>
+
 </div><!-- /page-wrap -->
 
 <footer>
   <span>LaksAtlas — Educational use only. No commercial value.</span>
-  <span>Data: Fiskeridirektoratet (sta-laks-mat-08-tap) · Veterinærinstituttet Fiskehelserapporten</span>
+  <span>Data: Fiskeridirektoratet (sta-laks-mat-08-tap · sta-laks-mat-05-kjop) · Veterinærinstituttet Fiskehelserapporten</span>
   <span>Contact: Miiro Virtanen — <a href="mailto:miiro.i.virtanen@nord.no">miiro.i.virtanen@nord.no</a></span>
 </footer>
 
@@ -589,6 +612,88 @@ new Chart(document.getElementById('stackedChart'),{
         stacked:true,
         grid:{display:false},
         ticks:{color:'#5e88aa',maxTicksLimit:10}
+      }
+    }
+  }
+});
+
+/* =========================================================================
+   DATA — fish put to sea (utsett) · 2001–2024
+   Source: Fiskeridirektoratet sta-laks-mat-05-kjop (Utsett sheet)
+========================================================================= */
+const STOCKED_Y=['2001','2002','2003','2004','2005','2006','2007','2008','2009','2010','2011','2012','2013','2014','2015','2016','2017','2018','2019','2020','2021','2022','2023','2024'];
+const STOCKED=[130736,135969,144863,134826,182775.3,214603.8,233019,251977.8,255503.9,277579.4,302516.2,298941.3,312397.8,317797.7,332785.8,334382.7,359442.5,365698.8,378737.7,390156.1,409518.5,442630,456690.1,462770.7];
+// Total losses for matching years (2001–2024 = index 3 onward in TOTAL)
+const TOTAL_MATCHED=STOCKED_Y.map(y=>{ const i=YEARS.indexOf(y); return i>=0?TOTAL[i]:null; });
+const SURVIVED=STOCKED.map((s,i)=>Math.max(0,s-TOTAL_MATCHED[i]));
+const LOSS_RATE=STOCKED.map((s,i)=>+(TOTAL_MATCHED[i]/s*100).toFixed(1));
+
+/* Chart 5 — Stocked vs lost (stacked bar + loss rate line) */
+new Chart(document.getElementById('stockedLostChart'),{
+  type:'bar',
+  data:{
+    labels:STOCKED_Y,
+    datasets:[
+      {
+        label:'Fish reaching harvest',
+        data:SURVIVED.map(v=>v/1000),
+        backgroundColor:'rgba(30,100,180,0.22)',
+        borderColor:'rgba(30,100,180,0.45)',
+        borderWidth:1,
+        borderRadius:2,
+        stack:'s'
+      },
+      {
+        label:'Sea phase losses',
+        data:TOTAL_MATCHED.map(v=>v/1000),
+        backgroundColor:'rgba(255,71,87,0.55)',
+        borderColor:'rgba(255,71,87,0.85)',
+        borderWidth:1,
+        borderRadius:2,
+        stack:'s'
+      },
+      {
+        label:'Loss rate %',
+        data:LOSS_RATE,
+        type:'line',
+        yAxisID:'yRate',
+        borderColor:'rgba(244,165,53,0.9)',
+        backgroundColor:'transparent',
+        borderWidth:2,
+        pointRadius:3,
+        tension:0.3,
+        order:-1
+      }
+    ]
+  },
+  options:{
+    responsive:true,
+    maintainAspectRatio:false,
+    plugins:{
+      legend:{position:'top',labels:{color:'#5e88aa',font:{size:11}}},
+      tooltip:{
+        callbacks:{
+          label:ctx=>{
+            if(ctx.dataset.label==='Loss rate %') return 'Loss rate: '+ctx.parsed.y+'%';
+            return ctx.dataset.label+': '+(ctx.parsed.y).toFixed(1)+'M fish';
+          }
+        }
+      }
+    },
+    scales:{
+      x:{stacked:true,grid:{display:false},ticks:{color:'#5e88aa',maxTicksLimit:12}},
+      y:{
+        stacked:true,
+        grid:{color:'rgba(255,255,255,0.03)'},
+        ticks:{color:'#5e88aa',callback:v=>v+'M'},
+        title:{display:true,text:'Millions of fish',color:'#2a4560',font:{size:10}}
+      },
+      yRate:{
+        position:'right',
+        min:0,max:30,
+        grid:{display:false},
+        ticks:{color:'rgba(244,165,53,0.7)',callback:v=>v+'%'},
+        title:{display:true,text:'Loss rate',color:'rgba(244,165,53,0.5)',font:{size:10}}
       }
     }
   }
