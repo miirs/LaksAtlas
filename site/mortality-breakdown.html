@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LaksAtlas — What's Hiding in the Numbers</title>
+<title>LaksAtlas — Two Ways to Count the Same Fish</title>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="mobile.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
@@ -225,7 +225,7 @@ footer a:hover{color:var(--neon-cyan)}
     <a href="javascript:history.back()" class="back-link">← Back</a>
     <br><br>
     <div class="page-tag">Deep dive</div>
-    <h1 class="page-title">What's hiding<br><span>in the numbers</span></h1>
+    <h1 class="page-title">Two ways to<br><span>count the same fish</span></h1>
     <p class="page-lead">
       Norwegian salmon farmers report four categories of sea phase losses to the Directorate of Fisheries:
       dead fish, slaughterhouse rejects, escapees, and "others." The Veterinary Institute's annual
@@ -260,12 +260,12 @@ footer a:hover{color:var(--neon-cyan)}
 
   <!-- SECTION 1: GAP CHART -->
   <div class="section reveal">
-    <div class="section-tag">01 — The gap</div>
-    <div class="section-title">Mortality never tells the full story</div>
+    <div class="section-tag">01 — The two figures</div>
+    <div class="section-title">Reported mortality and total losses are not the same number</div>
     <div class="section-desc">
-      The line below labelled "mortality" is what most statistical summaries report. The shaded area above it
-      is what disappears into other categories. In 2024, over 11 million fish were lost through channels
-      other than recorded natural mortality.
+      The Fiskehelserapporten uses reported dead fish (Dødfisk) to calculate mortality risk.
+      The total loss figure from Fiskeridirektoratet includes all four reporting categories.
+      The chart below shows both over time. In 2024 the difference was around 11 million fish.
     </div>
     <div class="chart-container">
       <div class="chart-title">Total Losses vs. Reported Mortality</div>
@@ -289,11 +289,10 @@ footer a:hover{color:var(--neon-cyan)}
   <!-- SECTION 2: OTHERS CHART -->
   <div class="section reveal">
     <div class="section-tag">02 — The "Others" category</div>
-    <div class="section-title">8–12 million fish per year — unclassified</div>
+    <div class="section-title">The "Annet" category over time</div>
     <div class="section-desc">
-      "Annet" (Others) has never been zero. It represents millions of fish every single year whose cause of removal
-      from stock is not recorded as natural mortality. The category absorbs events the industry considers
-      exceptional — but exceptional events in Norwegian aquaculture happen every year.
+      "Annet" has been present in every year of reporting. The charts below show its absolute volume
+      and its share of total losses from 1998 to 2024.
     </div>
     <div class="two-col">
       <div class="chart-container">
@@ -307,18 +306,18 @@ footer a:hover{color:var(--neon-cyan)}
         <div class="chart-wrap"><canvas id="othersPctChart"></canvas></div>
       </div>
     </div>
-    <div class="callout callout-red">
-      <div class="callout-label" style="color:var(--neon-red)">What is actually killing the fish</div>
-      <p>AquaCloud — an industry initiative collecting daily cause-of-death data from farm management systems —
-      covered 408 sea sites in 2025, representing approximately 49% of all Norwegian salmon sea sites.
+    <div class="callout callout-amber">
+      <div class="callout-label" style="color:var(--neon-amber)">Cause-of-death data from AquaCloud</div>
+      <p>AquaCloud is an industry initiative collecting daily cause-of-death data from farm management systems.
+      It covered 408 sea sites in 2025, representing approximately 49% of all Norwegian salmon sea sites.
       The three leading causes of registered mortality were:
       <strong>Injuries and trauma (33.5%)</strong>,
       <strong>Infectious diseases (28.1%)</strong>, and
       <strong>Unknown cause (27.4%)</strong>.</p>
       <p>Injuries and trauma include damage from delousing operations and handling.
       Infectious diseases include HSMB, CMS, and winter ulcer among others.
-      The 27.4% in "Unknown cause" is registered dead fish where no cause was recorded at the site.
-      These categories cover only the "Dødfisk" column — the "Annet" losses are not captured here at all.</p>
+      The 27.4% in "Unknown cause" represents registered dead fish where no cause was recorded at the site.
+      These categories apply to the "Dødfisk" column only. "Annet" losses are not included in AquaCloud's figures.</p>
     </div>
   </div>
 
@@ -363,13 +362,12 @@ footer a:hover{color:var(--neon-cyan)}
 
   <!-- SECTION 4: FULL STACKED BREAKDOWN -->
   <div class="section reveal">
-    <div class="section-tag">04 — Full picture</div>
-    <div class="section-title">Every category is a fish that didn't make it</div>
+    <div class="section-tag">04 — All categories together</div>
+    <div class="section-title">All four reported categories stacked</div>
     <div class="section-desc">
-      The chart below shows all four recorded categories of sea phase losses stacked together.
-      Slaughterhouse rejects (Utkast slakteri) — fish that were harvested but failed quality checks —
-      are included because they represent fish that entered the production system and never contributed
-      to food production. Escapees are included for completeness despite being small in recent years.
+      The chart below shows all four recorded categories of sea phase losses together.
+      Slaughterhouse rejects (Utkast) are fish that reached harvest but were rejected as unfit for consumption.
+      Escapees (Rømming) are included for completeness. Each category is defined separately by Fiskeridirektoratet.
     </div>
     <div class="chart-container">
       <div class="chart-title">Sea Phase Losses — Full Breakdown</div>
@@ -378,31 +376,26 @@ footer a:hover{color:var(--neon-cyan)}
     </div>
 
     <div class="callout callout-amber">
-      <div class="callout-label" style="color:var(--neon-amber)">What the stacked chart reveals</div>
-      <p>Reported mortality (Dødfisk) has grown in absolute terms as production scales up — but when viewed
-      as a share of fish stocked, the picture is more nuanced. In 2005, 182.6 million fish were put to sea.
-      By 2024 that was 461.9 million. Raw mortality counts are not directly comparable across years without
-      accounting for production volume.</p>
-      <p>In peak "Others" years like <strong>2011</strong> (12.1M) and <strong>2022</strong> (8.8M),
-      the unclassified category represents losses large enough to affect industry-level welfare statistics —
-      yet their cause remains officially undocumented.
-      <strong>Slaughterhouse rejects</strong> have held steady at 3–4 million per year:
-      fish that completed their entire production cycle and still never became food.</p>
+      <div class="callout-label" style="color:var(--neon-amber)">Reading the chart</div>
+      <p>Reported mortality (Dødfisk) has grown in absolute terms as production scales up. In 2005, 182.6 million
+      fish were put to sea; by 2024 that was 461.9 million. Raw counts are not directly comparable across years
+      without accounting for production volume — the rate charts in Section 05 show the same data relative to fish stocked.</p>
+      <p>"Annet" reached its highest absolute volume in <strong>2011</strong> (12.1M) and <strong>2022</strong> (8.8M).
+      Slaughterhouse rejects (Utkast) have remained broadly stable at 3–4 million per year across the full period.</p>
       <p>The Norwegian government's target is <strong>5% mortality per production cycle</strong>.
       The Fiskehelserapporten 2025 reports a production cycle mortality risk of <strong>14.7%</strong> for salmon
-      cycles completed in 2025 — nearly three times the target. That figure uses only "Dødfisk."
-      The total loss rate including all categories is higher still.</p>
+      cycles completed in 2025, based on Dødfisk only.</p>
     </div>
   </div>
 
   <!-- SECTION 5: STOCKED VS LOST -->
   <div class="section reveal">
-    <div class="section-tag">05 — Loss rate in context</div>
-    <div class="section-title">What share of every year's fish never made it?</div>
+    <div class="section-tag">05 — Relative to fish stocked</div>
+    <div class="section-title">Losses and mortality as a share of fish put to sea</div>
     <div class="section-desc">
-      Dividing total sea phase losses by fish put to sea gives a loss rate that is comparable across years —
-      production grew from 131 million fish stocked in 2001 to 463 million in 2024, so absolute numbers
-      are not directly comparable. The percentage is.
+      Dividing by fish put to sea makes years comparable regardless of production volume.
+      The first chart uses total losses (all four categories). The second uses Dødfisk only,
+      matching the method in the Fiskehelserapporten.
     </div>
     <div class="chart-container">
       <div class="chart-title">Sea Phase Loss Rate — All categories</div>
@@ -414,12 +407,12 @@ footer a:hover{color:var(--neon-cyan)}
       <div class="chart-subtitle">Reported dead fish ÷ fish put to sea · % · 2001–2024 · method used by Fiskehelserapporten</div>
       <div class="chart-wrap" style="height:380px"><canvas id="mortalityRateChart2"></canvas></div>
     </div>
-    <div class="callout callout-red">
-      <div class="callout-label" style="color:var(--neon-red)">Scale of the problem</div>
+    <div class="callout callout-amber">
+      <div class="callout-label" style="color:var(--neon-amber)">2024 in numbers</div>
       <p>In 2024, <strong>462.8 million fish</strong> were put into Norwegian sea cages.
-      <strong>70.3 million</strong> — roughly 1 in 7 — never reached slaughter.
-      At peak years the loss rate has exceeded 20%, meaning more than 1 in 5 fish stocked did not make it.
-      These are not edge cases or outliers. This is the baseline reality of Norwegian salmon farming at scale.</p>
+      Total losses were <strong>70.3 million</strong> — a loss rate of around 15%.
+      Reported mortality (Dødfisk) was 59.1 million — a mortality rate of around 13%.
+      The difference between the two rates reflects the other three reporting categories.</p>
     </div>
   </div>
 
