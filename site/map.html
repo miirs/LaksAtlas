@@ -1042,6 +1042,13 @@ function buildDetailsSheet(localities) {
     el.addEventListener('click', () => toggleDetailChart(c.metric, el));
     container.appendChild(el);
   });
+
+  // Health Overview button — same as the right panel button, but for mobile
+  const bvBtn = document.createElement('button');
+  bvBtn.className = 'bv-panel-btn';
+  bvBtn.id = 'bvViewBtnMobile';
+  bvBtn.innerHTML = '<span class="bv-panel-btn-title">&#9670; Health Overview</span><span class="bv-panel-btn-sub">lice &middot; disease &middot; escapes &middot; trends</span><span style="margin-top:4px;font-size:10px;font-family:\'JetBrains Mono\',monospace;color:rgba(0,200,255,0.55);letter-spacing:0.05em">&#8599; tap to explore</span>';
+  container.appendChild(bvBtn);
 }
 
 function toggleDetailChart(metric, cardEl) {
@@ -1295,7 +1302,7 @@ let _bvActive=false, _bvBubbles=[], _bvSel=null, _bvHistData=null, _bv5YearData=
 
 // ---- Entry points --------------------------------------------------------
 
-document.getElementById('rightPanel').addEventListener('click', e => { if(!e.target.closest('#bvViewBtn')) return;
+function _bvLaunch() {
   const t = Date.now();
   Promise.all([
     fetch('../data/health_history.json?t='     + t).then(r=>r.json()).catch(()=>null),
@@ -1305,7 +1312,10 @@ document.getElementById('rightPanel').addEventListener('click', e => { if(!e.tar
     _bv5YearData  = stats ? stats.weeks : null;
     _bvStart();
   });
-});
+}
+
+document.getElementById('rightPanel').addEventListener('click', e => { if(!e.target.closest('#bvViewBtn')) return; _bvLaunch(); });
+document.getElementById('detailsSheetStats').addEventListener('click', e => { if(!e.target.closest('#bvViewBtnMobile')) return; _bvLaunch(); });
 document.getElementById('bvExitBtn').addEventListener('click', _bvExit);
 document.getElementById('bvChartClose').addEventListener('click', _bvCloseChart);
 // Clicking the dimmed backdrop also closes the modal
