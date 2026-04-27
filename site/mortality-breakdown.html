@@ -659,6 +659,16 @@ new Chart(document.getElementById('stockedLostChart'),{
         borderWidth:1.5,
         pointRadius:0,
         backgroundColor:'transparent'
+      },
+      {
+        label:'Government target (5%)',
+        data:STOCKED_Y.map(()=>5),
+        type:'line',
+        borderColor:'rgba(29,233,168,0.55)',
+        borderDash:[3,5],
+        borderWidth:1.5,
+        pointRadius:0,
+        backgroundColor:'transparent'
       }
     ]
   },
@@ -671,6 +681,7 @@ new Chart(document.getElementById('stockedLostChart'),{
         callbacks:{
           label:ctx=>{
             if(ctx.datasetIndex===1) return 'Period average: '+ctx.parsed.y+'%';
+            if(ctx.datasetIndex===2) return 'Government target: 5%';
             const i=ctx.dataIndex;
             return 'Lost: '+ctx.parsed.y+'% of '+Math.round(STOCKED[i]/1000)+'M stocked ('+Math.round(TOTAL_MATCHED[i]/1000)+'M fish)';
           }
