@@ -597,6 +597,40 @@
 }
 
 /* ============================================================
+   ABOUT PAGE — Video hero
+   ============================================================ */
+@media (max-width: 768px) {
+
+  /* Reduce hero height so it doesn't eat the full screen on small phones */
+  .video-hero {
+    height: 60vh !important;
+    min-height: 320px !important;
+  }
+
+  /* Ensure the video fills its container without overflowing horizontally */
+  .video-hero video {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+  }
+
+  /* Move the scroll CTA up so it clears mobile browser chrome */
+  .video-hero-cta {
+    bottom: 28px !important;
+  }
+
+  .video-hero-cta span {
+    font-size: 10px !important;
+    letter-spacing: 2px !important;
+  }
+
+  /* Content padding more compact on mobile */
+  .content-wrap {
+    padding: 48px 16px 80px !important;
+  }
+}
+
+/* ============================================================
    CTA & FOOTER
    ============================================================ */
 @media (max-width: 768px) {
