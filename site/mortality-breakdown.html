@@ -397,17 +397,17 @@ footer a:hover{color:var(--neon-cyan)}
 
   <!-- SECTION 5: STOCKED VS LOST -->
   <div class="section reveal">
-    <div class="section-tag">05 — Individuals in, individuals out</div>
-    <div class="section-title">For every fish put to sea, how many never make it?</div>
+    <div class="section-tag">05 — Loss rate in context</div>
+    <div class="section-title">What share of every year's fish never made it?</div>
     <div class="section-desc">
-      Each bar below represents the total number of fish stocked into sea cages that year.
-      The red portion is what was lost. The grey portion reached harvest.
-      The line shows the loss rate — losses as a percentage of fish put to sea.
+      Dividing total sea phase losses by fish put to sea gives a loss rate that is comparable across years —
+      production grew from 131 million fish stocked in 2001 to 463 million in 2024, so absolute numbers
+      are not directly comparable. The percentage is.
     </div>
     <div class="chart-container">
-      <div class="chart-title">Fish Put to Sea vs. Sea Phase Losses</div>
-      <div class="chart-subtitle">Millions of individuals · 2001–2024 · loss rate % on right axis</div>
-      <div class="chart-wrap" style="height:400px"><canvas id="stockedLostChart"></canvas></div>
+      <div class="chart-title">Sea Phase Loss Rate</div>
+      <div class="chart-subtitle">Total sea losses ÷ fish put to sea · % · 2001–2024</div>
+      <div class="chart-wrap" style="height:380px"><canvas id="stockedLostChart"></canvas></div>
     </div>
     <div class="callout callout-red">
       <div class="callout-label" style="color:var(--neon-red)">Scale of the problem</div>
@@ -628,44 +628,32 @@ const STOCKED_Y=['2001','2002','2003','2004','2005','2006','2007','2008','2009',
 const STOCKED=[130736,135969,144863,134826,182775.3,214603.8,233019,251977.8,255503.9,277579.4,302516.2,298941.3,312397.8,317797.7,332785.8,334382.7,359442.5,365698.8,378737.7,390156.1,409518.5,442630,456690.1,462770.7];
 // Total losses for matching years (2001–2024 = index 3 onward in TOTAL)
 const TOTAL_MATCHED=STOCKED_Y.map(y=>{ const i=YEARS.indexOf(y); return i>=0?TOTAL[i]:null; });
-const SURVIVED=STOCKED.map((s,i)=>Math.max(0,s-TOTAL_MATCHED[i]));
 const LOSS_RATE=STOCKED.map((s,i)=>+(TOTAL_MATCHED[i]/s*100).toFixed(1));
 
-/* Chart 5 — Stocked vs lost (stacked bar + loss rate line) */
+/* Chart 5 — Loss rate % (total losses / fish put to sea) */
+const AVG_RATE=+(LOSS_RATE.reduce((a,b)=>a+b,0)/LOSS_RATE.length).toFixed(1);
 new Chart(document.getElementById('stockedLostChart'),{
   type:'bar',
   data:{
     labels:STOCKED_Y,
     datasets:[
       {
-        label:'Fish reaching harvest',
-        data:SURVIVED.map(v=>v/1000),
-        backgroundColor:'rgba(30,100,180,0.22)',
-        borderColor:'rgba(30,100,180,0.45)',
-        borderWidth:1,
-        borderRadius:2,
-        stack:'s'
-      },
-      {
-        label:'Sea phase losses',
-        data:TOTAL_MATCHED.map(v=>v/1000),
-        backgroundColor:'rgba(255,71,87,0.55)',
-        borderColor:'rgba(255,71,87,0.85)',
-        borderWidth:1,
-        borderRadius:2,
-        stack:'s'
-      },
-      {
-        label:'Loss rate %',
+        label:'Loss rate (losses ÷ stocked)',
         data:LOSS_RATE,
+        backgroundColor:LOSS_RATE.map(v=>v>=20?'rgba(255,71,87,0.7)':v>=17?'rgba(255,120,50,0.6)':'rgba(255,165,0,0.5)'),
+        borderColor:LOSS_RATE.map(v=>v>=20?'rgba(255,71,87,0.9)':v>=17?'rgba(255,120,50,0.85)':'rgba(255,165,0,0.8)'),
+        borderWidth:1,
+        borderRadius:3
+      },
+      {
+        label:'Average ('+AVG_RATE+'%)',
+        data:STOCKED_Y.map(()=>AVG_RATE),
         type:'line',
-        yAxisID:'yRate',
-        borderColor:'rgba(244,165,53,0.9)',
-        backgroundColor:'transparent',
-        borderWidth:2,
-        pointRadius:3,
-        tension:0.3,
-        order:-1
+        borderColor:'rgba(0,200,255,0.5)',
+        borderDash:[6,4],
+        borderWidth:1.5,
+        pointRadius:0,
+        backgroundColor:'transparent'
       }
     ]
   },
@@ -677,26 +665,19 @@ new Chart(document.getElementById('stockedLostChart'),{
       tooltip:{
         callbacks:{
           label:ctx=>{
-            if(ctx.dataset.label==='Loss rate %') return 'Loss rate: '+ctx.parsed.y+'%';
-            return ctx.dataset.label+': '+(ctx.parsed.y).toFixed(1)+'M fish';
+            if(ctx.datasetIndex===1) return 'Period average: '+ctx.parsed.y+'%';
+            const i=ctx.dataIndex;
+            return 'Lost: '+ctx.parsed.y+'% of '+Math.round(STOCKED[i]/1000)+'M stocked ('+Math.round(TOTAL_MATCHED[i]/1000)+'M fish)';
           }
         }
       }
     },
     scales:{
-      x:{stacked:true,grid:{display:false},ticks:{color:'#5e88aa',maxTicksLimit:12}},
+      x:{grid:{display:false},ticks:{color:'#5e88aa',maxTicksLimit:12}},
       y:{
-        stacked:true,
-        grid:{color:'rgba(255,255,255,0.03)'},
-        ticks:{color:'#5e88aa',callback:v=>v+'M'},
-        title:{display:true,text:'Millions of fish',color:'#2a4560',font:{size:10}}
-      },
-      yRate:{
-        position:'right',
         min:0,max:30,
-        grid:{display:false},
-        ticks:{color:'rgba(244,165,53,0.7)',callback:v=>v+'%'},
-        title:{display:true,text:'Loss rate',color:'rgba(244,165,53,0.5)',font:{size:10}}
+        grid:{color:'rgba(255,255,255,0.03)'},
+        ticks:{color:'#5e88aa',callback:v=>v+'%'}
       }
     }
   }
