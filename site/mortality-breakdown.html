@@ -405,9 +405,14 @@ footer a:hover{color:var(--neon-cyan)}
       are not directly comparable. The percentage is.
     </div>
     <div class="chart-container">
-      <div class="chart-title">Sea Phase Loss Rate</div>
+      <div class="chart-title">Sea Phase Loss Rate — All categories</div>
       <div class="chart-subtitle">Total sea losses ÷ fish put to sea · % · 2001–2024</div>
       <div class="chart-wrap" style="height:380px"><canvas id="stockedLostChart"></canvas></div>
+    </div>
+    <div class="chart-container">
+      <div class="chart-title">Sea Phase Mortality Rate — Dødfisk only</div>
+      <div class="chart-subtitle">Reported dead fish ÷ fish put to sea · % · 2001–2024 · method used by Fiskehelserapporten</div>
+      <div class="chart-wrap" style="height:380px"><canvas id="mortalityRateChart2"></canvas></div>
     </div>
     <div class="callout callout-red">
       <div class="callout-label" style="color:var(--neon-red)">Scale of the problem</div>
@@ -676,6 +681,72 @@ new Chart(document.getElementById('stockedLostChart'),{
       x:{grid:{display:false},ticks:{color:'#5e88aa',maxTicksLimit:12}},
       y:{
         min:0,max:30,
+        grid:{color:'rgba(255,255,255,0.03)'},
+        ticks:{color:'#5e88aa',callback:v=>v+'%'}
+      }
+    }
+  }
+});
+
+/* Chart 5b — Mortality rate % (Dødfisk only / fish put to sea) */
+const MORTALITY_MATCHED=STOCKED_Y.map(y=>{ const i=YEARS.indexOf(y); return i>=0?MORTALITY[i]:null; });
+const MORT_RATE=STOCKED.map((s,i)=>+(MORTALITY_MATCHED[i]/s*100).toFixed(1));
+const AVG_MORT_RATE=+(MORT_RATE.reduce((a,b)=>a+b,0)/MORT_RATE.length).toFixed(1);
+new Chart(document.getElementById('mortalityRateChart2'),{
+  type:'bar',
+  data:{
+    labels:STOCKED_Y,
+    datasets:[
+      {
+        label:'Mortality rate (Dødfisk ÷ stocked)',
+        data:MORT_RATE,
+        backgroundColor:MORT_RATE.map(v=>v>=16?'rgba(255,71,87,0.7)':v>=13?'rgba(255,120,50,0.6)':'rgba(255,165,0,0.5)'),
+        borderColor:MORT_RATE.map(v=>v>=16?'rgba(255,71,87,0.9)':v>=13?'rgba(255,120,50,0.85)':'rgba(255,165,0,0.8)'),
+        borderWidth:1,
+        borderRadius:3
+      },
+      {
+        label:'Average ('+AVG_MORT_RATE+'%)',
+        data:STOCKED_Y.map(()=>AVG_MORT_RATE),
+        type:'line',
+        borderColor:'rgba(0,200,255,0.5)',
+        borderDash:[6,4],
+        borderWidth:1.5,
+        pointRadius:0,
+        backgroundColor:'transparent'
+      },
+      {
+        label:'Government target (5%)',
+        data:STOCKED_Y.map(()=>5),
+        type:'line',
+        borderColor:'rgba(29,233,168,0.55)',
+        borderDash:[3,5],
+        borderWidth:1.5,
+        pointRadius:0,
+        backgroundColor:'transparent'
+      }
+    ]
+  },
+  options:{
+    responsive:true,
+    maintainAspectRatio:false,
+    plugins:{
+      legend:{position:'top',labels:{color:'#5e88aa',font:{size:11}}},
+      tooltip:{
+        callbacks:{
+          label:ctx=>{
+            if(ctx.datasetIndex===1) return 'Period average: '+ctx.parsed.y+'%';
+            if(ctx.datasetIndex===2) return 'Government target: 5%';
+            const i=ctx.dataIndex;
+            return 'Mortality: '+ctx.parsed.y+'% of '+Math.round(STOCKED[i]/1000)+'M stocked ('+Math.round(MORTALITY_MATCHED[i]/1000)+'M fish)';
+          }
+        }
+      }
+    },
+    scales:{
+      x:{grid:{display:false},ticks:{color:'#5e88aa',maxTicksLimit:12}},
+      y:{
+        min:0,max:25,
         grid:{color:'rgba(255,255,255,0.03)'},
         ticks:{color:'#5e88aa',callback:v=>v+'%'}
       }
