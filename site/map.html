@@ -257,7 +257,7 @@ header { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; padding: 0 2
     <button class="bv-exit-btn" id="bvExitBtn">&#8592; Live Map</button>
     <div>
       <span class="bv-title">5 YEAR VIEW</span>
-      <span class="bv-sub">2020&ndash;2024 national averages &middot; click any bubble to explore</span>
+      <span class="bv-sub">2020&ndash;2024 national averages &middot; tap or click any bubble to explore</span>
     </div>
   </div>
   <!-- Full-screen bubble canvas is injected here by JS -->
@@ -265,7 +265,7 @@ header { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; padding: 0 2
   <!-- Placeholder visible before any bubble is clicked -->
   <div id="bvPlaceholder">
     <div class="bv-ph-inner">
-      <div class="bv-ph-chart"><span>click a bubble for graph</span></div>
+      <div class="bv-ph-chart"><span>tap a bubble for graph</span></div>
       <div class="bv-ph-slider"></div>
     </div>
   </div>
@@ -1356,6 +1356,8 @@ function _bvInitBubbles(){
   arena.appendChild(cvs);
 
   const W = cvs.width, H = cvs.height;
+  // Scale bubble radii so they fit on small screens (designed for ~1000px wide)
+  const scale = Math.min(1, W / 1000);
 
   // Hit-test clicks against current display radius (accounts for hover scaling)
   cvs.addEventListener('click', e => {
@@ -1367,6 +1369,19 @@ function _bvInitBubbles(){
     }
     if(_bvSel) _bvCloseChart();
   });
+
+  // Touch: snappy tap without 300ms delay
+  cvs.addEventListener('touchend', e => {
+    e.preventDefault();
+    const touch = e.changedTouches[0];
+    const rect = cvs.getBoundingClientRect();
+    const sx = cvs.width / rect.width, sy = cvs.height / rect.height;
+    const mx = (touch.clientX - rect.left) * sx, my = (touch.clientY - rect.top) * sy;
+    for(const b of _bvBubbles){
+      if(Math.hypot(b.x - mx, b.y - my) <= b.dr){ _bvSelect(b.key); return; }
+    }
+    if(_bvSel) _bvCloseChart();
+  }, { passive: false });
 
   // Hover: update cursor and tracked hovered bubble key
   cvs.addEventListener('mousemove', e => {
@@ -1390,7 +1405,8 @@ function _bvInitBubbles(){
       ...m,
       displayVal: String(v),
       x: ix, y: iy,
-      dr: m.r,  // display radius — lerped smoothly on hover
+      r:  m.r * scale,   // scaled radius
+      dr: m.r * scale,   // display radius — lerped smoothly on hover
     });
   });
 }

@@ -638,6 +638,42 @@
 }
 
 /* ============================================================
+   HEALTH OVERVIEW (bubble visualization) — mobile fixes
+   ============================================================ */
+@media (max-width: 768px) {
+  .bv-modal-inner {
+    padding: 12px 10px !important;
+  }
+
+  .bv-header {
+    height: 44px !important;
+    padding: 0 10px !important;
+    gap: 6px !important;
+  }
+
+  .bv-sub {
+    display: none !important;
+  }
+
+  .bv-title {
+    font-size: 11px !important;
+    letter-spacing: 1px !important;
+  }
+
+  #bvChartCanvas {
+    height: 180px !important;
+  }
+
+  .bv-chart-box h4 {
+    font-size: 11px !important;
+  }
+
+  .bv-chart-box p {
+    font-size: 10px !important;
+  }
+}
+
+/* ============================================================
    CTA & FOOTER
    ============================================================ */
 @media (max-width: 768px) {
