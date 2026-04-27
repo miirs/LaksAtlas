@@ -966,7 +966,7 @@ footer a:hover{
   </div>
   <div class="chart-container">
     <div class="chart-title">Sea Phase vs. Smolt Phase Losses</div>
-    <div class="chart-subtitle">Millions of fish lost — 2005–2024 (stacked)</div>
+    <div class="chart-subtitle">Millions of fish lost — 2005–2024 · smolt split into natural deaths + fry destruction (stacked)</div>
     <div class="chart-wrap"><canvas id="combinedChart"></canvas></div>
   </div>
 </div>
@@ -1175,6 +1175,7 @@ const PROD=[820977,947160,976535,1012381,1091134,1156314,1254257,1290161,1384693
 
 const SMOLT_Y=['2005','2006','2007','2008','2009','2010','2011','2012','2013','2014','2015','2016','2017','2018','2019','2020','2021','2022','2023','2024'];
 const SMOLT_LOSS=[83763,93727,112278,127424,110332,124790,158874,192616,217114,133032,143960,118399,119680,111823,110059,122596,144925,156303,157628,169581];
+const SMOLT_DEST=[30554,28453,36409,48329,45238,64435,80717,132834,133871,60302,64161,53270,52931,43655,45072,62684,67845,77646,86806,97097];
 
 const CLEAN_Y=['1998','1999','2000','2001','2002','2003','2004','2005','2006','2007','2008','2009','2010','2011','2012','2013','2014','2015','2016','2017','2018','2019','2020','2021','2022','2023','2024'];
 const CLEAN=[2369,2619,1876,2321,1573,1539,1135,781,682,1564,1697,4883,10977,10639,13903,16206,24467,26409,37359,54575,48929,61035,51543,45575,33443,30227,22512];
@@ -1282,7 +1283,8 @@ const COMB_SEA=COMB_YEARS.map(y=>{
   const i=Y94.indexOf(y);
   return i>=0?SEA_LOSS[i]/1000:0;
 });
-const COMB_SMOLT=SMOLT_LOSS.map(v=>v/1000);
+const COMB_SMOLT=SMOLT_LOSS.map((v,i)=>(v-SMOLT_DEST[i])/1000);
+const COMB_DEST=SMOLT_DEST.map(v=>v/1000);
 
 new Chart(document.getElementById('combinedChart'),{
   type:'bar',
@@ -1298,10 +1300,18 @@ new Chart(document.getElementById('combinedChart'),{
         borderRadius:3
       },
       {
-        label:'Smolt/juvenile losses',
+        label:'Smolt deaths (natural)',
         data:COMB_SMOLT,
         backgroundColor:'rgba(255,77,148,0.34)',
         borderColor:'rgba(255,77,148,0.82)',
+        borderWidth:1,
+        borderRadius:3
+      },
+      {
+        label:'Fry destruction (culled)',
+        data:COMB_DEST,
+        backgroundColor:'rgba(255,165,0,0.45)',
+        borderColor:'rgba(255,165,0,0.85)',
         borderWidth:1,
         borderRadius:3
       }
