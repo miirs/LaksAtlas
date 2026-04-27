@@ -227,10 +227,10 @@ footer a:hover{color:var(--neon-cyan)}
     <div class="page-tag">Deep dive</div>
     <h1 class="page-title">What's hiding<br><span>in the numbers</span></h1>
     <p class="page-lead">
-      "Mortality" is only one slice of sea phase losses. Every year, millions of fish are recorded under
-      a category called "Others" — and according to researchers, it largely consists of stock counting
-      discrepancies that cannot be attributed to a specific cause. We do not know how many of those fish
-      died, escaped, or were never there. That ambiguity is the problem.
+      Norwegian salmon farmers report four categories of sea phase losses to the Directorate of Fisheries:
+      dead fish, slaughterhouse rejects, escapees, and "others." The Veterinary Institute's annual
+      Fiskehelserapporten calculates mortality risk using only the dead fish category.
+      Everything else — millions of fish per year — sits outside the headline figure.
     </p>
   </div>
 
@@ -273,15 +273,16 @@ footer a:hover{color:var(--neon-cyan)}
       <div class="chart-wrap"><canvas id="gapChart"></canvas></div>
     </div>
     <div class="callout callout-amber">
-      <div class="callout-label" style="color:var(--neon-amber)">The classification question</div>
-      <p>Norwegian law requires all removals from stock to be reported. But <strong>how they are categorised</strong> is a different matter.
-      Companies report dead fish, escaped fish, culls, and "other" to the Directorate of Fisheries each month.
-      The "other" category <strong>appears largely to consist of counting errors</strong> — both positive and negative —
-      but it is unclear whether these relate to stocking figures, mortality, harvest counts, or escapes.
-      As researcher Baard Misund (University of Stavanger) notes: <em>"It is difficult to know what 'other' actually covers."</em></p>
-      <p>More subcategories are needed to provide sufficient precision. As it stands, it is also difficult to determine
-      whether "Others" should be included in or excluded from mortality calculations — so different analysts make
-      different choices, producing incomparable figures.</p>
+      <div class="callout-label" style="color:var(--neon-amber)">How the four categories are defined</div>
+      <p>The Fiskehelserapporten 2025 (Norwegian Veterinary Institute) gives the official definitions.
+      <strong>"Død"</strong> covers fish physically removed from cages and recorded as dead.
+      <strong>"Utkast"</strong> covers downgraded fish sorted at the slaughterhouse — harvested but unfit for human consumption.
+      <strong>"Rømming"</strong> covers fish lost through escape events.
+      <strong>"Annet"</strong> is used for losses that do not fit the other three categories.</p>
+      <p>The Veterinary Institute does <strong>not</strong> merge "annet" with "tellefeil" (counting errors)
+      when calculating mortality risk — unlike Fiskeridirektoratet's biomassestatistikk, which combines them.
+      The "Others" figures in the charts on this page, sourced from Fiskeridirektoratet, may therefore
+      include both genuine unclassified losses and stock count corrections in the same number.</p>
     </div>
   </div>
 
@@ -307,55 +308,56 @@ footer a:hover{color:var(--neon-cyan)}
       </div>
     </div>
     <div class="callout callout-red">
-      <div class="callout-label" style="color:var(--neon-red)">A welfare argument</div>
-      <p>The Norwegian government's own aquaculture white paper points to jellyfish and algae as reasons
-      <strong>not</strong> to set a hard mortality limit — citing them as "unforeseen events" that would make
-      a fixed threshold unfair to farmers. But jellyfish blooms and harmful algae are well-documented, recurring
-      phenomena in Norwegian fjords. The industry has known about these risks for decades.
-      <strong>If a farmer's fish die from a jellyfish bloom, that is still a production failure and a welfare failure.</strong></p>
-      <p>Whether those deaths end up counted as "Mortality" or disappear into "Others" or counting discrepancies,
-      the loss rate captures them either way. That is precisely why it is the more honest indicator than reported
-      mortality alone.</p>
+      <div class="callout-label" style="color:var(--neon-red)">What is actually killing the fish</div>
+      <p>AquaCloud — an industry initiative collecting daily cause-of-death data from farm management systems —
+      covered 408 sea sites in 2025, representing approximately 49% of all Norwegian salmon sea sites.
+      The three leading causes of registered mortality were:
+      <strong>Injuries and trauma (33.5%)</strong>,
+      <strong>Infectious diseases (28.1%)</strong>, and
+      <strong>Unknown cause (27.4%)</strong>.</p>
+      <p>Injuries and trauma include damage from delousing operations and handling.
+      Infectious diseases include HSMB, CMS, and winter ulcer among others.
+      The 27.4% in "Unknown cause" is registered dead fish where no cause was recorded at the site.
+      These categories cover only the "Dødfisk" column — the "Annet" losses are not captured here at all.</p>
     </div>
   </div>
 
   <!-- SECTION 3: WHAT'S IN OTHERS -->
   <div class="section reveal">
     <div class="section-tag">03 — What is in "Others"</div>
-    <div class="section-title">Largely counting errors — but we cannot be sure</div>
+    <div class="section-title">No single cause — and the data systems treat it differently</div>
     <div class="section-desc">
-      According to research on Norwegian aquaculture statistics (Misund, University of Stavanger),
-      the "Annet" category <strong>appears largely to consist of stock counting discrepancies</strong> — both positive
-      and negative — rather than a specific cause of fish death. These could relate to errors in stocking figures,
-      mortality counts, harvest tallies, or escape registrations. We simply do not know which.
-      No further breakdown is published by Fiskeridirektoratet.
+      "Annet" is a residual category for losses that do not fit the definitions of dead, escaped, or slaughterhouse-rejected fish.
+      Fiskeridirektoratet's loss statistics merge "annet" with "tellefeil" (counting errors) in their biomassestatistikk,
+      while the Veterinary Institute keeps them separate in the Fiskehelserapporten.
+      No further breakdown of "annet" is published at national level.
     </div>
     <div class="cat-grid">
       <div class="cat-card" style="border-top-color:var(--neon-amber)">
-        <div class="cat-card-label" style="color:var(--neon-amber)">Stock counting errors</div>
-        <div class="cat-card-no">The most documented contributor. Companies count fish at stocking, during transfers, and at harvest. Discrepancies between expected and actual numbers are entered as "Other" — both positive (more fish than expected) and negative (fewer). <strong>The source of the error is not recorded.</strong></div>
-      </div>
-      <div class="cat-card" style="border-top-color:var(--neon-magenta)">
-        <div class="cat-card-label" style="color:var(--neon-magenta)">Unattributed removals</div>
-        <div class="cat-card-no">Fish removed from stock that do not fit the reporting categories of dead, escaped, culled, or sold. This could include fish lost during transfers, wellboat incidents, or emergency removals where the cause is disputed or unclear at the time of reporting.</div>
+        <div class="cat-card-label" style="color:var(--neon-amber)">Counting errors (Tellefeil)</div>
+        <div class="cat-card-no">Discrepancies between expected and actual stock counts — both positive and negative — arising from stocking, transfers, harvesting, or escape records. Fiskeridirektoratet merges these with "annet" in their published loss tables. The Veterinary Institute excludes them from mortality calculations.</div>
       </div>
       <div class="cat-card" style="border-top-color:var(--neon-red)">
-        <div class="cat-card-label" style="color:var(--neon-red)">Jellyfish &amp; algae events</div>
-        <div class="cat-card-no">Mass mortality from jellyfish blooms or harmful algae (HABs) may appear here or in Mortality depending on how the farm reports. The government's own white paper cites these as "unforeseen events" — but they are documented, recurring risks in Norwegian fjords, not genuine surprises.</div>
+        <div class="cat-card-label" style="color:var(--neon-red)">Unclassified losses</div>
+        <div class="cat-card-no">Losses that do not fit the three formal categories — dead, escaped, or slaughterhouse-rejected. Could include fish removed during emergency operations, losses during transfers between sites, or mortality events where the cause was not recorded by the time of monthly reporting.</div>
       </div>
-      <div class="cat-card" style="border-top-color:var(--text-muted)">
-        <div class="cat-card-label" style="color:var(--text-dim)">Retroactive corrections</div>
-        <div class="cat-card-no">Because "Other" includes both positive and negative values, some entries represent corrections to earlier reports rather than new fish lost. This further blurs what the total figure actually represents over time.</div>
+      <div class="cat-card" style="border-top-color:var(--neon-magenta)">
+        <div class="cat-card-label" style="color:var(--neon-magenta)">Jellyfish &amp; algae events</div>
+        <div class="cat-card-no">Mass mortality from jellyfish or harmful algae blooms may be registered under "Dødfisk" or "Annet" depending on reporting practice. In 2025, algae blooms in PO9 contributed to an increase in that region's mortality risk according to the Fiskehelserapporten. These events are well documented and recurring in Norwegian fjords.</div>
+      </div>
+      <div class="cat-card" style="border-top-color:var(--neon-cyan)">
+        <div class="cat-card-label" style="color:var(--neon-cyan)">Unknown cause — registered dead</div>
+        <div class="cat-card-no">AquaCloud data (49% of sea sites, 2025) shows that 27.4% of registered dead fish had no cause recorded. These are counted in "Dødfisk" — not "Annet." This means the true share of unexPlained losses across all categories is likely higher than the "Others" chart alone suggests.</div>
       </div>
     </div>
     <div class="callout callout-cyan">
-      <div class="callout-label" style="color:var(--neon-cyan)">Why this matters for welfare measurement</div>
-      <p>Because "Others" is undefined, analysts must decide whether to include or exclude it when calculating mortality rates.
-      Different choices produce incomparable figures. The same farm, the same year, can look meaningfully different
-      depending on which definition is used. As long as subcategories are not required,
-      <strong>the "Others" figure tells us very little — except that something unaccounted for happened.</strong></p>
-      <p>Fiskeridirektoratet itself acknowledges that more subcategories are needed. Until they exist,
-      the total loss rate remains the most defensible metric: it counts every removal regardless of label.</p>
+      <div class="callout-label" style="color:var(--neon-cyan)">How the Fiskehelserapporten handles this</div>
+      <p>The Veterinary Institute calculates mortality risk using only the "Dødfisk" category — dead fish physically
+      removed from cages. Slaughterhouse rejects, escapees, and "annet" are all excluded from the mortality risk figure.
+      This is the calculation behind the reported annual mortality risk of <strong>14.2% for salmon in 2025</strong>.</p>
+      <p>The total loss rate — which includes all four categories — gives a broader picture of fish that entered
+      the production system and did not reach slaughter as intended. Both figures matter.
+      They are measuring different things.</p>
     </div>
   </div>
 
@@ -387,8 +389,9 @@ footer a:hover{color:var(--neon-cyan)}
       <strong>Slaughterhouse rejects</strong> have held steady at 3–4 million per year:
       fish that completed their entire production cycle and still never became food.</p>
       <p>The Norwegian government's target is <strong>5% mortality per production cycle</strong>.
-      Research shows only around 4–8% of completed cycles actually achieved this in the 2018–2022 period.
-      That figure is based on reported Mortality (Dødfisk) alone. Add "Others" and the gap widens further.</p>
+      The Fiskehelserapporten 2025 reports a production cycle mortality risk of <strong>14.7%</strong> for salmon
+      cycles completed in 2025 — nearly three times the target. That figure uses only "Dødfisk."
+      The total loss rate including all categories is higher still.</p>
     </div>
   </div>
 
