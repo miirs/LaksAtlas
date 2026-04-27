@@ -972,6 +972,10 @@ footer a:hover{
     <div class="chart-title">Sea Phase vs. Smolt Phase Losses</div>
     <div class="chart-subtitle">Millions of fish lost — 2005–2021 · smolt split into natural deaths + fry destruction (stacked)</div>
     <div class="chart-wrap"><canvas id="combinedChart"></canvas></div>
+    <label style="display:inline-flex;align-items:center;gap:8px;margin-top:12px;cursor:pointer;user-select:none;font-size:12px;color:var(--text-dim);font-family:'JetBrains Mono',monospace">
+      <input type="checkbox" id="toggleCulled" checked style="accent-color:var(--neon-amber);width:14px;height:14px;cursor:pointer">
+      Include fry destruction (culled)
+    </label>
   </div>
 </div>
 
@@ -1294,7 +1298,7 @@ const COMB_SEA=COMB_YEARS.map(y=>{
 const COMB_SMOLT=SMOLT_LOSS.map((v,i)=>(v-SMOLT_DEST[i])/1000);
 const COMB_DEST=SMOLT_DEST.map(v=>v/1000);
 
-new Chart(document.getElementById('combinedChart'),{
+const combinedChartInst=new Chart(document.getElementById('combinedChart'),{
   type:'bar',
   data:{
     labels:COMB_YEARS,
@@ -1349,6 +1353,12 @@ new Chart(document.getElementById('combinedChart'),{
       }
     }
   }
+});
+
+document.getElementById('toggleCulled').addEventListener('change',function(){
+  const ds=combinedChartInst.data.datasets[2];
+  ds.hidden=!this.checked;
+  combinedChartInst.update();
 });
 
 /* =========================================================================
