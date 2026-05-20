@@ -1,10 +1,16 @@
 name: Deploy to GitHub Pages
 
-# Trigger on every push to main (including auto-data commits above)
+# Trigger on manual pushes to main, manual dispatch, and after the
+# weekly data update completes (GITHUB_TOKEN pushes don't re-trigger
+# push events, so workflow_run is required for that chain).
 on:
   push:
     branches: [main]
   workflow_dispatch:
+  workflow_run:
+    workflows: ["Weekly Data Update"]
+    types: [completed]
+    branches: [main]
 
 # Allow only one deployment at a time
 concurrency:
