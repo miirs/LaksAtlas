@@ -2227,8 +2227,15 @@ function togglePlay() {
   btn.textContent = playing ? '⏸' : '▶';
 
   if (playing) {
+    const slider = document.getElementById('yearSlider');
+    slider.value = 0;
+    currentYearIdx = 0;
+    document.getElementById('yearDisplay').textContent = DATA.qy[0];
+    syncSliderFill(slider);
+    updateMapColors();
+    updateSpeciesBubbles();
+    refreshTrendsIfOpen();
     playInterval = setInterval(() => {
-      const slider = document.getElementById('yearSlider');
       let next = +slider.value + 1;
       if (next > +slider.max) {
         clearInterval(playInterval);
@@ -3133,8 +3140,9 @@ function buildLadders(hiddenContinents, hiddenGroups = vvpHiddenGroups) {
 
   const highNames = new Set(highSp.map(([n]) => n));
   const FOOD_SEC_MAX_VPT = 5000; // USD/t — anything above this is premium, never food-security
+  const FAO_PRICE_OUTLIERS = new Set(['Japanese hard clam']);
   const lowSp = spList
-    .filter(([n, v]) => (globalQty[n] || 0) >= 50000 && v <= FOOD_SEC_MAX_VPT && !highNames.has(n))
+    .filter(([n, v]) => (globalQty[n] || 0) >= 50000 && v <= FOOD_SEC_MAX_VPT && !highNames.has(n) && !FAO_PRICE_OUTLIERS.has(n))
     .sort((a,b) => a[1] - b[1])
     .slice(0, 12);
 
@@ -3371,16 +3379,16 @@ function buildPremiumRankings(rows, earlyYear, lateYear) {
       <div style="font-size:12px;color:var(--text-muted);margin-bottom:6px;line-height:1.5">
         High-volume producers staying in low-cost, high-nutrition species — the backbone of global food security
       </div>
-      ${colHdr(['Production', '% now', 'Change'])}
+      ${colHdr(['Production', '% food-sec', 'Trend'])}
       <div class="vvp-col-legend">
         <span>Production = total farmed tonnes in ${lateYear}</span>
-        <span>% now = share of output in premium species (&gt;$5k/t) in ${lateYear} — low means food-security focus</span>
-        <span>Change = percentage point shift from ${earlyYear} — negative means moving further toward food security</span>
+        <span>% food-sec = share of output in low-cost, high-nutrition species (&lt;$5k/t) in ${lateYear}</span>
+        <span>Trend = change in food-security focus since ${earlyYear} — positive means more committed</span>
       </div>
       ${anchors.map(r => row(r,
         `<span class="vvp-rank-val" style="color:#1de9a8">${fmtT(r.qty)}</span>
-         <span class="vvp-rank-val">${r.late.toFixed(0)}%</span>
-         <span class="vvp-rank-sub" style="color:${r.shift <= 0 ? '#1de9a899' : '#f4a53599'}">${r.shift > 0 ? '+' : ''}${r.shift.toFixed(1)}pp</span>`
+         <span class="vvp-rank-val" style="color:#1de9a8">${(100 - r.late).toFixed(0)}%</span>
+         <span class="vvp-rank-sub" style="color:${r.shift <= 0 ? '#1de9a899' : '#f4a53599'}">${r.shift <= 0 ? '+' : ''}${Math.abs(r.shift).toFixed(1)}pp</span>`
       )).join('')}
     </div>`;
 }
