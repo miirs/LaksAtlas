@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LaksAtlas — Two Ways to Count the Same Fish</title>
+<title>LaksAtlas: Two Ways to Count the Same Fish</title>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="mobile.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
@@ -230,7 +230,7 @@ footer a:hover{color:var(--neon-cyan)}
       Norwegian salmon farmers report four categories of sea phase losses to the Directorate of Fisheries:
       dead fish, slaughterhouse rejects, escapees, and "others." The Veterinary Institute's annual
       Fiskehelserapporten calculates mortality risk using only the dead fish category.
-      Everything else — millions of fish per year — sits outside the headline figure.
+      Everything else, millions of fish per year, sits outside the headline figure.
     </p>
   </div>
 
@@ -244,12 +244,12 @@ footer a:hover{color:var(--neon-cyan)}
     <div class="stat-card">
       <div class="stat-card-label">Reported mortality</div>
       <div class="stat-card-value" style="color:var(--neon-amber)">59.1M</div>
-      <div class="stat-card-sub">84% of total — Dødfisk</div>
+      <div class="stat-card-sub">84% of total, Dødfisk</div>
     </div>
     <div class="stat-card">
       <div class="stat-card-label">"Others" category</div>
       <div class="stat-card-value" style="color:var(--neon-magenta)">8.3M</div>
-      <div class="stat-card-sub">12% of total — Annet</div>
+      <div class="stat-card-sub">12% of total, Annet</div>
     </div>
     <div class="stat-card">
       <div class="stat-card-label">Slaughterhouse rejects</div>
@@ -260,7 +260,7 @@ footer a:hover{color:var(--neon-cyan)}
 
   <!-- SECTION 1: GAP CHART -->
   <div class="section reveal">
-    <div class="section-tag">01 — The two figures</div>
+    <div class="section-tag">01 · The two figures</div>
     <div class="section-title">Reported mortality and total losses are not the same number</div>
     <div class="section-desc">
       The Fiskehelserapporten uses reported dead fish (Dødfisk) to calculate mortality risk.
@@ -269,18 +269,18 @@ footer a:hover{color:var(--neon-cyan)}
     </div>
     <div class="chart-container">
       <div class="chart-title">Total Losses vs. Reported Mortality</div>
-      <div class="chart-subtitle">Thousands of fish — sea phase (all species) · 1998–2024</div>
+      <div class="chart-subtitle">Thousands of fish, sea phase (all species) · 1998–2024</div>
       <div class="chart-wrap"><canvas id="gapChart"></canvas></div>
     </div>
     <div class="callout callout-amber">
       <div class="callout-label" style="color:var(--neon-amber)">How the four categories are defined</div>
       <p>The Fiskehelserapporten 2025 (Norwegian Veterinary Institute) gives the official definitions.
       <strong>"Død"</strong> covers fish physically removed from cages and recorded as dead.
-      <strong>"Utkast"</strong> covers downgraded fish sorted at the slaughterhouse — harvested but unfit for human consumption.
+      <strong>"Utkast"</strong> covers downgraded fish sorted at the slaughterhouse, harvested but unfit for human consumption.
       <strong>"Rømming"</strong> covers fish lost through escape events.
       <strong>"Annet"</strong> is used for losses that do not fit the other three categories.</p>
       <p>The Veterinary Institute does <strong>not</strong> merge "annet" with "tellefeil" (counting errors)
-      when calculating mortality risk — unlike Fiskeridirektoratet's biomassestatistikk, which combines them.
+      when calculating mortality risk, unlike Fiskeridirektoratet's biomassestatistikk, which combines them.
       The "Others" figures in the charts on this page, sourced from Fiskeridirektoratet, may therefore
       include both genuine unclassified losses and stock count corrections in the same number.</p>
     </div>
@@ -288,7 +288,7 @@ footer a:hover{color:var(--neon-cyan)}
 
   <!-- SECTION 2: OTHERS CHART -->
   <div class="section reveal">
-    <div class="section-tag">02 — The "Others" category</div>
+    <div class="section-tag">02 · The "Others" category</div>
     <div class="section-title">The "Annet" category over time</div>
     <div class="section-desc">
       "Annet" has been present in every year of reporting. The charts below show its absolute volume
@@ -296,13 +296,13 @@ footer a:hover{color:var(--neon-cyan)}
     </div>
     <div class="two-col">
       <div class="chart-container">
-        <div class="chart-title">Others — Absolute Volume</div>
-        <div class="chart-subtitle">Thousands of fish — 1998–2024</div>
+        <div class="chart-title">Others, Absolute Volume</div>
+        <div class="chart-subtitle">Thousands of fish, 1998–2024</div>
         <div class="chart-wrap"><canvas id="othersAbsChart"></canvas></div>
       </div>
       <div class="chart-container">
-        <div class="chart-title">Others — Share of Total Losses</div>
-        <div class="chart-subtitle">% of all sea phase losses — 1998–2024</div>
+        <div class="chart-title">Others, Share of Total Losses</div>
+        <div class="chart-subtitle">% of all sea phase losses, 1998–2024</div>
         <div class="chart-wrap"><canvas id="othersPctChart"></canvas></div>
       </div>
     </div>
@@ -323,8 +323,8 @@ footer a:hover{color:var(--neon-cyan)}
 
   <!-- SECTION 3: WHAT'S IN OTHERS -->
   <div class="section reveal">
-    <div class="section-tag">03 — What is in "Others"</div>
-    <div class="section-title">No single cause — and the data systems treat it differently</div>
+    <div class="section-tag">03 · What is in "Others"</div>
+    <div class="section-title">No single cause, and the data systems treat it differently</div>
     <div class="section-desc">
       "Annet" is a residual category for losses that do not fit the definitions of dead, escaped, or slaughterhouse-rejected fish.
       Fiskeridirektoratet's loss statistics merge "annet" with "tellefeil" (counting errors) in their biomassestatistikk,
@@ -334,27 +334,27 @@ footer a:hover{color:var(--neon-cyan)}
     <div class="cat-grid">
       <div class="cat-card" style="border-top-color:var(--neon-amber)">
         <div class="cat-card-label" style="color:var(--neon-amber)">Counting errors (Tellefeil)</div>
-        <div class="cat-card-no">Discrepancies between expected and actual stock counts — both positive and negative — arising from stocking, transfers, harvesting, or escape records. Fiskeridirektoratet merges these with "annet" in their published loss tables. The Veterinary Institute excludes them from mortality calculations.</div>
+        <div class="cat-card-no">Discrepancies between expected and actual stock counts, both positive and negative, arising from stocking, transfers, harvesting, or escape records. Fiskeridirektoratet merges these with "annet" in their published loss tables. The Veterinary Institute excludes them from mortality calculations.</div>
       </div>
       <div class="cat-card" style="border-top-color:var(--neon-red)">
         <div class="cat-card-label" style="color:var(--neon-red)">Unclassified losses</div>
-        <div class="cat-card-no">Losses that do not fit the three formal categories — dead, escaped, or slaughterhouse-rejected. Could include fish removed during emergency operations, losses during transfers between sites, or mortality events where the cause was not recorded by the time of monthly reporting.</div>
+        <div class="cat-card-no">Losses that do not fit the three formal categories, dead, escaped, or slaughterhouse-rejected. Could include fish removed during emergency operations, losses during transfers between sites, or mortality events where the cause was not recorded by the time of monthly reporting.</div>
       </div>
       <div class="cat-card" style="border-top-color:var(--neon-magenta)">
         <div class="cat-card-label" style="color:var(--neon-magenta)">Jellyfish &amp; algae events</div>
         <div class="cat-card-no">Mass mortality from jellyfish or harmful algae blooms may be registered under "Dødfisk" or "Annet" depending on reporting practice. In 2025, algae blooms in PO9 contributed to an increase in that region's mortality risk according to the Fiskehelserapporten. These events are well documented and recurring in Norwegian fjords.</div>
       </div>
       <div class="cat-card" style="border-top-color:var(--neon-cyan)">
-        <div class="cat-card-label" style="color:var(--neon-cyan)">Unknown cause — registered dead</div>
-        <div class="cat-card-no">AquaCloud data (49% of sea sites, 2025) shows that 27.4% of registered dead fish had no cause recorded. These are counted in "Dødfisk" — not "Annet." This means the true share of unexPlained losses across all categories is likely higher than the "Others" chart alone suggests.</div>
+        <div class="cat-card-label" style="color:var(--neon-cyan)">Unknown cause, registered dead</div>
+        <div class="cat-card-no">AquaCloud data (49% of sea sites, 2025) shows that 27.4% of registered dead fish had no cause recorded. These are counted in "Dødfisk", not "Annet." This means the true share of unexPlained losses across all categories is likely higher than the "Others" chart alone suggests.</div>
       </div>
     </div>
     <div class="callout callout-cyan">
       <div class="callout-label" style="color:var(--neon-cyan)">How the Fiskehelserapporten handles this</div>
-      <p>The Veterinary Institute calculates mortality risk using only the "Dødfisk" category — dead fish physically
+      <p>The Veterinary Institute calculates mortality risk using only the "Dødfisk" category, dead fish physically
       removed from cages. Slaughterhouse rejects, escapees, and "annet" are all excluded from the mortality risk figure.
       This is the calculation behind the reported annual mortality risk of <strong>14.2% for salmon in 2025</strong>.</p>
-      <p>The total loss rate — which includes all four categories — gives a broader picture of fish that entered
+      <p>The total loss rate, which includes all four categories, gives a broader picture of fish that entered
       the production system and did not reach slaughter as intended. Both figures matter.
       They are measuring different things.</p>
     </div>
@@ -362,7 +362,7 @@ footer a:hover{color:var(--neon-cyan)}
 
   <!-- SECTION 4: FULL STACKED BREAKDOWN -->
   <div class="section reveal">
-    <div class="section-tag">04 — All categories together</div>
+    <div class="section-tag">04 · All categories together</div>
     <div class="section-title">All four reported categories stacked</div>
     <div class="section-desc">
       The chart below shows all four recorded categories of sea phase losses together.
@@ -370,7 +370,7 @@ footer a:hover{color:var(--neon-cyan)}
       Escapees (Rømming) are included for completeness. Each category is defined separately by Fiskeridirektoratet.
     </div>
     <div class="chart-container">
-      <div class="chart-title">Sea Phase Losses — Full Breakdown</div>
+      <div class="chart-title">Sea Phase Losses, Full Breakdown</div>
       <div class="chart-subtitle">Thousands of fish by category · 1998–2024 (stacked)</div>
       <div class="chart-wrap" style="height:380px"><canvas id="stackedChart"></canvas></div>
     </div>
@@ -378,8 +378,8 @@ footer a:hover{color:var(--neon-cyan)}
     <div class="callout callout-amber">
       <div class="callout-label" style="color:var(--neon-amber)">Reading the chart</div>
       <p>Reported mortality (Dødfisk) has grown in absolute terms as production scales up. In 2005, 182.6 million
-      fish were put to sea; by 2024 that was 461.9 million. Raw counts are not directly comparable across years
-      without accounting for production volume — the rate charts in Section 05 show the same data relative to fish stocked.</p>
+      fish were put to sea. By 2024 that was 461.9 million. Raw counts are not directly comparable across years
+      without accounting for production volume, the rate charts in Section 05 show the same data relative to fish stocked.</p>
       <p>"Annet" reached its highest absolute volume in <strong>2011</strong> (12.1M) and <strong>2022</strong> (8.8M).
       Slaughterhouse rejects (Utkast) have remained broadly stable at 3–4 million per year across the full period.</p>
       <p>The Norwegian government's target is <strong>5% mortality per production cycle</strong>.
@@ -390,7 +390,7 @@ footer a:hover{color:var(--neon-cyan)}
 
   <!-- SECTION 5: STOCKED VS LOST -->
   <div class="section reveal">
-    <div class="section-tag">05 — Relative to fish stocked</div>
+    <div class="section-tag">05 · Relative to fish stocked</div>
     <div class="section-title">Losses and mortality as a share of fish put to sea</div>
     <div class="section-desc">
       Dividing by fish put to sea makes years comparable regardless of production volume.
@@ -398,20 +398,20 @@ footer a:hover{color:var(--neon-cyan)}
       matching the method in the Fiskehelserapporten.
     </div>
     <div class="chart-container">
-      <div class="chart-title">Sea Phase Loss Rate — All categories</div>
+      <div class="chart-title">Sea Phase Loss Rate, All categories</div>
       <div class="chart-subtitle">Total sea losses ÷ fish put to sea · % · 2001–2024</div>
       <div class="chart-wrap" style="height:380px"><canvas id="stockedLostChart"></canvas></div>
     </div>
     <div class="chart-container">
-      <div class="chart-title">Sea Phase Mortality Rate — Dødfisk only</div>
+      <div class="chart-title">Sea Phase Mortality Rate, Dødfisk only</div>
       <div class="chart-subtitle">Reported dead fish ÷ fish put to sea · % · 2001–2024 · method used by Fiskehelserapporten</div>
       <div class="chart-wrap" style="height:380px"><canvas id="mortalityRateChart2"></canvas></div>
     </div>
     <div class="callout callout-amber">
       <div class="callout-label" style="color:var(--neon-amber)">2024 in numbers</div>
       <p>In 2024, <strong>462.8 million fish</strong> were put into Norwegian sea cages.
-      Total losses were <strong>70.3 million</strong> — a loss rate of around 15%.
-      Reported mortality (Dødfisk) was 59.1 million — a mortality rate of around 13%.
+      Total losses were <strong>70.3 million</strong>, a loss rate of around 15%.
+      Reported mortality (Dødfisk) was 59.1 million, a mortality rate of around 13%.
       The difference between the two rates reflects the other three reporting categories.</p>
     </div>
   </div>
@@ -419,9 +419,9 @@ footer a:hover{color:var(--neon-cyan)}
 </div><!-- /page-wrap -->
 
 <footer>
-  <span>LaksAtlas — Educational use only. No commercial value.</span>
+  <span>LaksAtlas: Educational use only. No commercial value.</span>
   <span>Data: Fiskeridirektoratet (sta-laks-mat-08-tap · sta-laks-mat-05-kjop) · Veterinærinstituttet Fiskehelserapporten</span>
-  <span>Contact: Miiro Virtanen — <a href="mailto:miiro.i.virtanen@nord.no">miiro.i.virtanen@nord.no</a></span>
+  <span>Contact: Miiro Virtanen, <a href="mailto:miiro.i.virtanen@nord.no">miiro.i.virtanen@nord.no</a></span>
 </footer>
 
 <script src="mobile.js"></script>

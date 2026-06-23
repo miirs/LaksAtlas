@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LaksAtlas — Global Aquaculture Explorer</title>
+<title>LaksAtlas: Global Aquaculture Explorer</title>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
 
 <style>
@@ -954,7 +954,7 @@ nav {
           <label class="filter-label"><input type="checkbox" class="grp-cb" value="4" checked><span class="filter-dot" style="background:#7c55e8"></span>Other</label>
         </div>
         <div class="filter-nei">
-          <span class="filter-nei-tag">NEI</span> Not Elsewhere Included — FAO catch-all for species not classified in a specific category
+          <span class="filter-nei-tag">NEI</span> Not Elsewhere Included, FAO catch-all for species not classified in a specific category
         </div>
       </div>
     </div>
@@ -968,7 +968,7 @@ nav {
     <!-- Global stats (bottom-right of map) -->
     <div id="globalStats">
       <div class="gstat">
-        <div class="gstat-val" id="gstatTotal">—</div>
+        <div class="gstat-val" id="gstatTotal">, </div>
         <div class="gstat-lbl">World total</div>
       </div>
       <div class="gstat">
@@ -976,7 +976,7 @@ nav {
         <div class="gstat-lbl">Countries</div>
       </div>
       <div class="gstat">
-        <div class="gstat-val" id="gstatSpecies">—</div>
+        <div class="gstat-val" id="gstatSpecies">, </div>
         <div class="gstat-lbl">Species</div>
       </div>
     </div>
@@ -1031,7 +1031,7 @@ nav {
         <div class="trend-chart-box species-scroll-box">
           <canvas id="speciesChartCanvas"></canvas>
         </div>
-        <div class="nei-note">NEI = Not Elsewhere Included — FAO catch-all for species not assigned to a more specific category</div>
+        <div class="nei-note">NEI = Not Elsewhere Included, FAO catch-all for species not assigned to a more specific category</div>
       </div>
 
       <div class="tsec-divider"></div>
@@ -1040,7 +1040,7 @@ nav {
       <div class="tsec">
         <div class="tsec-tag">04</div>
         <div class="tsec-title">Premium vs Food Security</div>
-        <div class="tsec-sub"><strong>USD/t</strong> = US dollars earned per tonne farmed — a measure of how valuable a species is relative to its weight. Species above $5 000/t are considered premium (salmon, shrimp, abalone). Species below are high-volume staples that feed billions. Use the time window pills to see how countries have shifted their farming mix over the years. Click a continent in the scatter legend to filter all charts.</div>
+        <div class="tsec-sub"><strong>USD/t</strong> = US dollars earned per tonne farmed, a measure of how valuable a species is relative to its weight. Species above $5 000/t are considered premium (salmon, shrimp, abalone). Species below are high-volume staples that feed billions. Use the time window pills to see how countries have shifted their farming mix over the years. Click a continent in the scatter legend to filter all charts.</div>
         <div id="vvpPeriodBtns">
           <button class="vvp-period-btn active" data-early="2004" data-late="2024">2004–2024</button>
           <button class="vvp-period-btn" data-early="2014" data-late="2024">2014–2024</button>
@@ -1063,7 +1063,7 @@ nav {
             <canvas id="vvpLowCanvas"></canvas>
           </div>
         </div>
-        <div class="nei-note">NEI = Not Elsewhere Included — FAO catch-all for species not assigned to a more specific category</div>
+        <div class="nei-note">NEI = Not Elsewhere Included, FAO catch-all for species not assigned to a more specific category</div>
         <div class="tsec-card" style="margin-top:20px">
           <div class="tsec-sub" id="vvpShiftSub" style="margin-bottom:12px"></div>
           <canvas id="vvpShiftCanvas" height="360"></canvas>
@@ -1077,7 +1077,7 @@ nav {
       <div class="tsec">
         <div class="tsec-tag">05</div>
         <div class="tsec-title">Species Diversity</div>
-        <div class="tsec-sub">How many distinct species each country has tried farming. <strong>Established</strong> = farmed consistently for ≥5 years with a peak production of ≥10 tonnes — a proven commercial species. <strong>Experimental</strong> = tried briefly or in tiny quantities — innovation or one-off attempts. Countries with more established species have a broader, more resilient aquaculture base.</div>
+        <div class="tsec-sub">How many distinct species each country has tried farming. <strong>Established</strong> = farmed consistently for ≥5 years with a peak production of ≥10 tonnes, a proven commercial species. <strong>Experimental</strong> = tried briefly or in tiny quantities, innovation or one-off attempts. Countries with more established species have a broader, more resilient aquaculture base.</div>
         <div class="sdiv-top-grid">
           <div class="sdiv-box">
             <div class="sdiv-hdr">Species in aquaculture over time</div>
@@ -1093,13 +1093,13 @@ nav {
           </div>
         </div>
         <div class="tsec-card" style="margin-top:14px">
-          <div class="sdiv-hdr">Country species diversity — established vs experimental</div>
+          <div class="sdiv-hdr">Country species diversity, established vs experimental</div>
           <div class="sdiv-sub">Established = farmed ≥5 years with peak ≥10t · Experimental = tried briefly or in tiny quantities</div>
           <div id="sdivCountryList"></div>
         </div>
         <div class="tsec-card" style="margin-top:14px">
           <div class="sdiv-hdr">Diversity vs country population <span class="sdiv-src">· UN 2023 population estimates</span></div>
-          <div class="sdiv-sub">Bubble size = total production — countries above the trend line farm more species relative to their population</div>
+          <div class="sdiv-sub">Bubble size = total production, countries above the trend line farm more species relative to their population</div>
           <div class="sdiv-canvas-wrap" style="height:360px">
             <canvas id="sdivPopCanvas"></canvas>
           </div>
@@ -1113,11 +1113,11 @@ nav {
       <div class="tsec">
         <div class="tsec-tag">06</div>
         <div class="tsec-title">Growth &amp; Momentum</div>
-        <div class="tsec-sub">Two stories of growth: <strong>concentration</strong> (are a few countries controlling more and more of world production?) and <strong>acceleration</strong> (which countries are growing fastest right now?). <strong>CAGR</strong> = Compound Annual Growth Rate — the average yearly growth percentage over the period. A country with +20%/yr doubles its output roughly every 3–4 years.</div>
+        <div class="tsec-sub">Two stories of growth: <strong>concentration</strong> (are a few countries controlling more and more of world production?) and <strong>acceleration</strong> (which countries are growing fastest right now?). <strong>CAGR</strong> = Compound Annual Growth Rate, the average yearly growth percentage over the period. A country with +20%/yr doubles its output roughly every 3–4 years.</div>
 
         <div class="tsec-card">
-          <div class="sdiv-hdr">Market concentration over time — share of global output held by top producers</div>
-          <div class="sdiv-sub">Top-3 dominance has grown from ~60% in 1980 to ~78% in 2024 — aquaculture is consolidating</div>
+          <div class="sdiv-hdr">Market concentration over time, share of global output held by top producers</div>
+          <div class="sdiv-sub">Top-3 dominance has grown from ~60% in 1980 to ~78% in 2024 · aquaculture is consolidating</div>
           <div class="sdiv-canvas-wrap" style="height:220px">
             <canvas id="gmConcentrationCanvas"></canvas>
           </div>
@@ -1126,12 +1126,12 @@ nav {
         <div class="gm-two-col" style="margin-top:14px">
           <div class="gm-panel">
             <div class="sdiv-hdr">Fastest growing producers <span class="sdiv-src">· 2018–2024 · min 10 000 t</span></div>
-            <div class="sdiv-sub">Ranked by average yearly growth rate (compound annual growth rate, CAGR) — how fast a country's production expanded each year on average between 2018 and 2024. Tonnes (t) = metric tons of aquaculture output.</div>
+            <div class="sdiv-sub">Ranked by average yearly growth rate (compound annual growth rate, CAGR), how fast a country's production expanded each year on average between 2018 and 2024. Tonnes (t) = metric tons of aquaculture output.</div>
             <div id="gmCAGRList"></div>
           </div>
           <div class="gm-panel">
             <div class="sdiv-hdr">Emerging producers <span class="sdiv-src">· 2010 → 2024</span></div>
-            <div class="sdiv-sub">Countries that were minor producers in 2010 but have since scaled up significantly. The <strong style="color:#d8e8f6">× bigger</strong> column shows how many times larger their 2024 output is compared to 2010 — e.g. 5× means they produce 5 times more than they did in 2010.</div>
+            <div class="sdiv-sub">Countries that were minor producers in 2010 but have since scaled up significantly. The <strong style="color:#d8e8f6">× bigger</strong> column shows how many times larger their 2024 output is compared to 2010 · e.g. 5× means they produce 5 times more than they did in 2010.</div>
             <div id="gmEmergingList"></div>
           </div>
         </div>
@@ -1147,7 +1147,7 @@ nav {
 
         <div class="tsec-card">
           <div class="sdiv-hdr">Production by water environment 1950–2024</div>
-          <div class="sdiv-sub">Stacked area — freshwater and marine are neck and neck; brackishwater (shrimp, seaweed) is rising fastest</div>
+          <div class="sdiv-sub">Stacked area, freshwater and marine are neck and neck, brackishwater (shrimp, seaweed) is rising fastest</div>
           <div class="sdiv-canvas-wrap" style="height:260px">
             <canvas id="envAreaCanvas"></canvas>
           </div>
@@ -1192,7 +1192,7 @@ nav {
   <div id="sliderTrack">
     <input type="range" id="yearSlider" min="0" max="74" value="74" step="1">
   </div>
-  <div id="yearRange">1950 — 2024</div>
+  <div id="yearRange">1950 · 2024</div>
 </div>
 
 <!-- Species detail modal -->
