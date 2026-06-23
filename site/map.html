@@ -1773,7 +1773,7 @@ function _bvRender5YearWeekly(m, startY, endY){
     options:{ responsive:false, animation:false,
       plugins:{ legend:{position:'top',labels:{color:'#5e88aa',font:{size:8},boxWidth:10,padding:5}}, tooltip:{mode:'index',intersect:false} },
       scales:{ x:{grid:{color:'rgba(30,100,210,0.1)'},ticks:{color:'#5e88aa',font:{size:8},maxTicksLimit:13,maxRotation:0}},
-               y:{grid:{color:'rgba(30,100,210,0.1)'},ticks:{color:'#5e88aa',font:{size:9},...(yTickCb?{callback:yTickCb}:{})},beginAtZero:false} } } });
+               y:{grid:{color:'rgba(30,100,210,0.1)'},ticks:{color:'#5e88aa',font:{size:9},...(yTickCb?{callback:yTickCb}:{})},beginAtZero:false,...(m.key==='seaTemp'?{min:0,max:22}:{})} } } });
 }
 
 function _bvRenderWeekly(m, wks){
@@ -1792,7 +1792,7 @@ function _bvRenderWeekly(m, wks){
     options:{ responsive:false, animation:false,
       plugins:{ legend:{display:false} },
       scales:{ x:{grid:{color:'rgba(30,100,210,0.1)'},ticks:{color:'#5e88aa',font:{size:9}}},
-               y:{grid:{color:'rgba(30,100,210,0.1)'},ticks:{color:'#5e88aa',font:{size:9}},beginAtZero:false} } } });
+               y:{grid:{color:'rgba(30,100,210,0.1)'},ticks:{color:'#5e88aa',font:{size:9}},beginAtZero:false,...(m.key==='seaTemp'?{min:0,max:22}:{})} } } });
 }
 
 // =========================================================================
