@@ -1,5 +1,5 @@
 {
-  "fetched_at": "2026-07-07T10:48:27.323658",
+  "fetched_at": "2026-07-14T09:48:57.898054",
   "source": "Barentswatch Fishhealth API v2",
   "note": "INFEKSIOES_LAKSEANEMI=ISA, PANKREASSYKDOM=PD",
   "years": [
@@ -1098,10 +1098,10 @@
       "diseases": {
         "BAKTERIELL_NYRESYKE": 2,
         "FRANCISELLOSE": 1,
-        "INFEKSIOES_LAKSEANEMI": 7,
+        "INFEKSIOES_LAKSEANEMI": 8,
         "PANKREASSYKDOM": 29
       },
-      "lice_violations_total": 144,
+      "lice_violations_total": 152,
       "lice_violations_weekly": {
         "1": 9,
         "2": 6,
@@ -1129,9 +1129,9 @@
         "24": 4,
         "25": 8,
         "26": 12,
-        "27": 1,
-        "28": 0,
-        "29": null,
+        "27": 4,
+        "28": 5,
+        "29": 0,
         "30": null,
         "31": null,
         "32": null,
@@ -1157,17 +1157,17 @@
         "52": null,
         "53": null
       },
-      "escapes": 43,
+      "escapes": 41,
       "escapes_weekly": {
-        "19": 3,
-        "23": 3,
         "1": 3,
-        "27": 6,
         "4": 1,
-        "25": 5,
-        "26": 3,
+        "27": 5,
+        "25": 4,
+        "26": 2,
         "7": 3,
+        "23": 3,
         "20": 1,
+        "28": 1,
         "6": 1,
         "2": 1,
         "22": 2,
@@ -1177,12 +1177,13 @@
         "13": 3,
         "16": 2,
         "17": 1,
+        "19": 3,
         "24": 1
       },
       "lice_week52": {
-        "above": 1,
-        "below": 405,
-        "below_minimum": 322
+        "above": 5,
+        "below": 368,
+        "below_minimum": 308
       }
     }
   ]
