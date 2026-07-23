@@ -286,6 +286,16 @@ nav {
 .hud-lives span { color: var(--neon-red); letter-spacing: 3px; }
 .hud-combo span { color: var(--neon-amber); }
 
+.il-mission-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.il-mission-bar { flex: 1; height: 6px; background: rgba(255,255,255,0.06); border-radius: 3px; overflow: hidden; }
+.il-mission-fill { height: 100%; background: var(--neon-green); border-radius: 3px; transition: width .4s ease; }
+.il-fiber-badge {
+  font-family: 'JetBrains Mono', monospace; font-size: 11px; white-space: nowrap;
+  padding: 3px 10px; border-radius: 999px; border: 1px solid rgba(0,200,255,0.25);
+  color: var(--neon-cyan); background: rgba(0,200,255,0.06);
+}
+.il-fiber-badge.il-fiber-slow { color: var(--neon-amber); border-color: rgba(244,165,53,0.3); background: rgba(244,165,53,0.06); }
+
 .scope-wrap { position: relative; border-radius: 12px; overflow: hidden; background: rgba(0,12,32,0.6); border: 1px solid rgba(0,200,255,0.12); }
 .scope-wrap svg { width: 100%; height: auto; display: block; }
 .scope-grid { stroke: rgba(30,100,210,0.14); stroke-width: 1; }
@@ -842,8 +852,8 @@ footer { border-top: 1px solid var(--border); padding: 20px 28px; display: flex;
       <!-- Start screen -->
       <div class="impulse-start" id="impulse-start">
         <div class="il-icon">🎯</div>
-        <h3>Impulse Lab: Fire an Action Potential</h3>
-        <p class="impulse-lead">Carry a nerve impulse through its full cycle by firing the right ion channels at the right moment. Watch the live membrane trace and act on each phase before the window closes. You have <strong>3 lives</strong>, and each clean impulse builds your combo.</p>
+        <h3>Impulse Lab: Reach the Neuromuscular Junction</h3>
+        <p class="impulse-lead">A motor neuron needs <strong>15 clean impulses</strong> to reach the neuromuscular junction and trigger a muscle twitch. Fire the right ion channels at the right moment on each one. You have <strong>3 lives</strong>, and each impulse runs on a randomly assigned axon, myelinated or unmyelinated, so the timing changes every round.</p>
         <div class="il-legend">
           <div><span class="il-key">S</span> Stimulate to reach threshold at −50 mV</div>
           <div><span class="il-key">N</span> Open Na⁺ gates once at threshold</div>
@@ -857,9 +867,14 @@ footer { border-top: 1px solid var(--border); padding: 20px 28px; display: flex;
         <div class="impulse-hud">
           <div class="hud-item hud-lives">Lives <span id="il-lives">♥♥♥</span></div>
           <div class="hud-item">Score <span id="il-score">0</span></div>
-          <div class="hud-item">Fired <span id="il-aps">0</span></div>
+          <div class="hud-item">Fired <span id="il-aps">0</span> / 15</div>
           <div class="hud-item hud-combo">Combo <span id="il-combo">0</span></div>
           <div class="hud-item">Best <span id="il-best">0</span></div>
+        </div>
+
+        <div class="il-mission-row">
+          <div class="il-mission-bar"><div class="il-mission-fill" id="il-mission-fill" style="width:0%"></div></div>
+          <div class="il-fiber-badge" id="il-fiber-badge">Fibre: myelinated</div>
         </div>
 
         <div class="scope-wrap" id="il-scope-wrap">
@@ -891,14 +906,17 @@ footer { border-top: 1px solid var(--border); padding: 20px 28px; display: flex;
         </div>
       </div>
 
-      <!-- Game over screen -->
+      <!-- Game over / mission complete screen -->
       <div class="impulse-over" id="impulse-over" style="display:none;">
-        <div class="il-icon">📟</div>
+        <div class="il-icon" id="il-over-icon">📟</div>
+        <h3 id="il-over-title">Signal lost</h3>
         <div class="results-score" id="il-final-score">0</div>
         <div class="results-sub">final score</div>
-        <div class="il-final">Impulses fired: <span id="il-final-aps">0</span></div>
+        <div class="results-grade" id="il-over-grade"></div>
+        <div class="il-final">Impulses delivered: <span id="il-final-aps">0</span> / 15</div>
+        <div class="il-final">Peak accuracy: <span id="il-final-acc">0</span>%</div>
         <div class="il-final">Best this session: <span id="il-final-best">0</span></div>
-        <button class="big-btn" onclick="ilStart()">Try again</button>
+        <button class="big-btn" onclick="ilStart()">Play again</button>
       </div>
 
     </div>
@@ -1295,15 +1313,19 @@ function nextCard() { cardIdx = (cardIdx + 1) % CARDS.length; renderCard(); }
 // ═══════════════════════════════════════════════════════════════
 const IL_REST = -70, IL_THRESH = -50, IL_PEAK = 40, IL_HYPER = -80;
 const IL_VHI = 52, IL_VLO = -92, IL_W = 700, IL_H = 300, IL_VIEW = 5.2;
+const IL_MISSION = 15;
 
 const IL = {
   raf: null, state: 'idle', paused: false, ending: false,
   lastTs: 0, tSec: 0, v: IL_REST, phase: 'rest',
   points: [], marks: [],
   lives: 3, score: 0, aps: 0, combo: 0, best: 0,
+  accSum: 0,
   peakWindow: 0.95, refDur: 1.0, refTimer: 0,
   windowActive: false, peakTimer: 0,
+  fiber: 'myelinated', riseRate: 13, leakRate: 6, winMult: 0.65, ptMult: 1.5,
   trace: null, headEl: null, marksEl: null, promptEl: null, scopeWrap: null,
+  fiberBadge: null, missionFill: null,
 };
 
 function ilScaleY(v) { return 12 + ((IL_VHI - v) / (IL_VHI - IL_VLO)) * (IL_H - 24); }
@@ -1314,6 +1336,8 @@ function ilInitScope() {
   IL.marksEl = document.getElementById('il-marks');
   IL.promptEl = document.getElementById('il-prompt');
   IL.scopeWrap = document.getElementById('il-scope-wrap');
+  IL.fiberBadge = document.getElementById('il-fiber-badge');
+  IL.missionFill = document.getElementById('il-mission-fill');
   try { IL.best = parseInt(sessionStorage.getItem('ns_impulse_best') || '0', 10) || 0; } catch (e) { IL.best = 0; }
 
   const grid = document.getElementById('il-grid');
@@ -1368,15 +1392,30 @@ function ilUpdateHud() {
   document.getElementById('il-aps').textContent = IL.aps;
   document.getElementById('il-combo').textContent = IL.combo;
   document.getElementById('il-best').textContent = IL.best;
+  if (IL.missionFill) IL.missionFill.style.width = Math.min(100, (IL.aps / IL_MISSION) * 100) + '%';
+}
+
+function ilNewImpulse() {
+  const myelinated = Math.random() < 0.55;
+  IL.fiber = myelinated ? 'myelinated' : 'unmyelinated';
+  IL.riseRate = myelinated ? (11 + Math.random() * 3) : (4 + Math.random() * 2);
+  IL.winMult = myelinated ? 0.6 : 1.45;
+  IL.ptMult = myelinated ? 1.5 : 0.85;
+  IL.leakRate = 5 + Math.random() * 3.5;
+  if (IL.fiberBadge) {
+    IL.fiberBadge.textContent = myelinated ? 'Fibre: myelinated (fast, tight window)' : 'Fibre: unmyelinated (slow, wide window)';
+    IL.fiberBadge.classList.toggle('il-fiber-slow', !myelinated);
+  }
 }
 
 function ilStart() {
   IL.state = 'playing'; IL.paused = false; IL.ending = false;
   IL.lastTs = 0; IL.tSec = 0; IL.v = IL_REST; IL.phase = 'rest';
   IL.points = []; IL.marks = [];
-  IL.lives = 3; IL.score = 0; IL.aps = 0; IL.combo = 0;
+  IL.lives = 3; IL.score = 0; IL.aps = 0; IL.combo = 0; IL.accSum = 0;
   IL.peakWindow = 0.95; IL.refDur = 1.0; IL.refTimer = 0;
   IL.windowActive = false; IL.peakTimer = 0;
+  ilNewImpulse();
   document.getElementById('impulse-start').style.display = 'none';
   document.getElementById('impulse-over').style.display = 'none';
   document.getElementById('impulse-game').style.display = 'block';
@@ -1402,22 +1441,22 @@ function ilStep(ts) {
 function ilUpdate(dt) {
   const P = IL.phase;
   if (P === 'rest') {
-    IL.v += (IL_REST - IL.v) * Math.min(1, 6 * dt) + (Math.random() - 0.5) * 0.8;
+    IL.v += (IL_REST - IL.v) * Math.min(1, IL.leakRate * dt) + (Math.random() - 0.5) * 0.8;
   } else if (P === 'threshold') {
     IL.v += ((IL_THRESH + 2) - IL.v) * Math.min(1, 3 * dt);
     if (IL.v < IL_THRESH - 5) { IL.phase = 'rest'; ilPrompt('The graded potential faded. Stimulate again to reach threshold.', 'warn'); ilGlow('stim'); }
   } else if (P === 'rising') {
-    IL.v += ((IL_PEAK + 8) - IL.v) * Math.min(1, 9 * dt);
+    IL.v += ((IL_PEAK + 8) - IL.v) * Math.min(1, IL.riseRate * dt);
     if (IL.v > IL_PEAK) IL.v = IL_PEAK;
     if (IL.v >= 25 && !IL.windowActive) { IL.windowActive = true; IL.peakTimer = 0; ilPrompt('Peak. Inactivate Na⁺ channels and open K⁺ channels now.', 'warn'); ilGlow('nak'); }
-    if (IL.windowActive) { IL.peakTimer += dt; if (IL.peakTimer > IL.peakWindow) ilFail('Na⁺ channels stayed open. The membrane latched at the peak.'); }
+    if (IL.windowActive) { IL.peakTimer += dt; if (IL.peakTimer > IL.peakWindow * IL.winMult) ilFail('Na⁺ channels stayed open. The membrane latched at the peak.'); }
   } else if (P === 'falling') {
     IL.v += (IL_HYPER - IL.v) * Math.min(1, 5 * dt);
     if (IL.v <= IL_HYPER + 1.5) { IL.phase = 'refractory'; IL.refTimer = 0; ilPrompt('Hyperpolarisation and refractory period. The membrane cannot fire yet, wait.', 'warn'); ilGlow(null); }
   } else if (P === 'refractory') {
     IL.refTimer += dt;
     IL.v += (IL_REST - IL.v) * Math.min(1, 3.2 * dt);
-    if (IL.refTimer > IL.refDur && IL.v > IL_REST - 2) { IL.phase = 'rest'; ilPrompt('Resting potential restored. Stimulate to fire again.', ''); ilGlow('stim'); }
+    if (IL.refTimer > IL.refDur && IL.v > IL_REST - 2) { IL.phase = 'rest'; ilNewImpulse(); ilPrompt('Resting potential restored on a fresh axon segment. Stimulate to fire again.', ''); ilGlow('stim'); }
   }
   IL.points.push({ t: IL.tSec, v: IL.v });
   const tMin = IL.tSec - IL_VIEW - 0.3;
@@ -1460,15 +1499,21 @@ function ilPress(action) {
 
 function ilSuccess() {
   const acc = Math.max(0, 1 - Math.abs(IL_PEAK - IL.v) / 45);
+  IL.accSum += acc;
   const bonus = Math.round(acc * 50);
   IL.combo++;
-  const gained = 100 + bonus + (IL.combo - 1) * 15;
+  const gained = Math.round((100 + bonus + (IL.combo - 1) * 15) * IL.ptMult);
   IL.score += gained; IL.aps++;
   IL.windowActive = false; IL.phase = 'falling';
   ilPrompt('Repolarisation. K⁺ leaving the cell. Plus ' + gained + ' points.', 'good');
   ilGlow(null); ilMark('good');
-  if (IL.aps % 3 === 0) { IL.peakWindow = Math.max(0.42, IL.peakWindow - 0.12); IL.refDur = Math.max(0.55, IL.refDur - 0.1); }
+  if (IL.aps % 4 === 0) { IL.peakWindow = Math.max(0.6, IL.peakWindow - 0.06); IL.refDur = Math.max(0.7, IL.refDur - 0.06); }
   ilUpdateHud();
+  if (IL.aps >= IL_MISSION) {
+    IL.ending = true;
+    ilPrompt('Signal reached the neuromuscular junction. Acetylcholine released, muscle contracts.', 'good');
+    setTimeout(ilWin, 1300);
+  }
 }
 
 function ilFail(msg) {
@@ -1483,7 +1528,7 @@ function ilFail(msg) {
   }
 }
 
-function ilGameOver() {
+function ilFinishRun(won) {
   IL.state = 'over';
   cancelAnimationFrame(IL.raf);
   if (IL.score > IL.best) { IL.best = IL.score; try { sessionStorage.setItem('ns_impulse_best', IL.best); } catch (e) {} }
@@ -1492,7 +1537,32 @@ function ilGameOver() {
   document.getElementById('il-final-score').textContent = IL.score;
   document.getElementById('il-final-aps').textContent = IL.aps;
   document.getElementById('il-final-best').textContent = IL.best;
+  const avgAcc = IL.aps > 0 ? Math.round((IL.accSum / IL.aps) * 100) : 0;
+  document.getElementById('il-final-acc').textContent = avgAcc;
+
+  const icon = document.getElementById('il-over-icon');
+  const title = document.getElementById('il-over-title');
+  const grade = document.getElementById('il-over-grade');
+  if (won) {
+    icon.textContent = '🏁';
+    title.textContent = 'Mission complete';
+    const grades = [
+      [95, 'Flawless conduction. Textbook signalling.', '#1de9a8'],
+      [80, 'Strong run. The muscle got a clean twitch.', '#1de9a8'],
+      [60, 'Signal delivered, a bit ragged in places.', '#00c8ff'],
+      [0,  'It got there. Try tightening your peak timing.', '#f4a535'],
+    ];
+    const [,label,color] = grades.find(([n]) => avgAcc >= n);
+    grade.textContent = label; grade.style.color = color;
+  } else {
+    icon.textContent = '📟';
+    title.textContent = 'Signal lost';
+    grade.textContent = ''; grade.style.color = '';
+  }
 }
+
+function ilGameOver() { ilFinishRun(false); }
+function ilWin() { ilFinishRun(true); }
 
 function ilRender() {
   const tMax = IL.tSec, tMin = tMax - IL_VIEW;
