@@ -209,6 +209,63 @@ nav {
 .fc-dot.seen { background: rgba(0,200,255,0.4); }
 .fc-dot.current { background: var(--neon-cyan); }
 
+/* ─── STUDY NOTES ───────────────────────────────────────────────── */
+.notes-intro {
+  font-size: 14px; color: var(--text-dim); line-height: 1.7;
+  margin-bottom: 24px; padding: 16px 20px;
+  background: rgba(0,200,255,0.04); border: 1px solid rgba(0,200,255,0.1);
+  border-radius: 10px;
+}
+.accordion { display: flex; flex-direction: column; gap: 8px; }
+.acc-item { border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
+.acc-header {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 18px; cursor: pointer;
+  background: rgba(4,28,68,0.35); transition: background .2s;
+  list-style: none; user-select: none;
+}
+.acc-header:hover { background: rgba(4,28,68,0.6); }
+.acc-icon { font-size: 20px; flex-shrink: 0; }
+.acc-title { font-size: 15px; font-weight: 600; color: var(--text); flex: 1; }
+.acc-subtitle { font-size: 12px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
+.acc-chevron { color: var(--text-muted); font-size: 12px; flex-shrink: 0; transition: transform .25s; }
+.acc-item.open .acc-chevron { transform: rotate(90deg); }
+.acc-body {
+  max-height: 0; overflow: hidden;
+  transition: max-height .35s ease, padding .25s ease;
+  padding: 0 20px; background: rgba(2,12,32,0.45);
+}
+.acc-item.open .acc-body { max-height: 2000px; padding: 18px 20px 22px; }
+.acc-body p { font-size: 14px; color: var(--text-dim); line-height: 1.75; margin-bottom: 12px; }
+.acc-body p:last-child { margin-bottom: 0; }
+.acc-body strong { color: var(--text); font-weight: 600; }
+.acc-body em { color: var(--neon-cyan); font-style: normal; font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+.note-table { width: 100%; border-collapse: collapse; margin: 10px 0 12px; font-size: 13px; }
+.note-table th { text-align: left; padding: 6px 10px; color: var(--neon-cyan); font-weight: 600; border-bottom: 1px solid rgba(0,200,255,0.15); font-family: 'JetBrains Mono', monospace; font-size: 11px; text-transform: uppercase; }
+.note-table td { padding: 7px 10px; border-bottom: 1px solid rgba(30,100,210,0.08); color: var(--text-dim); vertical-align: top; }
+.note-table tr:last-child td { border-bottom: none; }
+.note-table td:first-child { color: var(--text); font-weight: 500; white-space: nowrap; }
+.note-pill {
+  display: inline-block; font-family: 'JetBrains Mono', monospace; font-size: 11px;
+  padding: 2px 8px; border-radius: 999px; margin: 2px 3px 2px 0;
+  background: rgba(0,200,255,0.07); border: 1px solid rgba(0,200,255,0.18); color: var(--neon-cyan);
+}
+.note-pill.green { background: rgba(29,233,168,0.07); border-color: rgba(29,233,168,0.2); color: #1de9a8; }
+.note-pill.amber { background: rgba(244,165,53,0.07); border-color: rgba(244,165,53,0.2); color: #f4a535; }
+.notes-ready-bar {
+  margin-top: 24px; padding: 14px 18px; border-radius: 10px;
+  background: rgba(29,233,168,0.06); border: 1px solid rgba(29,233,168,0.2);
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;
+}
+.notes-ready-bar span { font-size: 14px; color: var(--text-dim); }
+.notes-ready-bar button {
+  padding: 9px 22px; border-radius: 8px;
+  border: 1px solid rgba(29,233,168,0.4); background: rgba(29,233,168,0.08);
+  color: #1de9a8; font-size: 13px; font-family: 'Outfit', sans-serif; cursor: pointer;
+  transition: all .2s;
+}
+.notes-ready-bar button:hover { background: rgba(29,233,168,0.16); }
+
 /* ─── RESET BTN ──────────────────────────────────────────────────── */
 .reset-btn {
   padding: 6px 14px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.08);
@@ -245,13 +302,333 @@ footer { border-top: 1px solid var(--border); padding: 20px 28px; display: flex;
   </div>
 
   <div class="mode-tabs">
-    <button class="mode-tab active" onclick="setMode('label')">🐟 Label the Fish</button>
+    <button class="mode-tab active" onclick="setMode('notes')">📖 Study Notes</button>
+    <button class="mode-tab" onclick="setMode('label')">🐟 Label the Fish</button>
     <button class="mode-tab" onclick="setMode('quiz')">🧠 Anatomy Quiz</button>
     <button class="mode-tab" onclick="setMode('cards')">📚 Flash Cards</button>
   </div>
 
+  <!-- ═══════════════════ STUDY NOTES ═══════════════════ -->
+  <div class="game-panel active" id="panel-notes" style="display:block">
+
+    <div class="notes-intro">
+      Read through each section before testing yourself. Click a topic heading to expand it.
+      Key terms appear in <em>monospace</em> — these are the words to know for the games.
+    </div>
+
+    <div class="accordion">
+
+      <!-- 1 ANATOMICAL TERMINOLOGY -->
+      <div class="acc-item" id="acc0">
+        <div class="acc-header" onclick="toggleAcc(0)">
+          <span class="acc-icon">🧭</span>
+          <div style="flex:1">
+            <div class="acc-title">Anatomical Terminology</div>
+            <div class="acc-subtitle">Directions · planes · axes</div>
+          </div>
+          <span class="acc-chevron">▶</span>
+        </div>
+        <div class="acc-body">
+          <p>Precise anatomical language is essential for describing structures inside the fish body. All directional terms are relative to the fish's own orientation.</p>
+          <table class="note-table">
+            <tr><th>Term</th><th>Meaning</th><th>Opposite</th></tr>
+            <tr><td>Cranial / Anterior</td><td>Toward the head</td><td>Caudal / Posterior</td></tr>
+            <tr><td>Caudal / Posterior</td><td>Toward the tail</td><td>Cranial / Anterior</td></tr>
+            <tr><td>Dorsal</td><td>Toward the back (upper side)</td><td>Ventral</td></tr>
+            <tr><td>Ventral</td><td>Toward the belly (lower side)</td><td>Dorsal</td></tr>
+            <tr><td>Lateral</td><td>Toward the side</td><td>Medial</td></tr>
+            <tr><td>Medial</td><td>Toward the midline</td><td>Lateral</td></tr>
+          </table>
+          <p><strong>Planes</strong> are imaginary flat surfaces used to describe where a cut would be made. The <strong>median plane</strong> divides the fish into two equal left and right halves — there is only one. <strong>Sagittal planes</strong> run parallel to the median plane. <strong>Transverse planes</strong> cut perpendicular to the body axis, dividing into front and back sections. <strong>Horizontal planes</strong> divide into upper and lower sections.</p>
+        </div>
+      </div>
+
+      <!-- 2 EXTERNAL ANATOMY -->
+      <div class="acc-item" id="acc1">
+        <div class="acc-header" onclick="toggleAcc(1)">
+          <span class="acc-icon">🐟</span>
+          <div style="flex:1">
+            <div class="acc-title">External Anatomy</div>
+            <div class="acc-subtitle">Body shape · fins · external landmarks</div>
+          </div>
+          <span class="acc-chevron">▶</span>
+        </div>
+        <div class="acc-body">
+          <p>Most fish are <strong>streamlined</strong> — with a conical head at the front and a body that tapers toward the tail. This body form reduces drag during swimming. Bottom-dwelling fish that move slowly tend to be less streamlined than fast pelagic swimmers.</p>
+          <p><strong>Paired fins</strong> come in left-right pairs: <em>pectoral fins</em> (brystfinner) sit just behind the gill cover, and <em>pelvic fins</em> (bukfinner) are on the ventral side. The position of pelvic fins indicates evolutionary level — far back (caudal) is primitive (as in salmon), further forward is advanced (as in wrasse).</p>
+          <p><strong>Unpaired fins</strong> are single midline structures: <em>dorsal fin</em> (ryggfinne) on top, <em>anal fin</em> (analfinner) below toward the tail, and the <em>caudal fin</em> (halefinne) at the very end. Salmon also have a small fleshy <em>adipose fin</em> between the dorsal and caudal fins — it has no fin rays, no muscles, and no clear function.</p>
+          <p>On the head: <strong>mouth</strong>, <strong>eyes</strong>, <strong>nostrils</strong> (dorsally on the snout), and the <strong>operculum</strong> (gjellelokk) — the bony gill cover. The <strong>lateral line</strong> (sidelinje) runs along the flank and detects water vibrations.</p>
+          <p>The <strong>"tail"</strong> in anatomical terms is the entire region behind the body cavity — not just the caudal fin.</p>
+        </div>
+      </div>
+
+      <!-- 3 TISSUE TYPES -->
+      <div class="acc-item" id="acc2">
+        <div class="acc-header" onclick="toggleAcc(2)">
+          <span class="acc-icon">🔬</span>
+          <div style="flex:1">
+            <div class="acc-title">Tissue Types</div>
+            <div class="acc-subtitle">Epithelial · connective · muscle · nervous</div>
+          </div>
+          <span class="acc-chevron">▶</span>
+        </div>
+        <div class="acc-body">
+          <p>There are <strong>4 main tissue types</strong> in all vertebrates. The study of tissues is called <strong>histology</strong>.</p>
+          <table class="note-table">
+            <tr><th>Tissue</th><th>Key feature</th><th>Where found</th></tr>
+            <tr><td>Epithelial</td><td>Covers all inner and outer surfaces; no blood vessels; cells tightly packed</td><td>Skin, gut lining, gills, kidney tubules</td></tr>
+            <tr><td>Connective</td><td>Cells spread apart; defined by intercellular matrix (collagen, elastin, minerals)</td><td>Bone, cartilage, blood, fat, loose/dense connective tissue</td></tr>
+            <tr><td>Muscle</td><td>Cells that contract; contain actin and myosin</td><td>Swimming muscle, heart, gut wall, fins</td></tr>
+            <tr><td>Nervous</td><td>Specialised for impulse conduction; long projections (axons, dendrites)</td><td>Brain, spinal cord, all nerves</td></tr>
+          </table>
+          <p><strong>Epithelium</strong> is classified by layer count (single = simple; multiple = stratified) and cell shape (squamous = flat, cuboidal, columnar/cylindrical). The innermost lining of all blood vessels and the heart is a special single-layer squamous epithelium called <em>endothelium</em>.</p>
+          <p><strong>Connective tissue</strong> subtypes: <em>loose connective tissue</em> fills spaces in organs; <em>dense connective tissue</em> forms skin dermis, swim bladder wall; <em>cartilage</em> (no blood vessels, cells = chondrocytes); <em>bone</em> (hardened with hydroxyapatite, cells = osteocytes); <em>adipose tissue</em> (fat cells); <em>blood</em> (cells floating in plasma).</p>
+          <p><strong>Nerve cells</strong>: conducting cells are <em>neurons</em> (cell body = perikaryon; input extensions = dendrites; output = axon/neurite). Non-conducting support cells are <em>glial cells</em> — they insulate, nourish and support neurons.</p>
+        </div>
+      </div>
+
+      <!-- 4 SKIN & SCALES -->
+      <div class="acc-item" id="acc3">
+        <div class="acc-header" onclick="toggleAcc(3)">
+          <span class="acc-icon">🫧</span>
+          <div style="flex:1">
+            <div class="acc-title">Skin and Scales</div>
+            <div class="acc-subtitle">Epidermis · dermis · scale types</div>
+          </div>
+          <span class="acc-chevron">▶</span>
+        </div>
+        <div class="acc-body">
+          <p>Fish skin has two or three layers. <strong>Epidermis</strong> is the outermost: stratified squamous epithelium with numerous <em>mucus cells</em> (goblet cells) — all fish are slimy. The mucus protects against infections and reduces friction. Unlike land vertebrates, fish epidermis has no dead outer layer and no blood vessels.</p>
+          <p><strong>Dermis</strong> lies beneath the epidermis: dense connective tissue with regularly arranged collagen fibres running diagonally. The dermis contains blood vessels, nerves and pigment cells. Scales sit embedded in the dermis.</p>
+          <p><strong>Hypodermis</strong> (when present) is the deepest layer: loose connective tissue and fat cells.</p>
+          <p>Fish scales are small bony plates:</p>
+          <div style="margin:8px 0 12px">
+            <span class="note-pill">Cycloid</span> Smooth, rounded — primitive. Found in salmon. Growth rings allow age estimation.
+            <br><br>
+            <span class="note-pill amber">Ctenoid</span> Spiny rear edge (ctenii) — more advanced. Found in wrasse. Some flatfish have cycloid on the underside and ctenoid on top.
+          </div>
+          <p>Pigment cells in the skin are controlled by hormones (pituitary gland) and the nervous system, allowing fish to change colour — becoming lighter or darker.</p>
+        </div>
+      </div>
+
+      <!-- 5 SKELETON -->
+      <div class="acc-item" id="acc4">
+        <div class="acc-header" onclick="toggleAcc(4)">
+          <span class="acc-icon">🦴</span>
+          <div style="flex:1">
+            <div class="acc-title">Skeletal System</div>
+            <div class="acc-subtitle">Cranium · vertebral column · fins</div>
+          </div>
+          <span class="acc-chevron">▶</span>
+        </div>
+        <div class="acc-body">
+          <p>The skeleton protects vital organs, stiffens the body, anchors muscles and drives movement. It is built of notochord tissue, cartilage and bone. Three main regions:</p>
+          <p><strong>Cranium (skull)</strong> — many bones, partially moveable relative to each other. Divided into the <em>neurocranium</em> (protects brain and sense organs) and the <em>viscerocranium</em> (jaws and gill apparatus). The teleost upper jaw includes a moveable premaxilla — this is a key defining feature of teleosts, allowing the mouth to be extended dramatically to capture prey. Fish have no breastbone (sternum).</p>
+          <p><strong>Vertebral column</strong> (<em>columna vertebralis</em>) — the main longitudinal stiffening. Each <em>vertebra</em> (virvel) has a central body (<em>corpus vertebralis</em>, hourglass-shaped), a dorsal <em>neural arch</em> (the spinal cord passes through), and in the tail region a ventral <em>haemal arch</em>. Between vertebrae is a pad of notochord tissue that acts as an intervertebral disc — this is what makes the spine flexible and enables the S-curve swimming motion.</p>
+          <p><strong>Fin skeleton</strong> — fins are stiffened by fin rays. <em>Lepidotrichia</em> (soft rays) are segmented, branched and paired — flexible. <em>Acanthia</em> (spine rays) are unsegmented, unbranched and unpaired — rigid, used as defence. The adipose fin is unique: it has neither rays, muscles nor fat — just connective tissue.</p>
+        </div>
+      </div>
+
+      <!-- 6 MUSCLE -->
+      <div class="acc-item" id="acc5">
+        <div class="acc-header" onclick="toggleAcc(5)">
+          <span class="acc-icon">💪</span>
+          <div style="flex:1">
+            <div class="acc-title">Muscle System</div>
+            <div class="acc-subtitle">Red vs white · myotomes · jaw muscles</div>
+          </div>
+          <span class="acc-chevron">▶</span>
+        </div>
+        <div class="acc-body">
+          <p>The <strong>lateral swimming muscle</strong> is by far the largest muscle and accounts for most of the fish's economic value as food. In cross-section it has two clearly distinct zones:</p>
+          <table class="note-table">
+            <tr><th>Fibre type</th><th>Location</th><th>Blood supply</th><th>Energy store</th><th>Function</th></tr>
+            <tr><td>Red (aerobic)</td><td>Outermost lateral strip</td><td>Rich</td><td>Fat + glycogen</td><td>Sustained, low-speed swimming (e.g. migration)</td></tr>
+            <tr><td>White (anaerobic)</td><td>Bulk of the muscle</td><td>Poor</td><td>Very little</td><td>Powerful burst swimming — fatigues quickly</td></tr>
+          </table>
+          <p>Active swimmers like salmon, mackerel and herring have a higher proportion of red fibres than sedentary fish like pike, anglerfish or flatfish.</p>
+          <p>The lateral musculature is divided into <strong>myotomes</strong> — segments roughly equal in number to the vertebrae. Each myotome is <strong>W-shaped</strong> when seen from the side (with two peaks pointing caudally). The walls between segments are called <em>myosepts</em>. Muscle fibres inside a myotome are not parallel to the body axis — their arrangement is complex and three-dimensional.</p>
+          <p>In the head, the dominant muscle is <em>m. adductor mandibulae</em> — the jaw-closing muscle. Additional muscles control the eyes, hyoid arch, operculum and gills.</p>
+        </div>
+      </div>
+
+      <!-- 7 CIRCULATORY -->
+      <div class="acc-item" id="acc6">
+        <div class="acc-header" onclick="toggleAcc(6)">
+          <span class="acc-icon">❤️</span>
+          <div style="flex:1">
+            <div class="acc-title">Circulatory System</div>
+            <div class="acc-subtitle">Heart · blood cells · vessels</div>
+          </div>
+          <span class="acc-chevron">▶</span>
+        </div>
+        <div class="acc-body">
+          <p>The fish heart has <strong>four chambers</strong> in series. Blood always flows in one direction:</p>
+          <div style="margin:8px 0 14px;display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:13px;color:var(--text-dim)">
+            <span class="note-pill">Sinus venosus</span> → <span class="note-pill">Atrium</span> → <span class="note-pill">Ventricle</span> → <span class="note-pill">Bulbus arteriosus</span> → <em style="color:#5e88aa">gills → body → back to heart</em>
+          </div>
+          <p>The <em>sinus venosus</em> has a thin wall and receives four veins. The <em>atrium</em> is thin-walled with internal trabeculae. The <em>ventricle</em> is the main pump — salmon have an additional outer <em>compactum</em> layer. The <em>bulbus arteriosus</em> is white, elastic, and smooths pulsatile pressure before blood reaches the gills. The heart is paced by cells in the sinus venosus and influenced by adrenaline and the nervous system.</p>
+          <p><strong>Blood cells</strong>:</p>
+          <table class="note-table">
+            <tr><th>Cell type</th><th>Function</th><th>Key feature</th></tr>
+            <tr><td>Erythrocytes</td><td>Oxygen transport (haemoglobin)</td><td>Oval and nucleated — unlike mammalian RBCs. Produced in spleen and head kidney.</td></tr>
+            <tr><td>Lymphocytes</td><td>Produce antibodies (immune defence)</td><td>Round, large dark nucleus</td></tr>
+            <tr><td>Granulocytes</td><td>Phagocytosis — engulf pathogens</td><td>Bizarrely shaped nucleus (polymorphonuclear). Subtypes: eosinophil, neutrophil, basophil</td></tr>
+            <tr><td>Monocytes</td><td>Phagocytosis; become macrophages in tissue</td><td>Large, bean-shaped nucleus</td></tr>
+            <tr><td>Thrombocytes</td><td>Blood coagulation</td><td>Analogous to mammalian platelets</td></tr>
+          </table>
+          <p>Main blood-producing (haematopoietic) organs: <strong>head kidney</strong>, <strong>spleen</strong>, and <strong>thymus</strong>.</p>
+        </div>
+      </div>
+
+      <!-- 8 GILLS -->
+      <div class="acc-item" id="acc7">
+        <div class="acc-header" onclick="toggleAcc(7)">
+          <span class="acc-icon">🫁</span>
+          <div style="flex:1">
+            <div class="acc-title">Gills</div>
+            <div class="acc-subtitle">Structure · gas exchange · ion regulation</div>
+          </div>
+          <span class="acc-chevron">▶</span>
+        </div>
+        <div class="acc-body">
+          <p>Teleosts have <strong>4 gill arches</strong> per side. Each arch is a V-shaped structure of 4 bones with the tip pointing caudally. On each arch are two rows of <em>gill filaments</em> (gjellefilamenter) — flat, horizontal blades stiffened by cartilage. Both rows together form a <em>holobranch</em>; one row alone is a <em>hemibranch</em>.</p>
+          <p>Each filament carries many vertical <strong>gill lamellae</strong> (gjellelameller) on both sides — these are the actual gas exchange surfaces. They are extremely thin, with blood flowing inside through channels formed by specialised <em>pillar cells</em>. Blood flows through the lamellae in the <strong>opposite direction</strong> to water flow — this countercurrent arrangement maximises oxygen uptake.</p>
+          <p>At the base of the lamellae:</p>
+          <div style="margin:4px 0 12px">
+            <span class="note-pill">Mucus cells</span> secrete protective mucus
+            <br>
+            <span class="note-pill green">Ionocytes</span> (chloride cells) actively transport NaCl and other ions — key for osmoregulation in both freshwater and saltwater
+          </div>
+          <p><strong>Ventilation</strong>: Fish can use RAM ventilation (swimming with mouth open) or active opercular pumping — the operculum swings outward, drawing water in through the mouth; then the mouth closes and the operculum pushes inward, forcing water out over the gills.</p>
+          <p>The gills also excrete <strong>CO₂</strong> and <strong>ammonia</strong> (the main nitrogenous waste in fish).</p>
+        </div>
+      </div>
+
+      <!-- 9 DIGESTION -->
+      <div class="acc-item" id="acc8">
+        <div class="acc-header" onclick="toggleAcc(8)">
+          <span class="acc-icon">🍽️</span>
+          <div style="flex:1">
+            <div class="acc-title">Digestive System</div>
+            <div class="acc-subtitle">Gut tract · liver · pancreas</div>
+          </div>
+          <span class="acc-chevron">▶</span>
+        </div>
+        <div class="acc-body">
+          <p>The digestive tract runs from mouth to hindgut: <em>oral cavity → pharynx → oesophagus → stomach → midgut → hindgut</em>. Two accessory glands: liver and pancreas.</p>
+          <p><strong>Oesophagus</strong>: short, muscular. Wall transitions from skeletal muscle (upper) to smooth muscle (lower). Lined with tall stratified squamous epithelium with many mucus cells.</p>
+          <p><strong>Stomach</strong>: U-shaped in most fish. Lined with simple columnar epithelium. The surface layer is mucus cells; deep gastric crypts contain <em>chief cells</em> (hovedceller) that secrete HCl and pepsinogen. A muscular sphincter (pylorus) separates it from the midgut.</p>
+          <p><strong>Pyloric caecae</strong>: finger-like blind pouches opening at the start of the midgut. They massively increase absorptive surface area. Salmon can have hundreds. Pancreatic tissue is typically found among them.</p>
+          <p><strong>Midgut</strong>: nutrient absorption. Lined with tall columnar cells with a dense brush border (microvilli). Scattered mucus cells increase toward the hindgut.</p>
+          <p><strong>Liver</strong>: the central metabolic organ. Located cranialy in the body cavity. Processes and stores nutrients, produces bile. Bile is stored in the gallbladder and released into the midgut. Salmon liver is reddish-brown with low fat; cod liver is large, pale and fat-rich.</p>
+          <p><strong>Pancreas</strong> in teleosts is <em>pancreas diffusum</em> — not a compact organ but scattered cell clusters in mesenteries, along blood vessels, and in abdominal fat. Exocrine cells secrete digestive enzymes; endocrine cells (Islets of Langerhans / Brockmann bodies) secrete hormones (e.g. insulin).</p>
+        </div>
+      </div>
+
+      <!-- 10 SWIM BLADDER -->
+      <div class="acc-item" id="acc9">
+        <div class="acc-header" onclick="toggleAcc(9)">
+          <span class="acc-icon">🎈</span>
+          <div style="flex:1">
+            <div class="acc-title">Swim Bladder</div>
+            <div class="acc-subtitle">Buoyancy · physostomous vs physoclistous</div>
+          </div>
+          <span class="acc-chevron">▶</span>
+        </div>
+        <div class="acc-body">
+          <p>The <strong>swim bladder</strong> is a gas-filled sac lying dorsally in the body cavity just beneath the kidneys. Its function is buoyancy — a well-regulated swim bladder allows the fish to hover at depth without expending energy. However, the bladder sits slightly below the fish's centre of gravity, so an unconscious fish floats belly-up or on its side.</p>
+          <table class="note-table">
+            <tr><th>Type</th><th>Duct to oesophagus?</th><th>Wall</th><th>Example</th></tr>
+            <tr><td>Physostomous</td><td>Yes (open)</td><td>Thin — low burst risk</td><td>Salmon, herring</td></tr>
+            <tr><td>Physoclistous</td><td>No (sealed)</td><td>Thick dense connective tissue — withstands pressure</td><td>Cod, perch</td></tr>
+          </table>
+          <p>Physoclistous fish regulate gas volume through a <strong>gas gland</strong> containing a <em>rete mirabile</em> — a countercurrent capillary network where lactic acid lowers pH, releasing oxygen from haemoglobin into the bladder. A separate <em>oval</em> region allows gas reabsorption.</p>
+        </div>
+      </div>
+
+      <!-- 11 KIDNEY -->
+      <div class="acc-item" id="acc10">
+        <div class="acc-header" onclick="toggleAcc(10)">
+          <span class="acc-icon">🫘</span>
+          <div style="flex:1">
+            <div class="acc-title">Kidney</div>
+            <div class="acc-subtitle">Nephron · urine production · functions</div>
+          </div>
+          <span class="acc-chevron">▶</span>
+        </div>
+        <div class="acc-body">
+          <p>Fish kidneys are always <strong>dark violet</strong> and always fixed <strong>dorsally to the vertebral column</strong> in the body cavity. They originally develop as one per side but fuse into a single organ. The kidney has three functions: producing <strong>urine</strong>, producing <strong>blood cells</strong> and producing <strong>hormones</strong>.</p>
+          <p>The functional unit is the <strong>nephron</strong>:</p>
+          <div style="margin:6px 0 12px;display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:13px">
+            <span class="note-pill">Glomerulus</span> <span style="color:var(--text-muted)">→</span>
+            <span class="note-pill">Proximal tubule</span> <span style="color:var(--text-muted)">→</span>
+            <span class="note-pill">Distal tubule</span> <span style="color:var(--text-muted)">→</span>
+            <span class="note-pill">Collecting duct</span> <span style="color:var(--text-muted)">→</span>
+            <span class="note-pill">Ureter</span>
+          </div>
+          <p>The <em>glomerulus</em> is a knot of capillaries wrapped by <em>podocytes</em> (specialised epithelial cells with finger-like processes). Blood is filtered here — plasma is forced through as pre-urine (<em>ultrafiltrate</em>); blood cells cannot pass. The tubules then modify the composition — reabsorbing useful ions and water, and secreting waste products — to produce the final urine.</p>
+          <p>Both ureters (one per kidney) merge into a single duct that leads to the <strong>urinary bladder</strong>, and urine exits separately at the <em>urogenital papilla</em> near the anal opening.</p>
+        </div>
+      </div>
+
+      <!-- 12 NERVOUS SYSTEM & BRAIN -->
+      <div class="acc-item" id="acc11">
+        <div class="acc-header" onclick="toggleAcc(11)">
+          <span class="acc-icon">🧠</span>
+          <div style="flex:1">
+            <div class="acc-title">Nervous System</div>
+            <div class="acc-subtitle">Brain regions · spinal cord · cranial nerves</div>
+          </div>
+          <span class="acc-chevron">▶</span>
+        </div>
+        <div class="acc-body">
+          <p>The nervous system divides into the <strong>central nervous system (CNS)</strong> — brain and spinal cord — and the <strong>peripheral nervous system (PNS)</strong> — 10 pairs of cranial nerves and one pair of spinal nerves per vertebral segment.</p>
+          <p>The fish brain has <strong>5 regions</strong> from front to back:</p>
+          <table class="note-table">
+            <tr><th>Region</th><th>Key structures</th><th>Main function</th></tr>
+            <tr><td>Telencephalon</td><td>Olfactory bulb (bulbus olfactorius), limbic areas</td><td>Smell processing; behaviour; learning</td></tr>
+            <tr><td>Diencephalon</td><td>Thalamus, hypothalamus, pineal gland, pituitary (hypofyse), saccus vasculosus</td><td>Integration; hormone control; circadian rhythm; seasonal sensing</td></tr>
+            <tr><td>Mesencephalon</td><td>Optic tectum (tectum opticum) — two large lobes</td><td>Visual processing (dominant sense in most fish)</td></tr>
+            <tr><td>Metencephalon</td><td>Cerebellum (lillehjernen)</td><td>Motor coordination and balance</td></tr>
+            <tr><td>Myelencephalon</td><td>Medulla oblongata (forlengede marg)</td><td>Cranial nerve nuclei; vital functions</td></tr>
+          </table>
+          <p>The <strong>spinal cord</strong> runs through the neural arches of the vertebrae. Each spinal nerve enters/exits via two roots: <em>dorsal root</em> (sensory — pain, temperature, touch) and <em>ventral root</em> (motor — skeletal muscle).</p>
+          <p>The <strong>pineal gland</strong> senses light and produces melatonin to regulate circadian and seasonal rhythms — important for salmon smoltification and maturation timing.</p>
+        </div>
+      </div>
+
+      <!-- 13 SENSE ORGANS -->
+      <div class="acc-item" id="acc12">
+        <div class="acc-header" onclick="toggleAcc(12)">
+          <span class="acc-icon">👁️</span>
+          <div style="flex:1">
+            <div class="acc-title">Sense Organs</div>
+            <div class="acc-subtitle">Eye · lateral line · inner ear · smell</div>
+          </div>
+          <span class="acc-chevron">▶</span>
+        </div>
+        <div class="acc-body">
+          <p>Fish have both <strong>general senses</strong> (pain, temperature, touch — in the skin) and <strong>special senses</strong> with dedicated organs: smell, vision, taste, hearing/balance, lateral line, and electroreception.</p>
+          <p><strong>Eye</strong>: same three-layer structure as all vertebrates (sclera → uvea → retina), but the lens is perfectly spherical (unlike our flattened lens). The outer sclera is cartilage; transparent cornea is dense connective tissue. The <em>retina</em> contains rod cells (low-light) and cone cells (colour). Visual signals travel via <em>n. opticus</em> to the optic tectum.</p>
+          <p><strong>Inner ear</strong>: the sense of balance and hearing is located in the <em>sacculus</em> and <em>utriculus</em> — two fluid-filled sacs in the otic region of the skull. Each contains <em>otoliths</em> (ear stones of calcium carbonate) that press on hair cells when the fish accelerates or tilts. Three semicircular canals extending from the utriculus register rotation. Annual rings in otoliths reveal the fish's exact age.</p>
+          <p><strong>Lateral line</strong>: a network of canals in the dermis running along the flank, above the eye, below the eye and along the jaw. Groups of <em>hair cells</em> deep in the canals detect low-frequency water vibrations and pressure changes — used to sense prey, predators and schooling neighbours. Hair cells are also the basis of electroreception.</p>
+          <p><strong>Smell</strong>: olfactory pits on the dorsal snout. Most fish have two openings. Signals travel via <em>n. olfactorius</em> to the <em>olfactory bulb</em> (an anterior outgrowth of the telencephalon). Salmon famously use olfactory memory to navigate back to their natal river to spawn.</p>
+          <p><strong>Taste</strong>: taste cells clustered in the oral cavity, throat, on the tongue and on barbels. Simple in structure — taste cell groups in epithelial knots.</p>
+        </div>
+      </div>
+
+    </div><!-- /accordion -->
+
+    <div class="notes-ready-bar">
+      <span>Ready to test yourself?</span>
+      <button onclick="setMode('label')">Start: Label the Fish →</button>
+    </div>
+
+  </div>
+
   <!-- ═══════════════════ LABEL THE FISH ═══════════════════ -->
-  <div class="game-panel active" id="panel-label">
+  <div class="game-panel" id="panel-label">
     <div class="label-wrap">
       <div class="label-score">
         <div>
@@ -460,9 +837,17 @@ if (sessionStorage.getItem('cr_auth') !== '1') {
 }
 
 // ── Mode switcher ─────────────────────────────────────────────
+const MODES = ['notes','label','quiz','cards'];
 function setMode(mode) {
-  document.querySelectorAll('.mode-tab').forEach((t,i) => t.classList.toggle('active', ['label','quiz','cards'][i] === mode));
-  document.querySelectorAll('.game-panel').forEach((p,i) => p.classList.toggle('active', ['panel-label','panel-quiz','panel-cards'][i] === 'panel-'+mode));
+  document.querySelectorAll('.mode-tab').forEach((t,i) => t.classList.toggle('active', MODES[i] === mode));
+  document.querySelectorAll('.game-panel').forEach((p,i) => p.classList.toggle('active', 'panel-'+MODES[i] === 'panel-'+mode));
+}
+
+// ── Accordion ─────────────────────────────────────────────────
+function toggleAcc(idx) {
+  const item = document.getElementById('acc' + idx);
+  const isOpen = item.classList.contains('open');
+  item.classList.toggle('open', !isOpen);
 }
 
 // ═══════════════════════════════════════════════════════════════
