@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LaksAtlas Classroom: Fish Anatomy</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="mobile.css">
+<style>
+:root {
+  --bg: #04091a; --bg-soft: #071425; --bg-card: rgba(4,28,68,0.52);
+  --border: rgba(30,100,210,0.18); --text: #d8e8f6; --text-dim: #5e88aa;
+  --text-muted: #2a4560; --neon-cyan: #00c8ff; --neon-green: #1de9a8;
+  --neon-amber: #f4a535; --neon-red: #ff4757;
+  --glow-cyan: 0 0 14px rgba(0,200,255,0.22), 0 0 40px rgba(0,200,255,0.08);
+  --glow-green: 0 0 14px rgba(29,233,168,0.22);
+  --radius-lg: 18px; --radius-md: 12px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: 'Outfit', sans-serif; min-height: 100vh; }
+
+nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(4,9,26,0.92); backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 28px; height: 56px;
+  display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
+}
+.nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.nav-logo-name { font-size: 15px; font-weight: 700; color: var(--text); }
+.nav-logo-name span { color: var(--neon-cyan); }
+.nav-links { display: flex; gap: 20px; justify-self: end; align-items: center; }
+.nav-links a { font-size: 13px; color: var(--text-dim); text-decoration: none; transition: color .15s; }
+.nav-links a:hover { color: var(--neon-cyan); }
+.back-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12px; color: var(--text-dim); text-decoration: none;
+  border: 1px solid var(--border); border-radius: 6px; padding: 5px 12px;
+  transition: all .2s;
+}
+.back-btn:hover { color: var(--neon-cyan); border-color: rgba(0,200,255,0.3); }
+
+.page-wrap { max-width: 900px; margin: 0 auto; padding: 40px 24px 100px; }
+
+.topic-header { margin-bottom: 32px; }
+.topic-tag {
+  font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--neon-cyan);
+  letter-spacing: .12em; text-transform: uppercase; margin-bottom: 8px;
+}
+.topic-title { font-size: clamp(24px,4vw,40px); font-weight: 800; color: var(--text); margin-bottom: 8px; }
+.topic-sub { font-size: 14px; color: var(--text-dim); }
+
+/* MODE TABS */
+.mode-tabs { display: flex; gap: 8px; margin-bottom: 28px; flex-wrap: wrap; }
+.mode-tab {
+  padding: 9px 20px; border-radius: 8px; border: 1px solid var(--border);
+  background: transparent; color: var(--text-dim); font-family: 'Outfit', sans-serif;
+  font-size: 14px; font-weight: 500; cursor: pointer; transition: all .2s;
+}
+.mode-tab:hover { border-color: rgba(0,200,255,0.3); color: var(--text); }
+.mode-tab.active {
+  background: rgba(0,200,255,0.08); border-color: rgba(0,200,255,0.4);
+  color: var(--neon-cyan); box-shadow: var(--glow-cyan);
+}
+
+.game-panel { display: none; }
+.game-panel.active { display: block; }
+
+/* ─── LABEL GAME ────────────────────────────────────────────────── */
+.label-wrap {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 24px; position: relative;
+}
+.label-score {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px; flex-wrap: wrap; gap: 10px;
+}
+.label-score-text { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--text-dim); }
+.label-score-text span { color: var(--neon-cyan); font-weight: 700; }
+.label-instructions { font-size: 13px; color: var(--text-muted); margin-bottom: 14px; }
+.fish-svg-wrap { width: 100%; overflow: hidden; border-radius: 10px; background: rgba(0,20,50,0.3); }
+.fish-svg-wrap svg { width: 100%; height: auto; display: block; }
+
+.fish-body { fill: rgba(0,70,140,0.32); stroke: rgba(0,200,255,0.45); stroke-width: 1.5; }
+.fish-fin  { fill: rgba(0,200,255,0.10); stroke: rgba(0,200,255,0.38); stroke-width: 1.2; }
+.fish-eye-o { fill: #0d2236; stroke: rgba(0,200,255,0.5); stroke-width: 1; }
+.fish-eye-i { fill: rgba(0,200,255,0.18); }
+.fish-eye-p { fill: #00c8ff; }
+.fish-operculum { stroke: rgba(0,200,255,0.5); stroke-width: 1.2; fill: none; stroke-dasharray: 4,3; }
+.fish-lateral { stroke: rgba(0,200,255,0.65); stroke-width: 1; stroke-dasharray: 5,4; }
+.fish-nostril { fill: rgba(0,200,255,0.3); }
+
+.hotspot { cursor: pointer; }
+.hotspot circle.hs-bg { fill: #00c8ff; transition: fill .2s; }
+.hotspot text { fill: #04091a; font-family: 'JetBrains Mono',monospace; font-size: 11px; font-weight: 800; dominant-baseline: central; text-anchor: middle; pointer-events: none; }
+.hotspot.answered circle.hs-bg { fill: #1de9a8; cursor: default; }
+.hotspot.wrong circle.hs-bg { fill: #ff4757; }
+.hotspot:not(.answered):hover circle.hs-bg { filter: brightness(1.2); }
+
+#label-popup {
+  position: absolute; background: #0c1a2e; border: 1px solid rgba(0,200,255,0.28);
+  border-radius: 12px; padding: 16px; z-index: 20; width: 230px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+}
+#label-popup .pop-q { font-size: 12px; color: var(--text-dim); margin-bottom: 10px; }
+.pop-opt {
+  display: block; width: 100%; text-align: left; padding: 8px 12px;
+  margin-bottom: 6px; border-radius: 7px; border: 1px solid rgba(0,200,255,0.15);
+  background: rgba(0,200,255,0.04); color: var(--text); font-size: 13px;
+  font-family: 'Outfit', sans-serif; cursor: pointer; transition: all .15s;
+}
+.pop-opt:last-child { margin-bottom: 0; }
+.pop-opt:hover { border-color: rgba(0,200,255,0.4); background: rgba(0,200,255,0.1); }
+.pop-opt.correct { background: rgba(29,233,168,0.15); border-color: #1de9a8; color: #1de9a8; }
+.pop-opt.wrong   { background: rgba(255,71,87,0.12); border-color: #ff4757; color: #ff4757; }
+
+.label-complete {
+  margin-top: 16px; padding: 14px 18px; border-radius: 10px;
+  background: rgba(29,233,168,0.08); border: 1px solid rgba(29,233,168,0.3);
+  color: #1de9a8; font-size: 14px; font-weight: 600; display: none;
+}
+
+/* ─── QUIZ ───────────────────────────────────────────────────────── */
+.quiz-wrap { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 28px; }
+.quiz-meta { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; gap: 10px; flex-wrap: wrap; }
+.quiz-progress-bar { flex: 1; height: 5px; background: rgba(255,255,255,0.05); border-radius: 3px; min-width: 80px; }
+.quiz-progress-fill { height: 100%; background: var(--neon-cyan); border-radius: 3px; transition: width .3s; }
+.quiz-counter { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-dim); white-space: nowrap; }
+.quiz-score-badge {
+  font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--neon-green);
+  background: rgba(29,233,168,0.08); border: 1px solid rgba(29,233,168,0.2);
+  padding: 3px 10px; border-radius: 999px;
+}
+.quiz-q { font-size: 17px; font-weight: 600; color: var(--text); margin-bottom: 20px; line-height: 1.5; }
+.quiz-opts { display: grid; gap: 10px; }
+.quiz-opt {
+  padding: 12px 16px; border-radius: 9px; border: 1px solid rgba(0,200,255,0.15);
+  background: rgba(0,200,255,0.03); color: var(--text); font-size: 14px;
+  font-family: 'Outfit', sans-serif; cursor: pointer; text-align: left;
+  transition: all .15s;
+}
+.quiz-opt:hover:not(:disabled) { border-color: rgba(0,200,255,0.4); background: rgba(0,200,255,0.08); }
+.quiz-opt.correct { background: rgba(29,233,168,0.12); border-color: #1de9a8; color: #1de9a8; }
+.quiz-opt.wrong   { background: rgba(255,71,87,0.10); border-color: #ff4757;  color: #ff4757;  }
+.quiz-opt.reveal  { background: rgba(29,233,168,0.06); border-color: rgba(29,233,168,0.3); color: #1de9a8; }
+.quiz-opt:disabled { cursor: default; }
+.quiz-explanation {
+  margin-top: 14px; padding: 12px 15px; border-radius: 9px;
+  background: rgba(0,200,255,0.05); border-left: 3px solid rgba(0,200,255,0.4);
+  font-size: 13px; color: var(--text-dim); line-height: 1.6; display: none;
+}
+.quiz-explanation.show { display: block; }
+.quiz-next-btn {
+  margin-top: 16px; padding: 10px 24px; border-radius: 8px;
+  border: 1px solid rgba(0,200,255,0.35); background: rgba(0,200,255,0.08);
+  color: var(--neon-cyan); font-size: 14px; font-family: 'Outfit', sans-serif;
+  cursor: pointer; transition: all .2s; display: none;
+}
+.quiz-next-btn.show { display: inline-block; }
+.quiz-next-btn:hover { background: rgba(0,200,255,0.15); box-shadow: var(--glow-cyan); }
+
+.quiz-start, .quiz-results { text-align: center; padding: 20px 0; }
+.big-btn {
+  display: inline-block; padding: 13px 32px; border-radius: 10px;
+  border: 1px solid rgba(0,200,255,0.35); background: rgba(0,200,255,0.08);
+  color: var(--neon-cyan); font-size: 15px; font-family: 'Outfit', sans-serif;
+  cursor: pointer; transition: all .2s; margin-top: 12px;
+}
+.big-btn:hover { background: rgba(0,200,255,0.18); box-shadow: var(--glow-cyan); }
+.results-score {
+  font-size: 52px; font-weight: 800; color: var(--neon-cyan);
+  font-family: 'JetBrains Mono', monospace; margin-bottom: 4px;
+}
+.results-sub { font-size: 16px; color: var(--text-dim); margin-bottom: 8px; }
+.results-grade { font-size: 22px; font-weight: 700; margin-bottom: 20px; }
+
+/* ─── FLASHCARDS ─────────────────────────────────────────────────── */
+.fc-wrap { display: flex; flex-direction: column; align-items: center; gap: 20px; }
+.fc-nav { display: flex; align-items: center; gap: 16px; }
+.fc-counter { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--text-dim); }
+.fc-arrow {
+  width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--border);
+  background: transparent; color: var(--text-dim); font-size: 16px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; transition: all .2s;
+}
+.fc-arrow:hover { border-color: rgba(0,200,255,0.35); color: var(--neon-cyan); }
+.fc-hint { font-size: 12px; color: var(--text-muted); }
+
+.card-scene { width: 100%; max-width: 620px; height: 220px; perspective: 900px; cursor: pointer; }
+.card-inner { width: 100%; height: 100%; transition: transform .55s; transform-style: preserve-3d; position: relative; }
+.card-inner.flipped { transform: rotateY(180deg); }
+.card-face {
+  position: absolute; inset: 0; backface-visibility: hidden;
+  border-radius: var(--radius-lg); border: 1px solid var(--border);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 28px 36px; text-align: center;
+}
+.card-front { background: rgba(0,30,70,0.45); }
+.card-back  { background: rgba(0,50,30,0.35); border-color: rgba(29,233,168,0.2); transform: rotateY(180deg); }
+.card-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: .1em; margin-bottom: 10px; }
+.card-front .card-label { color: rgba(0,200,255,0.5); }
+.card-back  .card-label { color: rgba(29,233,168,0.5); }
+.card-term { font-size: 24px; font-weight: 700; color: var(--neon-cyan); }
+.card-def  { font-size: 14px; color: var(--text); line-height: 1.6; }
+.card-flip-hint { font-size: 11px; color: var(--text-muted); margin-top: 10px; }
+
+.fc-progress { width: 100%; max-width: 620px; display: flex; gap: 5px; flex-wrap: wrap; justify-content: center; }
+.fc-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.08); transition: background .3s; }
+.fc-dot.seen { background: rgba(0,200,255,0.4); }
+.fc-dot.current { background: var(--neon-cyan); }
+
+/* ─── RESET BTN ──────────────────────────────────────────────────── */
+.reset-btn {
+  padding: 6px 14px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.08);
+  background: transparent; color: var(--text-muted); font-size: 12px;
+  font-family: 'Outfit', sans-serif; cursor: pointer; transition: all .2s;
+}
+.reset-btn:hover { border-color: rgba(255,71,87,0.3); color: #ff4757; }
+
+footer { border-top: 1px solid var(--border); padding: 20px 28px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; font-size: 12px; color: var(--text-muted); }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">
+    <svg width="26" height="26" viewBox="0 0 32 32" fill="none">
+      <ellipse cx="16" cy="16" rx="14" ry="10" stroke="#00c8ff" stroke-width="1.5" opacity=".4"/>
+      <path d="M4 16 Q10 8 16 16 Q22 24 28 16" stroke="#00c8ff" stroke-width="2" fill="none"/>
+      <circle cx="16" cy="16" r="2.5" fill="#00c8ff" opacity=".7"/>
+    </svg>
+    <span class="nav-logo-name">Laks<span>Atlas</span></span>
+  </a>
+  <div></div>
+  <div class="nav-links">
+    <a href="classroom.html" class="back-btn">← Classroom</a>
+  </div>
+</nav>
+
+<div class="page-wrap">
+  <div class="topic-header">
+    <div class="topic-tag">Topic 01 · Anatomy</div>
+    <h1 class="topic-title">Fish Anatomy</h1>
+    <p class="topic-sub">External anatomy, tissues, organ systems and sense organs in teleost fish — primarily salmon.</p>
+  </div>
+
+  <div class="mode-tabs">
+    <button class="mode-tab active" onclick="setMode('label')">🐟 Label the Fish</button>
+    <button class="mode-tab" onclick="setMode('quiz')">🧠 Anatomy Quiz</button>
+    <button class="mode-tab" onclick="setMode('cards')">📚 Flash Cards</button>
+  </div>
+
+  <!-- ═══════════════════ LABEL THE FISH ═══════════════════ -->
+  <div class="game-panel active" id="panel-label">
+    <div class="label-wrap">
+      <div class="label-score">
+        <div>
+          <div class="label-score-text">Score: <span id="label-correct">0</span> / <span id="label-total">10</span></div>
+          <div class="label-instructions">Click a numbered circle on the fish, then select the correct label.</div>
+        </div>
+        <button class="reset-btn" onclick="resetLabel()">Reset</button>
+      </div>
+
+      <div class="fish-svg-wrap" id="fish-svg-container" style="position:relative;">
+        <svg viewBox="0 0 700 295" xmlns="http://www.w3.org/2000/svg" id="fish-svg">
+          <!-- ── BODY ── -->
+          <path class="fish-body" d="
+            M 22,148
+            C 34,124 58,96 100,84
+            C 142,72 200,65 295,62
+            C 390,60 462,66 535,82
+            L 535,212
+            C 462,228 390,234 295,232
+            C 200,229 142,222 100,210
+            C 58,198 34,172 22,148 Z
+          "/>
+
+          <!-- ── DORSAL FIN ── -->
+          <path class="fish-fin" d="M 242,64 C 262,38 280,10 295,6 C 310,10 332,38 356,63 Z"/>
+
+          <!-- ── ADIPOSE FIN ── -->
+          <path class="fish-fin" d="M 454,70 C 462,44 472,24 482,28 C 492,32 498,52 500,70 Z"/>
+
+          <!-- ── CAUDAL FIN ── -->
+          <path class="fish-fin" d="M 535,105 L 650,48 L 638,148 L 650,248 L 535,191 Z"/>
+
+          <!-- ── PECTORAL FIN ── -->
+          <path class="fish-fin" d="M 150,186 C 138,210 140,250 153,260 C 165,246 170,218 172,188 Z"/>
+
+          <!-- ── PELVIC FIN ── -->
+          <path class="fish-fin" d="M 263,232 C 265,256 276,274 287,274 C 298,274 309,256 311,232 Z"/>
+
+          <!-- ── ANAL FIN ── -->
+          <path class="fish-fin" d="M 394,232 C 402,256 420,274 440,270 C 448,252 442,232 437,232 Z"/>
+
+          <!-- ── OPERCULUM ARC ── -->
+          <path class="fish-operculum" d="M 152,88 Q 165,148 152,210"/>
+
+          <!-- ── LATERAL LINE ── -->
+          <line class="fish-lateral" x1="167" y1="148" x2="530" y2="148"/>
+
+          <!-- ── EYE ── -->
+          <circle class="fish-eye-o" cx="86" cy="110" r="17"/>
+          <circle class="fish-eye-i" cx="86" cy="110" r="9"/>
+          <circle class="fish-eye-p" cx="90" cy="107" r="3"/>
+
+          <!-- ── NOSTRIL ── -->
+          <circle class="fish-nostril" cx="46" cy="100" r="3.5"/>
+          <circle class="fish-nostril" cx="54" cy="95" r="3"/>
+
+          <!-- ── MOUTH LINE ── -->
+          <path style="fill:none;stroke:rgba(0,200,255,0.4);stroke-width:1.5" d="M 22,140 Q 14,148 22,158"/>
+
+          <!-- ── HOTSPOTS ── -->
+          <g id="hotspots">
+            <!-- 1 Mouth -->
+            <g class="hotspot" id="hs0" onclick="openPopup(0,event)">
+              <circle class="hs-bg" cx="14" cy="148" r="11"/>
+              <text x="14" y="148">1</text>
+            </g>
+            <!-- 2 Eye -->
+            <g class="hotspot" id="hs1" onclick="openPopup(1,event)">
+              <circle class="hs-bg" cx="86" cy="84" r="11"/>
+              <text x="86" y="84">2</text>
+            </g>
+            <!-- 3 Operculum -->
+            <g class="hotspot" id="hs2" onclick="openPopup(2,event)">
+              <circle class="hs-bg" cx="152" cy="148" r="11"/>
+              <text x="152" y="148">3</text>
+            </g>
+            <!-- 4 Pectoral fin -->
+            <g class="hotspot" id="hs3" onclick="openPopup(3,event)">
+              <circle class="hs-bg" cx="150" cy="262" r="11"/>
+              <text x="150" y="262">4</text>
+            </g>
+            <!-- 5 Dorsal fin -->
+            <g class="hotspot" id="hs4" onclick="openPopup(4,event)">
+              <circle class="hs-bg" cx="295" cy="18" r="11"/>
+              <text x="295" y="18">5</text>
+            </g>
+            <!-- 6 Lateral line -->
+            <g class="hotspot" id="hs5" onclick="openPopup(5,event)">
+              <circle class="hs-bg" cx="372" cy="148" r="11"/>
+              <text x="372" y="148">6</text>
+            </g>
+            <!-- 7 Pelvic fin -->
+            <g class="hotspot" id="hs6" onclick="openPopup(6,event)">
+              <circle class="hs-bg" cx="287" cy="274" r="11"/>
+              <text x="287" y="274">7</text>
+            </g>
+            <!-- 8 Adipose fin -->
+            <g class="hotspot" id="hs7" onclick="openPopup(7,event)">
+              <circle class="hs-bg" cx="477" cy="30" r="11"/>
+              <text x="477" y="30">8</text>
+            </g>
+            <!-- 9 Anal fin -->
+            <g class="hotspot" id="hs8" onclick="openPopup(8,event)">
+              <circle class="hs-bg" cx="420" cy="274" r="11"/>
+              <text x="420" y="274">9</text>
+            </g>
+            <!-- 10 Caudal fin -->
+            <g class="hotspot" id="hs9" onclick="openPopup(9,event)">
+              <circle class="hs-bg" cx="648" cy="148" r="11"/>
+              <text x="648" y="148">10</text>
+            </g>
+          </g>
+        </svg>
+
+        <!-- Popup (shown on hotspot click) -->
+        <div id="label-popup" style="display:none;">
+          <div class="pop-q">What is this structure called?</div>
+          <div id="pop-opts"></div>
+        </div>
+      </div>
+
+      <div class="label-complete" id="label-complete">
+        All 10 parts identified correctly! Well done.
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ QUIZ ═══════════════════ -->
+  <div class="game-panel" id="panel-quiz">
+    <div class="quiz-wrap">
+
+      <!-- Start screen -->
+      <div class="quiz-start" id="quiz-start">
+        <div style="font-size:36px;margin-bottom:10px;">🧬</div>
+        <div style="font-size:20px;font-weight:700;margin-bottom:8px;">Anatomy Quiz</div>
+        <div style="font-size:14px;color:var(--text-dim);margin-bottom:4px;">20 questions covering tissue types, organ systems, circulatory system, gills, digestion, and more.</div>
+        <div style="font-size:13px;color:var(--text-muted);">Based on chapter 2 of Fiskefysiologi (Kryvi, Bergen).</div>
+        <button class="big-btn" onclick="startQuiz()">Start Quiz</button>
+      </div>
+
+      <!-- Question screen -->
+      <div id="quiz-question" style="display:none;">
+        <div class="quiz-meta">
+          <div class="quiz-progress-bar"><div class="quiz-progress-fill" id="quiz-fill" style="width:0%"></div></div>
+          <div class="quiz-counter" id="quiz-counter">1 / 20</div>
+          <div class="quiz-score-badge" id="quiz-score-badge">0 correct</div>
+        </div>
+        <div class="quiz-q" id="quiz-q-text"></div>
+        <div class="quiz-opts" id="quiz-opts"></div>
+        <div class="quiz-explanation" id="quiz-exp"></div>
+        <button class="quiz-next-btn" id="quiz-next" onclick="nextQuestion()">Next question →</button>
+      </div>
+
+      <!-- Results screen -->
+      <div class="quiz-results" id="quiz-results" style="display:none;">
+        <div style="font-size:36px;margin-bottom:10px;">🏆</div>
+        <div class="results-score" id="results-score"></div>
+        <div class="results-sub">out of 20 questions</div>
+        <div class="results-grade" id="results-grade"></div>
+        <button class="big-btn" onclick="startQuiz()">Try again</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════ FLASH CARDS ═══════════════════ -->
+  <div class="game-panel" id="panel-cards">
+    <div class="fc-wrap">
+      <div class="fc-nav">
+        <button class="fc-arrow" onclick="prevCard()">&#8592;</button>
+        <span class="fc-counter" id="fc-counter">1 / 20</span>
+        <button class="fc-arrow" onclick="nextCard()">&#8594;</button>
+      </div>
+
+      <div class="fc-hint">Click the card to reveal the definition</div>
+
+      <div class="card-scene" onclick="flipCard()">
+        <div class="card-inner" id="card-inner">
+          <div class="card-face card-front">
+            <div class="card-label">Term</div>
+            <div class="card-term" id="card-term"></div>
+            <div class="card-flip-hint">tap to flip</div>
+          </div>
+          <div class="card-face card-back">
+            <div class="card-label">Definition</div>
+            <div class="card-def" id="card-def"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="fc-progress" id="fc-progress"></div>
+    </div>
+  </div>
+
+</div><!-- /page-wrap -->
+
+<footer>
+  <span>LaksAtlas Classroom — Educational use only</span>
+  <span>Source: Kryvi H &amp; Poppe T (2016). Fiskeanatomi. Fagbokforlaget, Bergen.</span>
+</footer>
+
+<script>
+// ── Auth check ────────────────────────────────────────────────
+if (sessionStorage.getItem('cr_auth') !== '1') {
+  document.body.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:12px;text-align:center;padding:40px;font-family:Outfit,sans-serif;background:#04091a;color:#5e88aa"><div style="font-size:36px">🔒</div><h2 style="font-size:18px">Access restricted</h2><p style="font-size:14px">Return to the <a href="about.html" style="color:#00c8ff">About page</a> to sign in.</p></div>';
+}
+
+// ── Mode switcher ─────────────────────────────────────────────
+function setMode(mode) {
+  document.querySelectorAll('.mode-tab').forEach((t,i) => t.classList.toggle('active', ['label','quiz','cards'][i] === mode));
+  document.querySelectorAll('.game-panel').forEach((p,i) => p.classList.toggle('active', ['panel-label','panel-quiz','panel-cards'][i] === 'panel-'+mode));
+}
+
+// ═══════════════════════════════════════════════════════════════
+// LABEL GAME
+// ═══════════════════════════════════════════════════════════════
+const PARTS = [
+  { name: 'Mouth',        wrong: ['Nostril','Operculum','Palatine tooth'] },
+  { name: 'Eye',          wrong: ['Nostril','Pineal window','Ear stone (otolith)'] },
+  { name: 'Operculum',    wrong: ['Branchiostegal ray','Preoperculum','Hyoid arch'] },
+  { name: 'Pectoral fin', wrong: ['Pelvic fin','Anal fin','Fin ray (lepidotrichia)'] },
+  { name: 'Dorsal fin',   wrong: ['Adipose fin','Dorsal ridge','Anal fin'] },
+  { name: 'Lateral line', wrong: ['Myosept boundary','Dermis layer','Pigment stripe'] },
+  { name: 'Pelvic fin',   wrong: ['Pectoral fin','Anal fin','Ventral keel'] },
+  { name: 'Adipose fin',  wrong: ['Second dorsal fin','Dorsal ridge','Fat deposit'] },
+  { name: 'Anal fin',     wrong: ['Pelvic fin','Caudal fin','Ventral fin'] },
+  { name: 'Caudal fin',   wrong: ['Peduncle','Hypural plate','Tail ridge'] },
+];
+
+let labelAnswered = new Set(), labelScore = 0, labelCurrentPart = null;
+
+function shuffle(arr) { return [...arr].sort(() => Math.random() - .5); }
+
+function openPopup(idx, e) {
+  if (labelAnswered.has(idx)) return;
+  labelCurrentPart = idx;
+  const part = PARTS[idx];
+  const opts = shuffle([part.name, ...part.wrong]);
+
+  const popup = document.getElementById('label-popup');
+  const optsDiv = document.getElementById('pop-opts');
+  optsDiv.innerHTML = '';
+  opts.forEach(o => {
+    const b = document.createElement('button');
+    b.className = 'pop-opt';
+    b.textContent = o;
+    b.onclick = () => checkLabel(idx, o === part.name, b, opts, part.name);
+    optsDiv.appendChild(b);
+  });
+
+  // position popup near click within container
+  const container = document.getElementById('fish-svg-container');
+  const cRect = container.getBoundingClientRect();
+  const svg   = document.getElementById('fish-svg');
+  const sRect = svg.getBoundingClientRect();
+  // click coords relative to container
+  let left = e.clientX - cRect.left + 14;
+  let top  = e.clientY - cRect.top  + 10;
+  // keep within bounds
+  if (left + 240 > cRect.width)  left = cRect.width  - 244;
+  if (top  + 200 > cRect.height) top  = top - 200;
+  if (top < 2) top = 2;
+  popup.style.left = left + 'px';
+  popup.style.top  = top  + 'px';
+  popup.style.display = 'block';
+  document.addEventListener('mousedown', outsideClickClose, { once: true });
+}
+
+function outsideClickClose(e) {
+  const popup = document.getElementById('label-popup');
+  if (!popup.contains(e.target)) popup.style.display = 'none';
+}
+
+function checkLabel(idx, correct, btn, allOpts, correctName) {
+  const optsDiv = document.getElementById('pop-opts');
+  optsDiv.querySelectorAll('.pop-opt').forEach(b => {
+    b.disabled = true;
+    if (b.textContent === correctName) b.classList.add(correct ? 'correct' : 'reveal');
+  });
+  if (correct) {
+    btn.classList.add('correct');
+    labelAnswered.add(idx);
+    labelScore++;
+    document.getElementById('label-correct').textContent = labelScore;
+    document.getElementById('hs' + idx).classList.add('answered');
+    setTimeout(() => {
+      document.getElementById('label-popup').style.display = 'none';
+      if (labelAnswered.size === 10) document.getElementById('label-complete').style.display = 'block';
+    }, 700);
+  } else {
+    btn.classList.add('wrong');
+    document.getElementById('hs' + idx).classList.add('wrong');
+    setTimeout(() => document.getElementById('hs' + idx).classList.remove('wrong'), 800);
+    setTimeout(() => document.getElementById('label-popup').style.display = 'none', 1200);
+  }
+}
+
+function resetLabel() {
+  labelAnswered.clear(); labelScore = 0; labelCurrentPart = null;
+  document.getElementById('label-correct').textContent = '0';
+  document.getElementById('label-popup').style.display = 'none';
+  document.getElementById('label-complete').style.display = 'none';
+  for (let i = 0; i < 10; i++) {
+    const el = document.getElementById('hs' + i);
+    el.classList.remove('answered','wrong');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// QUIZ
+// ═══════════════════════════════════════════════════════════════
+const QUESTIONS = [
+  { q: "What does the term 'dorsal' mean in fish anatomy?",
+    opts: ["Toward the belly","Toward the back","Toward the head","Toward the tail"], ans: 1,
+    exp: "Dorsal means toward the back (upper surface). Its opposite is ventral (toward the belly). Cranial/anterior is toward the head; caudal/posterior is toward the tail." },
+  { q: "How many main tissue types exist in vertebrates including fish?",
+    opts: ["2","3","4","6"], ans: 2,
+    exp: "There are 4 tissue types: epithelial (covers all surfaces), connective (support and binding), muscle (contracts), and nervous (impulse conduction)." },
+  { q: "What type of scales does Atlantic salmon have?",
+    opts: ["Placoid (thorn-shaped)","Ctenoid (spiny-edged)","Cycloid (smooth, rounded)","Ganoid (diamond-shaped)"], ans: 2,
+    exp: "Salmon have cycloid scales — smooth and rounded. This is considered a more primitive scale type. Wrasse (leppefisk) have the more advanced ctenoid scales with spiny rear edges." },
+  { q: "In what order does blood pass through the four chambers of the fish heart?",
+    opts: [
+      "Sinus venosus → Atrium → Ventricle → Bulbus arteriosus",
+      "Atrium → Sinus venosus → Ventricle → Bulbus arteriosus",
+      "Bulbus arteriosus → Ventricle → Atrium → Sinus venosus",
+      "Ventricle → Atrium → Bulbus arteriosus → Sinus venosus"
+    ], ans: 0,
+    exp: "Blood flows: Sinus venosus (receives venous blood) → Atrium (thin-walled, trabeculae) → Ventricle (main pump, also with trabeculae; salmon have a compactum layer) → Bulbus arteriosus (elastic, smooths pressure pulses)." },
+  { q: "What is the primary function of red muscle fibres in fish?",
+    opts: ["Powerful burst swimming","Sustained, endurance swimming","Moving the fins","Jaw closing force"], ans: 1,
+    exp: "Red (aerobic) muscle fibres are located on the outer lateral surface. They have rich blood supply, many mitochondria, and stored fat — ideal for sustained slow swimming. White fibres are the bulk muscle used for fast burst swimming but fatigue quickly." },
+  { q: "How many gill arches does a teleost fish have on each side?",
+    opts: ["2","3","4","5"], ans: 2,
+    exp: "Teleosts have 4 gill arches (gjellebuer) per side. Each arch carries two rows of gill filaments (forming a holobranch), and each filament has many thin gill lamellae where gas exchange occurs." },
+  { q: "What is the function of ionocytes (chloride cells) in fish gills?",
+    opts: ["Gas exchange (O₂/CO₂)","Produce protective mucus","Active ion transport (especially NaCl)","Provide structural support inside lamellae"], ans: 2,
+    exp: "Ionocytes actively transport NaCl and other ions to regulate the fish's salt and water balance. They sit at the base of gill lamellae and respond to the fish's environment (freshwater vs. saltwater)." },
+  { q: "What type of swim bladder does salmon have?",
+    opts: ["Physoclistous — permanently sealed","Physostomous — open duct to esophagus","They do not have a swim bladder","Physoclastic — burst to adjust depth"], ans: 1,
+    exp: "Salmon are physostomous: they have an open pneumatic duct connecting the swim bladder to the esophagus. This allows them to swallow or belch air to adjust buoyancy rapidly." },
+  { q: "What is the shape of a myotome when viewed from the side?",
+    opts: ["V-shaped","U-shaped","W-shaped","S-shaped"], ans: 2,
+    exp: "Each myotome (muscle segment) is W-shaped when viewed from the side, with two peaks pointing caudally. The muscle fibres inside have a complex 3D arrangement, with very few running exactly parallel to the body axis." },
+  { q: "Where are fish kidneys always found?",
+    opts: ["Ventral, adjacent to the stomach","Dorsally fixed to the vertebral column","Just posterior to the gills","Embedded in the liver"], ans: 1,
+    exp: "Fish kidneys are always dark violet and fixed dorsally to the vertebral column (columna vertebralis) in the body cavity. They have three functions: producing urine, producing blood cells, and producing hormones." },
+  { q: "What cells produce hydrochloric acid (HCl) and pepsinogen in the fish stomach?",
+    opts: ["Mucous cells (surface layer)","Chief cells (main cells, 'hovedceller')","Pillar cells","Ionocytes"], ans: 1,
+    exp: "The gastric crypts in the stomach wall contain chief cells (Norwegian: 'hovedceller') that produce HCl and the digestive enzyme pepsinogen. The surface layer of the stomach is lined with mucous cells." },
+  { q: "What are pyloric caecae (pylorusblindsekker)?",
+    opts: [
+      "Blind-ended pouches at the start of the midgut that increase absorptive area",
+      "Muscular valves separating stomach from intestine",
+      "Folds (villi) lining the esophagus",
+      "Part of the large intestine / hindgut"
+    ], ans: 0,
+    exp: "Pyloric caecae are finger-like blind-ended pouches at the start of the midgut. They greatly increase the intestinal surface area for nutrient absorption. Salmon can have hundreds of them." },
+  { q: "How do fish erythrocytes differ from mammalian red blood cells?",
+    opts: [
+      "Fish erythrocytes lack hemoglobin",
+      "Fish erythrocytes are perfectly round",
+      "Fish erythrocytes retain their nucleus",
+      "Fish erythrocytes are produced only in bone marrow"
+    ], ans: 2,
+    exp: "Fish erythrocytes are oval and nucleated — unlike mammalian RBCs which are enucleated (lose their nucleus during maturation). Fish RBCs are produced in the spleen and head kidney (hodenyre), live a few months, then are filtered out in the spleen." },
+  { q: "How is the pancreas organised in teleost fish like salmon?",
+    opts: [
+      "A compact gland adjacent to the stomach, like in mammals",
+      "Diffuse (pancreas diffusum) — scattered in mesenteries, fat tissue and around blood vessels",
+      "Located in the head region near the gills",
+      "Fused with the liver as a hepatopancreas"
+    ], ans: 1,
+    exp: "Teleosts have pancreas diffusum — the pancreatic tissue is scattered through the mesenteries, around blood vessels, and embedded in abdominal fat. In salmon it is often found between the pyloric caecae." },
+  { q: "Which blood cells are responsible for coagulation in fish?",
+    opts: ["Erythrocytes","Lymphocytes","Granulocytes","Thrombocytes"], ans: 3,
+    exp: "Thrombocytes are involved in coagulation (blood clotting) in fish, playing a role analogous to platelets in mammals. Lymphocytes produce antibodies; granulocytes (polymorphonuclear cells) are phagocytes; erythrocytes carry oxygen." },
+  { q: "What is the rete mirabile?",
+    opts: [
+      "A nerve network along the lateral line",
+      "A countercurrent capillary system in the swim bladder gas gland",
+      "The capillary filtration network in the kidney",
+      "The arterial supply to the gill filaments"
+    ], ans: 1,
+    exp: "The rete mirabile ('wonderful net') is a countercurrent capillary arrangement in the swim bladder's gas gland. Afferent and efferent capillaries run tightly alongside each other, concentrating oxygen into the swim bladder against a large pressure gradient." },
+  { q: "Which brain region processes visual information in fish?",
+    opts: ["Telencephalon","Cerebellum","Optic tectum (tectum opticum)","Medulla oblongata"], ans: 2,
+    exp: "The optic tectum is the large dorsal structure of the mesencephalon (midbrain) and is the primary visual processing centre in fish. It receives input via the optic nerve (n. opticus). Cerebellum integrates movement; medulla oblongata contains cranial nerve nuclei." },
+  { q: "Where is the sense of balance (and largely hearing) located in fish?",
+    opts: [
+      "In the lateral line system (hair cells in dermis canals)",
+      "In the inner ear — sacculus and utriculus with otoliths",
+      "In the eye (retinal rods and cones)",
+      "In pressure-sensing cells in the skin"
+    ], ans: 1,
+    exp: "Balance and acceleration are detected in the inner ear: two fluid-filled sacs (sacculus and utriculus) contain otoliths (calcium carbonate stones). When the fish moves, the otoliths stimulate hair cells. Otolith growth rings can also be used to determine the fish's age." },
+  { q: "What is the key defining feature that distinguishes teleosts from all other bony fish?",
+    opts: [
+      "They breathe using lungs in addition to gills",
+      "They have a cartilaginous skeleton",
+      "They possess bones in the tail skeleton and skull, including a movable premaxilla",
+      "They can only live in freshwater environments"
+    ], ans: 2,
+    exp: "Teleosts are defined by ossification of the tail skeleton (urostyle region) and skull, and by having a movable premaxilla — the front bone of the upper jaw that lets fish extend their mouths dramatically to catch prey. They make up the vast majority (~96%) of all fish species." },
+  { q: "What is the function of pillar cells in fish gill lamellae?",
+    opts: [
+      "Active ion transport across the gill surface",
+      "Mucus production to trap parasites",
+      "Structural support — forming the walls of the blood space inside lamellae",
+      "Production of antibodies in the gill immune tissue"
+    ], ans: 2,
+    exp: "Pillar cells are specialised endothelial cells that form the structural framework of the blood space (blood channel) inside gill lamellae. They give the lamellae mechanical strength while keeping blood-to-water diffusion distance extremely short for efficient gas exchange." },
+];
+
+let qIdx = 0, qScore = 0, qAnswered = false;
+
+function startQuiz() {
+  qIdx = 0; qScore = 0; qAnswered = false;
+  const qs = shuffle([...Array(QUESTIONS.length).keys()]).slice(0, 20);
+  window._quizOrder = qs;
+  document.getElementById('quiz-start').style.display = 'none';
+  document.getElementById('quiz-results').style.display = 'none';
+  document.getElementById('quiz-question').style.display = 'block';
+  renderQuestion();
+}
+
+function renderQuestion() {
+  qAnswered = false;
+  const q = QUESTIONS[window._quizOrder[qIdx]];
+  const pct = Math.round((qIdx / 20) * 100);
+  document.getElementById('quiz-fill').style.width = pct + '%';
+  document.getElementById('quiz-counter').textContent = (qIdx + 1) + ' / 20';
+  document.getElementById('quiz-score-badge').textContent = qScore + ' correct';
+  document.getElementById('quiz-q-text').textContent = q.q;
+  document.getElementById('quiz-exp').className = 'quiz-explanation';
+  document.getElementById('quiz-exp').textContent = q.exp;
+  document.getElementById('quiz-next').className = 'quiz-next-btn';
+
+  const shuffledOpts = shuffle(q.opts.map((o,i) => ({ text: o, orig: i })));
+  const optsDiv = document.getElementById('quiz-opts');
+  optsDiv.innerHTML = '';
+  shuffledOpts.forEach(o => {
+    const b = document.createElement('button');
+    b.className = 'quiz-opt';
+    b.textContent = o.text;
+    b.onclick = () => selectAnswer(o.orig === q.ans, b, shuffledOpts, q.ans, q.opts);
+    optsDiv.appendChild(b);
+  });
+}
+
+function selectAnswer(correct, btn, shuffledOpts, correctIdx, origOpts) {
+  if (qAnswered) return;
+  qAnswered = true;
+  const correctText = origOpts[correctIdx];
+  document.querySelectorAll('.quiz-opt').forEach(b => {
+    b.disabled = true;
+    if (b.textContent === correctText) b.classList.add(correct ? 'correct' : 'reveal');
+  });
+  btn.classList.add(correct ? 'correct' : 'wrong');
+  if (correct) qScore++;
+  document.getElementById('quiz-score-badge').textContent = qScore + ' correct';
+  document.getElementById('quiz-exp').classList.add('show');
+  document.getElementById('quiz-next').textContent = qIdx < 19 ? 'Next question →' : 'See results →';
+  document.getElementById('quiz-next').classList.add('show');
+}
+
+function nextQuestion() {
+  qIdx++;
+  if (qIdx >= 20) { showResults(); return; }
+  renderQuestion();
+}
+
+function showResults() {
+  document.getElementById('quiz-question').style.display = 'none';
+  document.getElementById('quiz-results').style.display = 'block';
+  document.getElementById('results-score').textContent = qScore + '/20';
+  const grades = [
+    [18, '🏆 Outstanding — anatomy expert!', '#1de9a8'],
+    [15, '🥇 Excellent — solid understanding.', '#1de9a8'],
+    [12, '👍 Good — review a few more sections.', '#00c8ff'],
+    [8,  '📖 Decent start — keep studying!', '#f4a535'],
+    [0,  '📚 Keep going — re-read the chapter.', '#ff4757'],
+  ];
+  const [,label,color] = grades.find(([n]) => qScore >= n);
+  const el = document.getElementById('results-grade');
+  el.textContent = label;
+  el.style.color = color;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// FLASH CARDS
+// ═══════════════════════════════════════════════════════════════
+const CARDS = [
+  { term: 'Cranial', def: 'Toward the head (anterior direction). Opposite: caudal. The median plane divides the fish into two equal halves; sagittal planes are parallel to it.' },
+  { term: 'Caudal', def: 'Toward the tail (posterior direction). Opposite: cranial. The "tail" is defined as the region caudal to the body cavity.' },
+  { term: 'Dorsal', def: 'Toward the back / upper surface. Opposite: ventral. The dorsal fin (ryggfinne) sits on the dorsal surface of the body.' },
+  { term: 'Ventral', def: 'Toward the belly / lower surface. Opposite: dorsal. The pelvic fins (bukfinner) and anal fin are on the ventral side.' },
+  { term: 'Operculum', def: 'The bony gill cover. Consists of 4 bones: operculum, suboperculum, interoperculum and preoperculum. Braced by branchiostegal rays. Pumps water over gills in active ventilation.' },
+  { term: 'Myotome', def: 'A single W-shaped segment of lateral swimming muscle. Roughly as many myotomes as vertebrae. The connective tissue walls between them are myosepts.' },
+  { term: 'Red muscle', def: 'Aerobic, fatigue-resistant fibres on the outer lateral surface of the body. Rich in blood vessels, mitochondria, and fat stores. Used for sustained slow swimming (e.g., migration cruising speed).' },
+  { term: 'White muscle', def: 'Anaerobic fibres forming the bulk of the lateral musculature. Few blood vessels, little stored energy. Very powerful but fatigues rapidly — used for burst swimming and escape responses.' },
+  { term: 'Cycloid scale', def: 'Smooth, rounded scale with no spines; found in salmon and other primitive teleosts. Lies in overlapping layers in the dermis with only the caudal edge exposed. Growth rings enable age reading.' },
+  { term: 'Ctenoid scale', def: 'More advanced scale with small spines (ctenii) on the exposed rear edge. Found in wrasse (leppefisk) and other advanced teleosts. More resistance to parasites attaching to the skin.' },
+  { term: 'Bulbus arteriosus', def: 'The 4th and final chamber of the fish heart. Composed of elastic connective tissue and internal valves. Smooths the pulsatile blood pressure from the ventricle before blood reaches the gills.' },
+  { term: 'Erythrocyte', def: 'Red blood cell. In fish: oval and nucleated (unlike mammalian enucleated discs). Contains hemoglobin for oxygen transport. Produced in spleen and head kidney; lives a few months.' },
+  { term: 'Gill lamella', def: 'Thin vertical flap projecting from each gill filament. Actual site of gas exchange. Blood flows through internal pillar cell channels in the opposite direction to water flow (countercurrent exchange) for maximum efficiency.' },
+  { term: 'Ionocyte', def: 'Also called chloride cell. Located at the base of gill lamellae. Actively transports NaCl and other ions between blood and water to regulate osmotic balance. Responds hormonally to salt/freshwater transitions.' },
+  { term: 'Physostomous', def: 'A swim bladder retaining an open duct (pneumatic duct) to the esophagus. Salmon are physostomous. Fish can gulp or release air at the surface to quickly adjust buoyancy. Opposite: physoclistous (sealed bladder with gas gland only).' },
+  { term: 'Rete mirabile', def: '"Wonderful net." Countercurrent capillary system in the swim bladder gas gland. Tightly packed afferent and efferent capillaries exchange gases, allowing oxygen to be concentrated into the swim bladder against extreme pressure gradients at depth.' },
+  { term: 'Pyloric caecae', def: 'Blind-ended pouches opening into the start of the midgut. Dramatically increase absorptive surface area. Salmon have hundreds. Pancreatic tissue is often found between them (pancreas diffusum).' },
+  { term: 'Nephron', def: 'Functional unit of the fish kidney. Consists of a glomerulus (knot of capillaries filtered by podocytes → pre-urine) and tubules (proximal → distal → collecting duct) that modify the filtrate into final urine.' },
+  { term: 'Optic tectum', def: 'Large paired dorsal lobes of the mesencephalon (midbrain). Primary visual processing centre in fish. Receives input from the optic nerve (n. opticus). Also called tectum opticum.' },
+  { term: 'Otolith', def: 'Calcium carbonate stone in the inner ear (sacculus and utriculus). Stimulates hair cells in response to gravity and acceleration — providing the sense of balance. Daily/annual growth rings allow precise age determination.' },
+];
+
+let cardIdx = 0, seenCards = new Set();
+
+function renderCard() {
+  const c = CARDS[cardIdx];
+  document.getElementById('card-term').textContent = c.term;
+  document.getElementById('card-def').textContent = c.def;
+  document.getElementById('card-inner').classList.remove('flipped');
+  document.getElementById('fc-counter').textContent = (cardIdx + 1) + ' / ' + CARDS.length;
+  seenCards.add(cardIdx);
+  renderFCProgress();
+}
+
+function renderFCProgress() {
+  const wrap = document.getElementById('fc-progress');
+  wrap.innerHTML = '';
+  CARDS.forEach((_,i) => {
+    const d = document.createElement('div');
+    d.className = 'fc-dot' + (seenCards.has(i) ? ' seen' : '') + (i === cardIdx ? ' current' : '');
+    wrap.appendChild(d);
+  });
+}
+
+function flipCard() { document.getElementById('card-inner').classList.toggle('flipped'); }
+function prevCard() { cardIdx = (cardIdx - 1 + CARDS.length) % CARDS.length; renderCard(); }
+function nextCard() { cardIdx = (cardIdx + 1) % CARDS.length; renderCard(); }
+
+// ── Init ──────────────────────────────────────────────────────
+renderCard();
+</script>
+<script src="mobile.js"></script>
+</body>
+</html>
