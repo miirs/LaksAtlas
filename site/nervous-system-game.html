@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LaksAtlas Classroom: Nervous System</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="mobile.css">
+<style>
+:root {
+  --bg: #04091a; --bg-soft: #071425; --bg-card: rgba(4,28,68,0.52);
+  --border: rgba(30,100,210,0.18); --text: #d8e8f6; --text-dim: #5e88aa;
+  --text-muted: #2a4560; --neon-cyan: #00c8ff; --neon-green: #1de9a8;
+  --neon-amber: #f4a535; --neon-red: #ff4757;
+  --glow-cyan: 0 0 14px rgba(0,200,255,0.22), 0 0 40px rgba(0,200,255,0.08);
+  --glow-green: 0 0 14px rgba(29,233,168,0.22);
+  --radius-lg: 18px; --radius-md: 12px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: 'Outfit', sans-serif; min-height: 100vh; }
+
+nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(4,9,26,0.92); backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 28px; height: 56px;
+  display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
+}
+.nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.nav-logo-name { font-size: 15px; font-weight: 700; color: var(--text); }
+.nav-logo-name span { color: var(--neon-cyan); }
+.nav-links { display: flex; gap: 20px; justify-self: end; align-items: center; }
+.nav-links a { font-size: 13px; color: var(--text-dim); text-decoration: none; transition: color .15s; }
+.nav-links a:hover { color: var(--neon-cyan); }
+.back-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12px; color: var(--text-dim); text-decoration: none;
+  border: 1px solid var(--border); border-radius: 6px; padding: 5px 12px;
+  transition: all .2s;
+}
+.back-btn:hover { color: var(--neon-cyan); border-color: rgba(0,200,255,0.3); }
+
+.page-wrap { max-width: 900px; margin: 0 auto; padding: 40px 24px 100px; }
+
+.topic-header { margin-bottom: 32px; }
+.topic-tag {
+  font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--neon-cyan);
+  letter-spacing: .12em; text-transform: uppercase; margin-bottom: 8px;
+}
+.topic-title { font-size: clamp(24px,4vw,40px); font-weight: 800; color: var(--text); margin-bottom: 8px; }
+.topic-sub { font-size: 14px; color: var(--text-dim); }
+
+/* MODE TABS */
+.mode-tabs { display: flex; gap: 8px; margin-bottom: 28px; flex-wrap: wrap; }
+.mode-tab {
+  padding: 9px 20px; border-radius: 8px; border: 1px solid var(--border);
+  background: transparent; color: var(--text-dim); font-family: 'Outfit', sans-serif;
+  font-size: 14px; font-weight: 500; cursor: pointer; transition: all .2s;
+}
+.mode-tab:hover { border-color: rgba(0,200,255,0.3); color: var(--text); }
+.mode-tab.active {
+  background: rgba(0,200,255,0.08); border-color: rgba(0,200,255,0.4);
+  color: var(--neon-cyan); box-shadow: var(--glow-cyan);
+}
+
+.game-panel { display: none; }
+.game-panel.active { display: block; }
+
+/* ─── STUDY NOTES ───────────────────────────────────────────────── */
+.notes-intro {
+  font-size: 14px; color: var(--text-dim); line-height: 1.7;
+  margin-bottom: 24px; padding: 16px 20px;
+  background: rgba(0,200,255,0.04); border: 1px solid rgba(0,200,255,0.1);
+  border-radius: 10px;
+}
+.accordion { display: flex; flex-direction: column; gap: 8px; }
+.acc-item { border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
+.acc-header {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 18px; cursor: pointer;
+  background: rgba(4,28,68,0.35); transition: background .2s;
+  list-style: none; user-select: none;
+}
+.acc-header:hover { background: rgba(4,28,68,0.6); }
+.acc-icon { font-size: 20px; flex-shrink: 0; }
+.acc-title { font-size: 15px; font-weight: 600; color: var(--text); flex: 1; }
+.acc-subtitle { font-size: 12px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
+.acc-chevron { color: var(--text-muted); font-size: 12px; flex-shrink: 0; transition: transform .25s; }
+.acc-item.open .acc-chevron { transform: rotate(90deg); }
+.acc-body {
+  max-height: 0; overflow: hidden;
+  transition: max-height .35s ease, padding .25s ease;
+  padding: 0 20px; background: rgba(2,12,32,0.45);
+}
+.acc-item.open .acc-body { max-height: 2400px; padding: 18px 20px 22px; }
+.acc-body p { font-size: 14px; color: var(--text-dim); line-height: 1.75; margin-bottom: 12px; }
+.acc-body p:last-child { margin-bottom: 0; }
+.acc-body strong { color: var(--text); font-weight: 600; }
+.acc-body em { color: var(--neon-cyan); font-style: normal; font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+.note-table { width: 100%; border-collapse: collapse; margin: 10px 0 12px; font-size: 13px; }
+.note-table th { text-align: left; padding: 6px 10px; color: var(--neon-cyan); font-weight: 600; border-bottom: 1px solid rgba(0,200,255,0.15); font-family: 'JetBrains Mono', monospace; font-size: 11px; text-transform: uppercase; }
+.note-table td { padding: 7px 10px; border-bottom: 1px solid rgba(30,100,210,0.08); color: var(--text-dim); vertical-align: top; }
+.note-table tr:last-child td { border-bottom: none; }
+.note-table td:first-child { color: var(--text); font-weight: 500; white-space: nowrap; }
+.note-pill {
+  display: inline-block; font-family: 'JetBrains Mono', monospace; font-size: 11px;
+  padding: 2px 8px; border-radius: 999px; margin: 2px 3px 2px 0;
+  background: rgba(0,200,255,0.07); border: 1px solid rgba(0,200,255,0.18); color: var(--neon-cyan);
+}
+.note-pill.green { background: rgba(29,233,168,0.07); border-color: rgba(29,233,168,0.2); color: #1de9a8; }
+.note-pill.amber { background: rgba(244,165,53,0.07); border-color: rgba(244,165,53,0.2); color: #f4a535; }
+.note-pill.red { background: rgba(255,71,87,0.07); border-color: rgba(255,71,87,0.2); color: #ff4757; }
+.notes-ready-bar {
+  margin-top: 24px; padding: 14px 18px; border-radius: 10px;
+  background: rgba(29,233,168,0.06); border: 1px solid rgba(29,233,168,0.2);
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;
+}
+.notes-ready-bar span { font-size: 14px; color: var(--text-dim); }
+.notes-ready-bar button {
+  padding: 9px 22px; border-radius: 8px;
+  border: 1px solid rgba(29,233,168,0.4); background: rgba(29,233,168,0.08);
+  color: #1de9a8; font-size: 13px; font-family: 'Outfit', sans-serif; cursor: pointer;
+  transition: all .2s;
+}
+.notes-ready-bar button:hover { background: rgba(29,233,168,0.16); }
+
+/* ─── LABEL GAME (NEURON) ──────────────────────────────────────── */
+.label-wrap {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 24px; position: relative;
+}
+.label-score {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px; flex-wrap: wrap; gap: 10px;
+}
+.label-score-text { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--text-dim); }
+.label-score-text span { color: var(--neon-cyan); font-weight: 700; }
+.label-instructions { font-size: 13px; color: var(--text-muted); margin-bottom: 14px; }
+.fish-svg-wrap { width: 100%; overflow: hidden; border-radius: 10px; background: rgba(0,20,50,0.3); }
+.fish-svg-wrap svg { width: 100%; height: auto; display: block; }
+
+.neuron-soma { fill: rgba(0,70,140,0.35); stroke: rgba(0,200,255,0.5); stroke-width: 1.5; }
+.neuron-nucleus { fill: rgba(0,200,255,0.22); stroke: rgba(0,200,255,0.5); stroke-width: 1; }
+.neuron-dendrite { fill: none; stroke: rgba(0,200,255,0.45); stroke-width: 2; stroke-linecap: round; }
+.neuron-axon { stroke: rgba(0,200,255,0.5); stroke-width: 3; stroke-linecap: round; }
+.neuron-myelin { fill: rgba(0,200,255,0.14); stroke: rgba(0,200,255,0.4); stroke-width: 1.2; }
+.neuron-terminal { fill: rgba(0,200,255,0.28); stroke: rgba(0,200,255,0.5); stroke-width: 1.2; }
+.neuron-target { fill: rgba(29,233,168,0.14); stroke: rgba(29,233,168,0.4); stroke-width: 1.5; }
+.neuron-cleft { fill: rgba(244,165,53,0.18); }
+
+.hotspot { cursor: pointer; }
+.hotspot circle.hs-bg { fill: #00c8ff; transition: fill .2s; }
+.hotspot text { fill: #04091a; font-family: 'JetBrains Mono',monospace; font-size: 11px; font-weight: 800; dominant-baseline: central; text-anchor: middle; pointer-events: none; }
+.hotspot.answered circle.hs-bg { fill: #1de9a8; cursor: default; }
+.hotspot.wrong circle.hs-bg { fill: #ff4757; }
+.hotspot:not(.answered):hover circle.hs-bg { filter: brightness(1.2); }
+
+#label-popup {
+  position: absolute; background: #0c1a2e; border: 1px solid rgba(0,200,255,0.28);
+  border-radius: 12px; padding: 16px; z-index: 20; width: 230px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+}
+#label-popup .pop-q { font-size: 12px; color: var(--text-dim); margin-bottom: 10px; }
+.pop-opt {
+  display: block; width: 100%; text-align: left; padding: 8px 12px;
+  margin-bottom: 6px; border-radius: 7px; border: 1px solid rgba(0,200,255,0.15);
+  background: rgba(0,200,255,0.04); color: var(--text); font-size: 13px;
+  font-family: 'Outfit', sans-serif; cursor: pointer; transition: all .15s;
+}
+.pop-opt:last-child { margin-bottom: 0; }
+.pop-opt:hover { border-color: rgba(0,200,255,0.4); background: rgba(0,200,255,0.1); }
+.pop-opt.correct { background: rgba(29,233,168,0.15); border-color: #1de9a8; color: #1de9a8; }
+.pop-opt.wrong   { background: rgba(255,71,87,0.12); border-color: #ff4757; color: #ff4757; }
+
+.label-complete {
+  margin-top: 16px; padding: 14px 18px; border-radius: 10px;
+  background: rgba(29,233,168,0.08); border: 1px solid rgba(29,233,168,0.3);
+  color: #1de9a8; font-size: 14px; font-weight: 600; display: none;
+}
+
+/* ─── QUIZ ───────────────────────────────────────────────────────── */
+.quiz-wrap { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 28px; }
+.quiz-meta { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; gap: 10px; flex-wrap: wrap; }
+.quiz-progress-bar { flex: 1; height: 5px; background: rgba(255,255,255,0.05); border-radius: 3px; min-width: 80px; }
+.quiz-progress-fill { height: 100%; background: var(--neon-cyan); border-radius: 3px; transition: width .3s; }
+.quiz-counter { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-dim); white-space: nowrap; }
+.quiz-score-badge {
+  font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--neon-green);
+  background: rgba(29,233,168,0.08); border: 1px solid rgba(29,233,168,0.2);
+  padding: 3px 10px; border-radius: 999px;
+}
+.quiz-q { font-size: 17px; font-weight: 600; color: var(--text); margin-bottom: 20px; line-height: 1.5; }
+.quiz-opts { display: grid; gap: 10px; }
+.quiz-opt {
+  padding: 12px 16px; border-radius: 9px; border: 1px solid rgba(0,200,255,0.15);
+  background: rgba(0,200,255,0.03); color: var(--text); font-size: 14px;
+  font-family: 'Outfit', sans-serif; cursor: pointer; text-align: left;
+  transition: all .15s;
+}
+.quiz-opt:hover:not(:disabled) { border-color: rgba(0,200,255,0.4); background: rgba(0,200,255,0.08); }
+.quiz-opt.correct { background: rgba(29,233,168,0.12); border-color: #1de9a8; color: #1de9a8; }
+.quiz-opt.wrong   { background: rgba(255,71,87,0.10); border-color: #ff4757;  color: #ff4757;  }
+.quiz-opt.reveal  { background: rgba(29,233,168,0.06); border-color: rgba(29,233,168,0.3); color: #1de9a8; }
+.quiz-opt:disabled { cursor: default; }
+.quiz-explanation {
+  margin-top: 14px; padding: 12px 15px; border-radius: 9px;
+  background: rgba(0,200,255,0.05); border-left: 3px solid rgba(0,200,255,0.4);
+  font-size: 13px; color: var(--text-dim); line-height: 1.6; display: none;
+}
+.quiz-explanation.show { display: block; }
+.quiz-next-btn {
+  margin-top: 16px; padding: 10px 24px; border-radius: 8px;
+  border: 1px solid rgba(0,200,255,0.35); background: rgba(0,200,255,0.08);
+  color: var(--neon-cyan); font-size: 14px; font-family: 'Outfit', sans-serif;
+  cursor: pointer; transition: all .2s; display: none;
+}
+.quiz-next-btn.show { display: inline-block; }
+.quiz-next-btn:hover { background: rgba(0,200,255,0.15); box-shadow: var(--glow-cyan); }
+
+.quiz-start, .quiz-results { text-align: center; padding: 20px 0; }
+.big-btn {
+  display: inline-block; padding: 13px 32px; border-radius: 10px;
+  border: 1px solid rgba(0,200,255,0.35); background: rgba(0,200,255,0.08);
+  color: var(--neon-cyan); font-size: 15px; font-family: 'Outfit', sans-serif;
+  cursor: pointer; transition: all .2s; margin-top: 12px;
+}
+.big-btn:hover { background: rgba(0,200,255,0.18); box-shadow: var(--glow-cyan); }
+.results-score {
+  font-size: 52px; font-weight: 800; color: var(--neon-cyan);
+  font-family: 'JetBrains Mono', monospace; margin-bottom: 4px;
+}
+.results-sub { font-size: 16px; color: var(--text-dim); margin-bottom: 8px; }
+.results-grade { font-size: 22px; font-weight: 700; margin-bottom: 20px; }
+
+/* ─── FLASHCARDS ─────────────────────────────────────────────────── */
+.fc-wrap { display: flex; flex-direction: column; align-items: center; gap: 20px; }
+.fc-nav { display: flex; align-items: center; gap: 16px; }
+.fc-counter { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--text-dim); }
+.fc-arrow {
+  width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--border);
+  background: transparent; color: var(--text-dim); font-size: 16px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; transition: all .2s;
+}
+.fc-arrow:hover { border-color: rgba(0,200,255,0.35); color: var(--neon-cyan); }
+.fc-hint { font-size: 12px; color: var(--text-muted); }
+
+.card-scene { width: 100%; max-width: 620px; height: 220px; perspective: 900px; cursor: pointer; }
+.card-inner { width: 100%; height: 100%; transition: transform .55s; transform-style: preserve-3d; position: relative; }
+.card-inner.flipped { transform: rotateY(180deg); }
+.card-face {
+  position: absolute; inset: 0; backface-visibility: hidden;
+  border-radius: var(--radius-lg); border: 1px solid var(--border);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 28px 36px; text-align: center;
+}
+.card-front { background: rgba(0,30,70,0.45); }
+.card-back  { background: rgba(0,50,30,0.35); border-color: rgba(29,233,168,0.2); transform: rotateY(180deg); }
+.card-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: .1em; margin-bottom: 10px; }
+.card-front .card-label { color: rgba(0,200,255,0.5); }
+.card-back  .card-label { color: rgba(29,233,168,0.5); }
+.card-term { font-size: 24px; font-weight: 700; color: var(--neon-cyan); }
+.card-def  { font-size: 14px; color: var(--text); line-height: 1.6; }
+.card-flip-hint { font-size: 11px; color: var(--text-muted); margin-top: 10px; }
+
+.fc-progress { width: 100%; max-width: 620px; display: flex; gap: 5px; flex-wrap: wrap; justify-content: center; }
+.fc-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.08); transition: background .3s; }
+.fc-dot.seen { background: rgba(0,200,255,0.4); }
+.fc-dot.current { background: var(--neon-cyan); }
+
+/* ─── RESET BTN ──────────────────────────────────────────────────── */
+.reset-btn {
+  padding: 6px 14px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.08);
+  background: transparent; color: var(--text-muted); font-size: 12px;
+  font-family: 'Outfit', sans-serif; cursor: pointer; transition: all .2s;
+}
+.reset-btn:hover { border-color: rgba(255,71,87,0.3); color: #ff4757; }
+
+footer { border-top: 1px solid var(--border); padding: 20px 28px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; font-size: 12px; color: var(--text-muted); }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">
+    <svg width="26" height="26" viewBox="0 0 32 32" fill="none">
+      <ellipse cx="16" cy="16" rx="14" ry="10" stroke="#00c8ff" stroke-width="1.5" opacity=".4"/>
+      <path d="M4 16 Q10 8 16 16 Q22 24 28 16" stroke="#00c8ff" stroke-width="2" fill="none"/>
+      <circle cx="16" cy="16" r="2.5" fill="#00c8ff" opacity=".7"/>
+    </svg>
+    <span class="nav-logo-name">Laks<span>Atlas</span></span>
+  </a>
+  <div></div>
+  <div class="nav-links">
+    <a href="classroom.html" class="back-btn">← Classroom</a>
+  </div>
+</nav>
+
+<div class="page-wrap">
+  <div class="topic-header">
+    <div class="topic-tag">Topic 02 · Nervous System</div>
+    <h1 class="topic-title">The Nervous System</h1>
+    <p class="topic-sub">Neuron structure and signalling, the brain and cranial nerves, the spinal cord, and the autonomic nervous system in fish.</p>
+  </div>
+
+  <div class="mode-tabs">
+    <button class="mode-tab active" onclick="setMode('notes')">📖 Study Notes</button>
+    <button class="mode-tab" onclick="setMode('label')">⚡ Label the Neuron</button>
+    <button class="mode-tab" onclick="setMode('quiz')">🧠 Nervous System Quiz</button>
+    <button class="mode-tab" onclick="setMode('cards')">📚 Flash Cards</button>
+  </div>
+
+  <!-- ═══════════════════ STUDY NOTES ═══════════════════ -->
+  <div class="game-panel active" id="panel-notes" style="display:block">
+
+    <div class="notes-intro">
+      Read through each section before testing yourself. Click a topic heading to expand it.
+      Key terms appear in <em>monospace</em>. These are the words to know for the games.
+    </div>
+
+    <div class="accordion">
+
+      <!-- 1 NEURON STRUCTURE -->
+      <div class="acc-item" id="acc0">
+        <div class="acc-header" onclick="toggleAcc(0)">
+          <span class="acc-icon">⚡</span>
+          <div style="flex:1">
+            <div class="acc-title">Neuron Structure &amp; Function</div>
+            <div class="acc-subtitle">Cell body · dendrites · axon · glial cells</div>
+          </div>
+          <span class="acc-chevron">▶</span>
+        </div>
+        <div class="acc-body">
+          <p>The nervous system is built from two cell types: <strong>neurons</strong> and <strong>glial cells</strong>. Neurons are excitable cells that rapidly receive, integrate and transmit electrical impulses called <em>action potentials</em> along their membrane. Glial cells do not conduct impulses. Instead, they insulate, nourish and support neurons.</p>
+          <p>A typical (motor) neuron has four functional zones: reception, integration, conduction and transmission.</p>
+          <div style="margin:6px 0 12px;display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:13px;color:var(--text-dim)">
+            <span class="note-pill">Dendrites</span> → <span class="note-pill">Cell body (perikaryon)</span> → <span class="note-pill">Axon hillock</span> → <span class="note-pill">Axon</span> → <span class="note-pill">Synapse</span>
+          </div>
+          <p><strong>Dendrites</strong> are short, branched projections covered in receptors. They sense incoming signals and convert them into electrical changes. The <strong>cell body (perikaryon)</strong> contains the nucleus, cytoplasm and the machinery for protein synthesis, and its membrane can also carry receptors. The <strong>axon hillock</strong> is the junction between cell body and axon, and is where incoming signals are summed and integrated. The <strong>axon</strong> is a long projection that carries the outgoing signal to the target cell.</p>
+          <p>Each axon is wrapped by insulating glial cells: <strong>oligodendrocytes</strong> in the central nervous system, <strong>Schwann cells</strong> in the peripheral nervous system. Where many layers of glial membrane wrap the axon, they form an insulating <em>myelin sheath</em>.</p>
+        </div>
+      </div>
+
+      <!-- 2 ION CHANNELS & RESTING POTENTIAL -->
+      <div class="acc-item" id="acc1">
+        <div class="acc-header" onclick="toggleAcc(1)">
+          <span class="acc-icon">🔋</span>
+          <div style="flex:1">
+            <div class="acc-title">Ion Channels &amp; the Resting Potential</div>
+            <div class="acc-subtitle">Na⁺/K⁺ gradients · Na/K-ATPase</div>
+          </div>
+          <span class="acc-chevron">▶</span>
+        </div>
+        <div class="acc-body">
+          <p>At rest, a neuron's membrane potential sits at about <strong>−70 mV</strong>, meaning the inside of the cell is more negative than the outside. This resting potential is maintained by two things working together:</p>
+          <p><strong>Passive diffusion</strong>: leak channels let potassium (K⁺) drift out of the cell and sodium (Na⁺) drift in, following their concentration gradients. At rest, there are more open K⁺ leak channels than Na⁺ leak channels, so the membrane is more permeable to potassium.</p>
+          <p><strong>Active pumping</strong>: the enzyme <strong>Na/K-ATPase</strong> pumps 3 sodium ions out of the cell and 2 potassium ions in, against their gradients, using energy from ATP. This maintains the concentration gradients that make the resting potential possible.</p>
+          <p>Each ion has its own <strong>equilibrium potential</strong>, the voltage at which that ion would stop moving. For sodium this is about <em>+60 mV</em>, and for potassium about <em>−90 mV</em>. Ions always try to pull the membrane potential toward their own equilibrium potential whenever their channels are open, and this tug-of-war is what drives the action potential.</p>
+        </div>
+      </div>
+
+      <!-- 3 ACTION POTENTIAL -->
+      <div class="acc-item" id="acc2">
+        <div class="acc-header" onclick="toggleAcc(2)">
+          <span class="acc-icon">📈</span>
+          <div style="flex:1">
+            <div class="acc-title">The Action Potential</div>
+            <div class="acc-subtitle">Threshold · depolarisation · repolarisation · refractory period</div>
+          </div>
+          <span class="acc-chevron">▶</span>
+        </div>
+        <div class="acc-body">
+          <p>An action potential is a rapid, stereotyped reversal of membrane polarity that travels along the axon without losing strength. It has three phases:</p>
+          <table class="note-table">
+            <tr><th>Phase</th><th>What happens</th></tr>
+            <tr><td>Depolarisation</td><td>Voltage-gated Na⁺ channels open rapidly, Na⁺ floods in, making the inside more positive</td></tr>
+            <tr><td>Repolarisation</td><td>Na⁺ channels inactivate, slower voltage-gated K⁺ channels open fully, K⁺ flows out, restoring negative charge</td></tr>
+            <tr><td>Hyperpolarisation</td><td>K⁺ channels are slow to close, so the membrane briefly overshoots to about −80 mV before settling back to rest</td></tr>
+          </table>
+          <p>For an action potential to fire at all, incoming graded signals must sum to reach a <strong>threshold potential</strong> of around <em>−50 mV</em>. Below threshold nothing happens. Above it, Na⁺ channels open in a self-reinforcing cascade, an all-or-nothing event that is always the same size.</p>
+          <p>Voltage-gated Na⁺ channels have <strong>two gates</strong>: an activation gate and an inactivation gate. At rest the activation gate is closed. During depolarisation it opens, letting Na⁺ in. At the peak, the inactivation gate closes, shutting off further Na⁺ entry. Voltage-gated K⁺ channels are simpler, with just one gate.</p>
+          <p>Immediately after firing, a stretch of membrane cannot fire again. This is called the <strong>refractory period</strong>. The <em>absolute refractory period</em> lasts until the membrane returns to resting potential (Na⁺ channels are inactivated and unresponsive). The <em>relative refractory period</em> covers the hyperpolarisation phase, when a much stronger stimulus is needed to trigger a new action potential. This one-way "reset" is what forces the signal to travel in only one direction down the axon.</p>
+          <p>Information is encoded not in the size of action potentials (always identical) but in their <strong>frequency</strong>: stronger stimuli produce more frequent firing.</p>
+        </div>
+      </div>
+
+      <!-- 4 MYELINATION -->
+      <div class="acc-item" id="acc3">
+        <div class="acc-header" onclick="toggleAcc(3)">
+          <span class="acc-icon">🧬</span>
+          <div style="flex:1">
+            <div class="acc-title">Myelination &amp; Conduction Speed</div>
+            <div class="acc-subtitle">Saltatory conduction · nodes of Ranvier · fibre types</div>
+          </div>
+          <span class="acc-chevron">▶</span>
+        </div>
+        <div class="acc-body">
+          <p>Myelin dramatically speeds up signal conduction. Between myelinated segments, small gaps called <strong>nodes of Ranvier</strong> expose the axon membrane, where voltage-gated ion channels are densely packed. Because myelin insulates the rest of the axon, an action potential at one node triggers a fast passive current that "jumps" to the next node, where a new action potential fires. This is called <strong>saltatory conduction</strong>, and it lets thin myelinated fibres conduct as fast as thick unmyelinated ones, without needing a huge nerve bundle.</p>
+          <p>In unmyelinated axons, the signal must regenerate continuously along the entire membrane, which is much slower.</p>
+          <table class="note-table">
+            <tr><th>Fibre type</th><th>Myelinated?</th><th>Diameter</th><th>Conduction speed</th></tr>
+            <tr><td>Type A</td><td>Yes</td><td>~10 µm</td><td>~100 m/s (up to 120 m/s)</td></tr>
+            <tr><td>Type B</td><td>Yes (thinner)</td><td>~5 µm</td><td>~10 m/s</td></tr>
+            <tr><td>Type C</td><td>No</td><td>&lt;1 µm</td><td>~1 m/s (max ~2 m/s)</td></tr>
+          </table>
+          <p>Conduction speed is proportional to axon diameter, but scaling up diameter alone to increase speed would require impractically bulky nerves. Myelination solves this problem far more efficiently.</p>
+        </div>
+      </div>
+
+      <!-- 5 SYNAPSES -->
+      <div class="acc-item" id="acc4">
+        <div class="acc-header" onclick="toggleAcc(4)">
+          <span class="acc-icon">🔗</span>
+          <div style="flex:1">
+            <div class="acc-title">Synapses &amp; Neurotransmitters</div>
+            <div class="acc-subtitle">Chemical vs electrical · receptors · key transmitters</div>
+          </div>
+          <span class="acc-chevron">▶</span>
+        </div>
+        <div class="acc-body">
+          <p>Neurons mostly communicate via <strong>chemical synapses</strong>, the gap (synaptic cleft, ~20 nanometres) between the axon terminal and the target cell. <strong>Electrical synapses</strong> also exist, using gap junctions for direct electrical coupling, faster but less flexible.</p>
+          <p>Sequence at a chemical synapse: an action potential arrives at the axon terminal → voltage-gated <strong>calcium</strong> channels open → Ca²⁺ enters → this triggers synaptic vesicles to fuse with the membrane and release neurotransmitter by exocytosis → the neurotransmitter crosses the cleft and binds receptors on the target cell.</p>
+          <p>Receptors are either:</p>
+          <div style="margin:6px 0 12px">
+            <span class="note-pill">Ionotropic</span> Part of an ion channel itself, fast, direct, brief effect (e.g. Na⁺/Ca²⁺ channels = excitatory, Cl⁻ channels = inhibitory)
+            <br><br>
+            <span class="note-pill amber">Metabotropic</span> Act indirectly via G-proteins and second messengers, slower, longer-lasting
+          </div>
+          <p>Key neurotransmitters: <strong>glutamate</strong> is excitatory (opens cation channels, depolarises the cell). <strong>GABA</strong> is inhibitory (opens Cl⁻ channels, hyperpolarises the cell). <strong>Acetylcholine</strong> can be either. It excites skeletal muscle via nicotinic receptors, but can inhibit the heart via muscarinic receptors, depending which receptor the target cell expresses.</p>
+          <p>Transmitter action is brief (~1 millisecond). Molecules are cleared by enzymatic breakdown or reuptake into surrounding glial cells or the pre-synaptic neuron.</p>
+        </div>
+      </div>
+
+      <!-- 6 BRAIN REGIONS -->
+      <div class="acc-item" id="acc5">
+        <div class="acc-header" onclick="toggleAcc(5)">
+          <span class="acc-icon">🧠</span>
+          <div style="flex:1">
+            <div class="acc-title">The Brain: Five Regions</div>
+            <div class="acc-subtitle">Telencephalon → medulla oblongata</div>
+          </div>
+          <span class="acc-chevron">▶</span>
+        </div>
+        <div class="acc-body">
+          <p>The fish brain develops into <strong>five regions</strong> from front to back, each with distinct functions:</p>
+          <table class="note-table">
+            <tr><th>Region</th><th>Key structures</th><th>Main function</th></tr>
+            <tr><td>Telencephalon</td><td>Olfactory bulb (lobus olfactorius)</td><td>Receives smell input, not hollow in teleosts (unlike other vertebrates)</td></tr>
+            <tr><td>Diencephalon</td><td>Thalamus, hypothalamus, pineal gland, pituitary, saccus vasculosus</td><td>Thalamus = main sensory/motor relay, hypothalamus = homeostasis control centre</td></tr>
+            <tr><td>Mesencephalon</td><td>Optic tectum (tectum opticum)</td><td>Primary visual processing, clearly layered, also a swimming-movement centre</td></tr>
+            <tr><td>Metencephalon</td><td>Cerebellum</td><td>Coordinates movement, folded under the optic tectum (valvula cerebelli)</td></tr>
+            <tr><td>Medulla oblongata</td><td>Cranial nerve nuclei</td><td>Connects to spinal cord via foramen magnum, houses major nerve nuclei incl. vagus</td></tr>
+          </table>
+          <p>The <strong>pineal gland</strong> (corpus pineale) sits dorsally on the diencephalon and is directly light-sensitive. It produces <strong>melatonin</strong> and helps regulate daily and seasonal rhythms (relevant to salmon smoltification timing).</p>
+          <p>The <strong>optic nerve</strong> (n. opticus) crosses completely to the opposite side at the <em>optic chiasm</em> before reaching the tectum opticum. Fish have no stereoscopic vision, and each eye has a completely separate visual field.</p>
+          <p><strong>Cerebellum cortex</strong> has three distinct layers: an outer molecular layer, a layer of large <em>Purkinje cells</em>, and an inner granular layer densely packed with cell bodies.</p>
+        </div>
+      </div>
+
+      <!-- 7 CRANIAL NERVES -->
+      <div class="acc-item" id="acc6">
+        <div class="acc-header" onclick="toggleAcc(6)">
+          <span class="acc-icon">🔟</span>
+          <div style="flex:1">
+            <div class="acc-title">Cranial Nerves (I to X)</div>
+            <div class="acc-subtitle">10 pairs · sensory, motor, or mixed</div>
+          </div>
+          <span class="acc-chevron">▶</span>
+        </div>
+        <div class="acc-body">
+          <p>Fish have <strong>10 pairs of cranial nerves</strong>, numbered with Roman numerals. Each carries impulses to or from the brain (as opposed to spinal nerves, which serve the rest of the body).</p>
+          <table class="note-table">
+            <tr><th>Nerve</th><th>Name</th><th>Function</th></tr>
+            <tr><td>I</td><td>Olfactorius</td><td>Smell, from olfactory pit to telencephalon</td></tr>
+            <tr><td>II</td><td>Opticus</td><td>Vision, crosses fully at optic chiasm to opposite tectum opticum</td></tr>
+            <tr><td>III</td><td>Oculomotorius</td><td>4 of 6 eye muscles, parasympathetic fibres to the iris</td></tr>
+            <tr><td>IV</td><td>Trochlearis</td><td>One eye movement muscle</td></tr>
+            <tr><td>V</td><td>Trigeminus</td><td>General sense (touch, pain, temperature) from head skin and mouth, jaw-closing muscles</td></tr>
+            <tr><td>VI</td><td>Abducens</td><td>Final eye movement muscle</td></tr>
+            <tr><td>VII</td><td>Facialis</td><td>Sensory from head lateral line, hyoid arch muscles</td></tr>
+            <tr><td>VIII</td><td>Statoacusticus</td><td>Balance, from inner ear (utriculus, sacculus, lagena)</td></tr>
+            <tr><td>IX</td><td>Glossopharyngeus</td><td>Taste (rear mouth), first gill arch, sensory + motor</td></tr>
+            <tr><td>X</td><td>Vagus</td><td>Largest cranial nerve, parasympathetic to heart, gut, smooth muscle, sensory + motor to remaining gill arches and lateral line</td></tr>
+          </table>
+          <p>The <strong>vagus nerve</strong> is by far the most extensive. It supplies nearly all visceral organs and carries a large parasympathetic component, making it central to the autonomic nervous system.</p>
+        </div>
+      </div>
+
+      <!-- 8 SPINAL CORD -->
+      <div class="acc-item" id="acc7">
+        <div class="acc-header" onclick="toggleAcc(7)">
+          <span class="acc-icon">🦴</span>
+          <div style="flex:1">
+            <div class="acc-title">Spinal Cord Organisation</div>
+            <div class="acc-subtitle">Grey/white matter · dorsal &amp; ventral roots · Mauthner cells</div>
+          </div>
+          <span class="acc-chevron">▶</span>
+        </div>
+        <div class="acc-body">
+          <p>The spinal cord (medulla spinalis) lies protected inside the neural arches of the vertebrae. In cross-section, cell bodies cluster in an inverted-Y shape called <strong>grey matter</strong>, and surrounding myelinated axon tracts form the lighter <strong>white matter</strong>.</p>
+          <table class="note-table">
+            <tr><th>Region</th><th>Type</th><th>Carries</th></tr>
+            <tr><td>Dorsal horn</td><td>Sensory</td><td>General sense info (pain, temperature, touch) from skin, mostly reflex processing here</td></tr>
+            <tr><td>Ventral horn</td><td>Motor</td><td>Signals out to skeletal muscle</td></tr>
+          </table>
+          <p>Each spinal nerve connects to the cord via two roots: <strong>radix dorsalis</strong> (dorsal root, sensory, cell bodies form the spinal ganglia) and <strong>radix ventralis</strong> (ventral root, motor).</p>
+          <p>Fish are considered more "spinal" than mammals. Many reflex behaviours are handled directly by the spinal cord without involving the brain.</p>
+          <p><strong>Mauthner cells</strong> are a pair of exceptionally large neurons in the medulla oblongata (one per side), each with a thick, heavily myelinated axon running the full length of the spinal cord. They trigger the <strong>C-start escape response</strong>: a single firing event causes powerful, near-simultaneous contraction of lateral swimming muscle along one whole side of the body, letting the fish flee a threat almost instantly.</p>
+        </div>
+      </div>
+
+      <!-- 9 SYMPATHETIC ANS -->
+      <div class="acc-item" id="acc8">
+        <div class="acc-header" onclick="toggleAcc(8)">
+          <span class="acc-icon">🔥</span>
+          <div style="flex:1">
+            <div class="acc-title">Autonomic Nervous System: Sympathetic</div>
+            <div class="acc-subtitle">Stress · truncus sympaticus · noradrenaline</div>
+          </div>
+          <span class="acc-chevron">▶</span>
+        </div>
+        <div class="acc-body">
+          <p>The <strong>autonomic nervous system</strong> regulates homeostasis via involuntary control of heart muscle, smooth muscle and certain glands, coordinated from the hypothalamus. Unlike somatic motor neurons, autonomic pathways almost always use <strong>two neurons in series</strong>: a <em>pre-ganglionic</em> neuron (cell body inside the CNS) synapses onto a <em>post-ganglionic</em> neuron (cell body in a ganglion outside the CNS), which then reaches the target cell.</p>
+          <p>The <strong>sympathetic nervous system</strong> is active during stress and demanding situations ("fight or flight"). It stimulates the heart and redirects blood flow toward skeletal muscle and away from digestive organs.</p>
+          <p>Pre-ganglionic sympathetic neurons are short. They exit the spinal cord via the dorsal root and synapse quickly in a chain of ganglia lying just dorsal to the kidneys, called the <strong>truncus sympaticus</strong> (sympathetic trunk/chain), running nearly the full length of the spine. Post-ganglionic neurons are long, reaching all the way to organs and blood vessels. The transmitter released at the target is <strong>noradrenaline</strong>.</p>
+          <p>A special case: <strong>suprarenal cells</strong> (chromaffin cells) in the head kidney act as post-ganglionic neurons without their own axon. They receive direct pre-ganglionic input and release <strong>adrenaline and noradrenaline</strong> straight into the blood as hormones.</p>
+        </div>
+      </div>
+
+      <!-- 10 PARASYMPATHETIC ANS -->
+      <div class="acc-item" id="acc9">
+        <div class="acc-header" onclick="toggleAcc(9)">
+          <span class="acc-icon">🍽️</span>
+          <div style="flex:1">
+            <div class="acc-title">Autonomic Nervous System: Parasympathetic</div>
+            <div class="acc-subtitle">Rest &amp; digest · vagus nerve dominance</div>
+          </div>
+          <span class="acc-chevron">▶</span>
+        </div>
+        <div class="acc-body">
+          <p>The <strong>parasympathetic nervous system</strong> governs digestion and energy storage, broadly the opposite role to the sympathetic system. Both systems are active simultaneously in most organs, forming a background balance called <strong>autonomic tone</strong>, which shifts as the fish's needs change.</p>
+          <p>The dominant parasympathetic nerve is the <strong>vagus (X)</strong>, always well developed, targeting heart muscle and smooth muscle broadly. Unlike land vertebrates (which have parasympathetic supply to salivary and tear glands, absent in fish), fish parasympathetic fibres notably supply the intraocular iris muscles via the oculomotor nerve (III), and smooth muscle in the pharynx via nerves VII and IX.</p>
+          <p>Structurally, parasympathetic pathways are the reverse of sympathetic ones: <strong>long pre-ganglionic</strong> fibres travel almost all the way to the target organ before synapsing in a <strong>short post-ganglionic</strong> neuron very close to (or inside) the target tissue.</p>
+        </div>
+      </div>
+
+    </div><!-- /accordion -->
+
+    <div class="notes-ready-bar">
+      <span>Ready to test yourself?</span>
+      <button onclick="setMode('label')">Start: Label the Neuron →</button>
+    </div>
+
+  </div>
+
+  <!-- ═══════════════════ LABEL THE NEURON ═══════════════════ -->
+  <div class="game-panel" id="panel-label">
+    <div class="label-wrap">
+      <div class="label-score">
+        <div>
+          <div class="label-score-text">Score: <span id="label-correct">0</span> / <span id="label-total">10</span></div>
+          <div class="label-instructions">Click a numbered circle on the diagram, then select the correct label.</div>
+        </div>
+        <button class="reset-btn" onclick="resetLabel()">Reset</button>
+      </div>
+
+      <div class="fish-svg-wrap" id="fish-svg-container" style="position:relative;">
+        <svg viewBox="0 0 700 300" xmlns="http://www.w3.org/2000/svg" id="fish-svg">
+
+          <!-- ── DENDRITES ── -->
+          <path class="neuron-dendrite" d="M 100,150 L 55,95"/>
+          <path class="neuron-dendrite" d="M 55,95 L 30,70"/>
+          <path class="neuron-dendrite" d="M 55,95 L 40,115"/>
+          <path class="neuron-dendrite" d="M 95,130 L 45,120"/>
+          <path class="neuron-dendrite" d="M 45,120 L 20,105"/>
+          <path class="neuron-dendrite" d="M 45,120 L 25,138"/>
+          <path class="neuron-dendrite" d="M 100,185 L 55,215"/>
+          <path class="neuron-dendrite" d="M 55,215 L 30,235"/>
+          <path class="neuron-dendrite" d="M 55,215 L 35,200"/>
+
+          <!-- ── SOMA (cell body) ── -->
+          <circle class="neuron-soma" cx="130" cy="150" r="50"/>
+          <circle class="neuron-nucleus" cx="122" cy="150" r="17"/>
+
+          <!-- ── AXON HILLOCK ── -->
+          <path class="neuron-soma" d="M 172,128 L 205,142 L 205,158 L 172,172 Z"/>
+
+          <!-- ── AXON with myelin segments ── -->
+          <line class="neuron-axon" x1="205" y1="150" x2="480" y2="150"/>
+          <rect class="neuron-myelin" x="212" y="136" width="55" height="28" rx="13"/>
+          <rect class="neuron-myelin" x="282" y="136" width="55" height="28" rx="13"/>
+          <rect class="neuron-myelin" x="352" y="136" width="55" height="28" rx="13"/>
+          <rect class="neuron-myelin" x="422" y="136" width="45" height="28" rx="13"/>
+
+          <!-- ── AXON TERMINAL (branching) ── -->
+          <path class="neuron-axon" d="M 480,150 L 525,120"/>
+          <path class="neuron-axon" d="M 480,150 L 530,150"/>
+          <path class="neuron-axon" d="M 480,150 L 525,180"/>
+          <circle class="neuron-terminal" cx="528" cy="118" r="9"/>
+          <circle class="neuron-terminal" cx="533" cy="150" r="9"/>
+          <circle class="neuron-terminal" cx="528" cy="182" r="9"/>
+
+          <!-- ── SYNAPTIC CLEFT ── -->
+          <rect class="neuron-cleft" x="542" y="100" width="18" height="100"/>
+
+          <!-- ── TARGET CELL ── -->
+          <rect class="neuron-target" x="562" y="90" width="110" height="120" rx="8"/>
+          <line x1="580" y1="90" x2="580" y2="210" stroke="rgba(29,233,168,0.25)" stroke-width="1.5"/>
+          <line x1="600" y1="90" x2="600" y2="210" stroke="rgba(29,233,168,0.25)" stroke-width="1.5"/>
+          <line x1="620" y1="90" x2="620" y2="210" stroke="rgba(29,233,168,0.25)" stroke-width="1.5"/>
+          <line x1="640" y1="90" x2="640" y2="210" stroke="rgba(29,233,168,0.25)" stroke-width="1.5"/>
+          <line x1="660" y1="90" x2="660" y2="210" stroke="rgba(29,233,168,0.25)" stroke-width="1.5"/>
+
+          <!-- ── HOTSPOTS ── -->
+          <g id="hotspots">
+            <!-- 1 Dendrite -->
+            <g class="hotspot" id="hs0" onclick="openPopup(0,event)">
+              <circle class="hs-bg" cx="22" cy="80" r="11"/>
+              <text x="22" y="80">1</text>
+            </g>
+            <!-- 2 Cell body -->
+            <g class="hotspot" id="hs1" onclick="openPopup(1,event)">
+              <circle class="hs-bg" cx="100" cy="195" r="11"/>
+              <text x="100" y="195">2</text>
+            </g>
+            <!-- 3 Nucleus -->
+            <g class="hotspot" id="hs2" onclick="openPopup(2,event)">
+              <circle class="hs-bg" cx="122" cy="150" r="11"/>
+              <text x="122" y="150">3</text>
+            </g>
+            <!-- 4 Axon hillock -->
+            <g class="hotspot" id="hs3" onclick="openPopup(3,event)">
+              <circle class="hs-bg" cx="188" cy="150" r="11"/>
+              <text x="188" y="150">4</text>
+            </g>
+            <!-- 5 Axon -->
+            <g class="hotspot" id="hs4" onclick="openPopup(4,event)">
+              <circle class="hs-bg" cx="273" cy="180" r="11"/>
+              <text x="273" y="180">5</text>
+            </g>
+            <!-- 6 Myelin sheath -->
+            <g class="hotspot" id="hs5" onclick="openPopup(5,event)">
+              <circle class="hs-bg" cx="240" cy="112" r="11"/>
+              <text x="240" y="112">6</text>
+            </g>
+            <!-- 7 Node of Ranvier -->
+            <g class="hotspot" id="hs6" onclick="openPopup(6,event)">
+              <circle class="hs-bg" cx="273" cy="112" r="11"/>
+              <text x="273" y="112">7</text>
+            </g>
+            <!-- 8 Axon terminal -->
+            <g class="hotspot" id="hs7" onclick="openPopup(7,event)">
+              <circle class="hs-bg" cx="533" cy="60" r="11"/>
+              <text x="533" y="60">8</text>
+            </g>
+            <!-- 9 Synaptic cleft -->
+            <g class="hotspot" id="hs8" onclick="openPopup(8,event)">
+              <circle class="hs-bg" cx="551" cy="240" r="11"/>
+              <text x="551" y="240">9</text>
+            </g>
+            <!-- 10 Target cell -->
+            <g class="hotspot" id="hs9" onclick="openPopup(9,event)">
+              <circle class="hs-bg" cx="617" cy="60" r="11"/>
+              <text x="617" y="60">10</text>
+            </g>
+          </g>
+        </svg>
+
+        <!-- Popup (shown on hotspot click) -->
+        <div id="label-popup" style="display:none;">
+          <div class="pop-q">What is this structure called?</div>
+          <div id="pop-opts"></div>
+        </div>
+      </div>
+
+      <div class="label-complete" id="label-complete">
+        All 10 parts identified correctly! Well done.
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ QUIZ ═══════════════════ -->
+  <div class="game-panel" id="panel-quiz">
+    <div class="quiz-wrap">
+
+      <!-- Start screen -->
+      <div class="quiz-start" id="quiz-start">
+        <div style="font-size:36px;margin-bottom:10px;">🧠</div>
+        <div style="font-size:20px;font-weight:700;margin-bottom:8px;">Nervous System Quiz</div>
+        <div style="font-size:14px;color:var(--text-dim);margin-bottom:4px;">20 questions covering neuron signalling, action potentials, synapses, brain regions, cranial nerves, and the autonomic nervous system.</div>
+        <div style="font-size:13px;color:var(--text-muted);">Based on chapter 3 of Fiskefysiologi (Nilsen &amp; Kryvi, Bergen).</div>
+        <button class="big-btn" onclick="startQuiz()">Start Quiz</button>
+      </div>
+
+      <!-- Question screen -->
+      <div id="quiz-question" style="display:none;">
+        <div class="quiz-meta">
+          <div class="quiz-progress-bar"><div class="quiz-progress-fill" id="quiz-fill" style="width:0%"></div></div>
+          <div class="quiz-counter" id="quiz-counter">1 / 20</div>
+          <div class="quiz-score-badge" id="quiz-score-badge">0 correct</div>
+        </div>
+        <div class="quiz-q" id="quiz-q-text"></div>
+        <div class="quiz-opts" id="quiz-opts"></div>
+        <div class="quiz-explanation" id="quiz-exp"></div>
+        <button class="quiz-next-btn" id="quiz-next" onclick="nextQuestion()">Next question →</button>
+      </div>
+
+      <!-- Results screen -->
+      <div class="quiz-results" id="quiz-results" style="display:none;">
+        <div style="font-size:36px;margin-bottom:10px;">🏆</div>
+        <div class="results-score" id="results-score"></div>
+        <div class="results-sub">out of 20 questions</div>
+        <div class="results-grade" id="results-grade"></div>
+        <button class="big-btn" onclick="startQuiz()">Try again</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════ FLASH CARDS ═══════════════════ -->
+  <div class="game-panel" id="panel-cards">
+    <div class="fc-wrap">
+      <div class="fc-nav">
+        <button class="fc-arrow" onclick="prevCard()">&#8592;</button>
+        <span class="fc-counter" id="fc-counter">1 / 20</span>
+        <button class="fc-arrow" onclick="nextCard()">&#8594;</button>
+      </div>
+
+      <div class="fc-hint">Click the card to reveal the definition</div>
+
+      <div class="card-scene" onclick="flipCard()">
+        <div class="card-inner" id="card-inner">
+          <div class="card-face card-front">
+            <div class="card-label">Term</div>
+            <div class="card-term" id="card-term"></div>
+            <div class="card-flip-hint">tap to flip</div>
+          </div>
+          <div class="card-face card-back">
+            <div class="card-label">Definition</div>
+            <div class="card-def" id="card-def"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="fc-progress" id="fc-progress"></div>
+    </div>
+  </div>
+
+</div><!-- /page-wrap -->
+
+<footer>
+  <span>LaksAtlas Classroom: Educational use only</span>
+  <span>Source: Nilsen TO &amp; Kryvi H (Fiskefysiologi, ch. 3). Institutt for Biovitenskap, UiB.</span>
+</footer>
+
+<script>
+// ── Auth check ────────────────────────────────────────────────
+if (sessionStorage.getItem('cr_auth') !== '1') {
+  document.body.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:12px;text-align:center;padding:40px;font-family:Outfit,sans-serif;background:#04091a;color:#5e88aa"><div style="font-size:36px">🔒</div><h2 style="font-size:18px">Access restricted</h2><p style="font-size:14px">Return to the <a href="about.html" style="color:#00c8ff">About page</a> to sign in.</p></div>';
+}
+
+// ── Mode switcher ─────────────────────────────────────────────
+const MODES = ['notes','label','quiz','cards'];
+function setMode(mode) {
+  document.querySelectorAll('.mode-tab').forEach((t,i) => t.classList.toggle('active', MODES[i] === mode));
+  document.querySelectorAll('.game-panel').forEach((p,i) => p.classList.toggle('active', 'panel-'+MODES[i] === 'panel-'+mode));
+}
+
+// ── Accordion ─────────────────────────────────────────────────
+function toggleAcc(idx) {
+  const item = document.getElementById('acc' + idx);
+  const isOpen = item.classList.contains('open');
+  item.classList.toggle('open', !isOpen);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// LABEL GAME: Neuron
+// ═══════════════════════════════════════════════════════════════
+const PARTS = [
+  { name: 'Dendrite',            wrong: ['Axon terminal','Node of Ranvier','Myelin sheath'] },
+  { name: 'Cell body (soma)',    wrong: ['Axon hillock','Nucleus','Target cell'] },
+  { name: 'Nucleus',             wrong: ['Nucleolus','Mitochondrion','Golgi apparatus'] },
+  { name: 'Axon hillock',        wrong: ['Synaptic cleft','Node of Ranvier','Dendrite'] },
+  { name: 'Axon',                wrong: ['Dendrite','Myelin sheath','Axon terminal'] },
+  { name: 'Myelin sheath',       wrong: ['Node of Ranvier','Synaptic vesicle','Nucleus'] },
+  { name: 'Node of Ranvier',     wrong: ['Myelin sheath','Axon hillock','Synapse'] },
+  { name: 'Axon terminal',       wrong: ['Dendrite','Cell body','Node of Ranvier'] },
+  { name: 'Synaptic cleft',      wrong: ['Axon hillock','Myelin sheath','Node of Ranvier'] },
+  { name: 'Target cell',         wrong: ['Schwann cell','Glial cell','Dendrite'] },
+];
+
+let labelAnswered = new Set(), labelScore = 0, labelCurrentPart = null;
+
+function shuffle(arr) { return [...arr].sort(() => Math.random() - .5); }
+
+function openPopup(idx, e) {
+  if (labelAnswered.has(idx)) return;
+  labelCurrentPart = idx;
+  const part = PARTS[idx];
+  const opts = shuffle([part.name, ...part.wrong]);
+
+  const popup = document.getElementById('label-popup');
+  const optsDiv = document.getElementById('pop-opts');
+  optsDiv.innerHTML = '';
+  opts.forEach(o => {
+    const b = document.createElement('button');
+    b.className = 'pop-opt';
+    b.textContent = o;
+    b.onclick = () => checkLabel(idx, o === part.name, b, opts, part.name);
+    optsDiv.appendChild(b);
+  });
+
+  const container = document.getElementById('fish-svg-container');
+  const cRect = container.getBoundingClientRect();
+  let left = e.clientX - cRect.left + 14;
+  let top  = e.clientY - cRect.top  + 10;
+  if (left + 240 > cRect.width)  left = cRect.width  - 244;
+  if (top  + 200 > cRect.height) top  = top - 200;
+  if (top < 2) top = 2;
+  popup.style.left = left + 'px';
+  popup.style.top  = top  + 'px';
+  popup.style.display = 'block';
+  document.addEventListener('mousedown', outsideClickClose, { once: true });
+}
+
+function outsideClickClose(e) {
+  const popup = document.getElementById('label-popup');
+  if (!popup.contains(e.target)) popup.style.display = 'none';
+}
+
+function checkLabel(idx, correct, btn, allOpts, correctName) {
+  const optsDiv = document.getElementById('pop-opts');
+  optsDiv.querySelectorAll('.pop-opt').forEach(b => {
+    b.disabled = true;
+    if (b.textContent === correctName) b.classList.add(correct ? 'correct' : 'reveal');
+  });
+  if (correct) {
+    btn.classList.add('correct');
+    labelAnswered.add(idx);
+    labelScore++;
+    document.getElementById('label-correct').textContent = labelScore;
+    document.getElementById('hs' + idx).classList.add('answered');
+    setTimeout(() => {
+      document.getElementById('label-popup').style.display = 'none';
+      if (labelAnswered.size === 10) document.getElementById('label-complete').style.display = 'block';
+    }, 700);
+  } else {
+    btn.classList.add('wrong');
+    document.getElementById('hs' + idx).classList.add('wrong');
+    setTimeout(() => document.getElementById('hs' + idx).classList.remove('wrong'), 800);
+    setTimeout(() => document.getElementById('label-popup').style.display = 'none', 1200);
+  }
+}
+
+function resetLabel() {
+  labelAnswered.clear(); labelScore = 0; labelCurrentPart = null;
+  document.getElementById('label-correct').textContent = '0';
+  document.getElementById('label-popup').style.display = 'none';
+  document.getElementById('label-complete').style.display = 'none';
+  for (let i = 0; i < 10; i++) {
+    const el = document.getElementById('hs' + i);
+    el.classList.remove('answered','wrong');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// QUIZ
+// ═══════════════════════════════════════════════════════════════
+const QUESTIONS = [
+  { q: "What is the approximate resting membrane potential of a neuron?",
+    opts: ["0 mV","−30 mV","−70 mV","−120 mV"], ans: 2,
+    exp: "The resting membrane potential is about −70 mV, meaning the inside of the neuron is more negative than the outside. This is maintained by leak channels (more permeable to K⁺ than Na⁺ at rest) and the Na/K-ATPase pump." },
+  { q: "What does the Na/K-ATPase pump do?",
+    opts: [
+      "Pumps 3 Na⁺ out and 2 K⁺ in, using ATP",
+      "Pumps 2 Na⁺ out and 3 K⁺ in, using ATP",
+      "Allows Na⁺ and K⁺ to diffuse freely down their gradients",
+      "Pumps Ca²⁺ out of the presynaptic terminal"
+    ], ans: 0,
+    exp: "The Na/K-ATPase actively pumps 3 sodium ions out of the cell and 2 potassium ions in, against their concentration gradients, consuming ATP. This maintains the ion gradients that underlie the resting potential." },
+  { q: "What is the approximate threshold potential needed to trigger an action potential?",
+    opts: ["−90 mV","−70 mV","−50 mV","+30 mV"], ans: 2,
+    exp: "Graded potentials must summate to reach a threshold of roughly −50 mV. Below this, no action potential fires. At or above it, voltage-gated Na⁺ channels open in a self-reinforcing cascade." },
+  { q: "What is the correct order of the three phases of an action potential?",
+    opts: [
+      "Repolarisation → Depolarisation → Hyperpolarisation",
+      "Depolarisation → Repolarisation → Hyperpolarisation",
+      "Hyperpolarisation → Depolarisation → Repolarisation",
+      "Depolarisation → Hyperpolarisation → Repolarisation"
+    ], ans: 1,
+    exp: "Depolarisation (Na⁺ influx makes the cell more positive) is followed by repolarisation (K⁺ efflux restores negative charge), then a brief hyperpolarisation overshoot before the membrane returns to rest." },
+  { q: "How many gates does a voltage-gated sodium channel have?",
+    opts: ["One gate","Two gates, activation and inactivation","Three gates","No gates, it is always open"], ans: 1,
+    exp: "Voltage-gated Na⁺ channels have an activation gate and an inactivation gate. At rest the activation gate is closed. During depolarisation it opens. Near the peak, the inactivation gate closes and shuts off further Na⁺ entry." },
+  { q: "What causes the brief hyperpolarisation phase after an action potential?",
+    opts: [
+      "Na⁺ channels reopening",
+      "K⁺ channels being slow to close, so K⁺ continues leaving the cell",
+      "Active pumping of Cl⁻ into the cell",
+      "Calcium influx at the axon hillock"
+    ], ans: 1,
+    exp: "Voltage-gated K⁺ channels close slowly. Even after the membrane has repolarised, K⁺ continues to leave through the still-open channels, briefly pushing the potential below resting level (~−80 mV) before it recovers." },
+  { q: "What is the difference between the absolute and relative refractory periods?",
+    opts: [
+      "They are the same thing",
+      "Absolute = membrane cannot fire at all (Na⁺ channels inactivated). Relative = a stronger-than-normal stimulus can trigger firing during hyperpolarisation",
+      "Absolute happens before the action potential, relative happens after",
+      "Relative refractory period only occurs in unmyelinated axons"
+    ], ans: 1,
+    exp: "During the absolute refractory period, Na⁺ channels are inactivated and the membrane cannot fire no matter how strong the stimulus. During the relative refractory period (hyperpolarisation), a stronger-than-usual stimulus can still trigger a new action potential." },
+  { q: "What is saltatory conduction?",
+    opts: [
+      "Continuous regeneration of the signal along the entire unmyelinated axon",
+      "The signal 'jumping' rapidly between nodes of Ranvier in myelinated axons",
+      "Backward propagation of an action potential",
+      "Conduction that only occurs in the cell body"
+    ], ans: 1,
+    exp: "In myelinated axons, ion channels are concentrated at the nodes of Ranvier. An action potential at one node creates a fast passive current that leaps to the next node, where a new action potential fires, much faster than continuous conduction." },
+  { q: "Roughly how fast can a myelinated Type A nerve fibre conduct signals, compared to an unmyelinated Type C fibre?",
+    opts: [
+      "Type A: ~100 m/s vs Type C: ~1 m/s",
+      "Type A: ~1 m/s vs Type C: ~100 m/s",
+      "Both conduct at roughly the same speed",
+      "Type A: ~10 m/s vs Type C: ~10 m/s"
+    ], ans: 0,
+    exp: "Myelinated Type A fibres (~10 µm diameter) conduct at up to ~100–120 m/s, while unmyelinated Type C fibres (<1 µm) conduct at only about 1–2 m/s." },
+  { q: "What triggers neurotransmitter release at a chemical synapse?",
+    opts: [
+      "Sodium influx into the presynaptic terminal",
+      "Calcium influx into the presynaptic terminal, triggering vesicle fusion",
+      "Potassium efflux from the postsynaptic cell",
+      "Direct electrical coupling through gap junctions"
+    ], ans: 1,
+    exp: "When an action potential reaches the axon terminal, voltage-gated calcium channels open. Ca²⁺ influx causes synaptic vesicles to fuse with the membrane and release neurotransmitter into the synaptic cleft by exocytosis." },
+  { q: "What is the key structural difference between ionotropic and metabotropic receptors?",
+    opts: [
+      "Ionotropic receptors are part of an ion channel itself, metabotropic receptors act indirectly via G-proteins",
+      "Metabotropic receptors are part of an ion channel, ionotropic receptors use G-proteins",
+      "Ionotropic receptors are only found in the brain",
+      "There is no functional difference"
+    ], ans: 0,
+    exp: "Ionotropic receptors are directly built into an ion channel, producing fast, brief effects when a neurotransmitter binds. Metabotropic receptors are not directly linked to a channel. They act indirectly through G-proteins and second messengers, giving slower but longer-lasting effects." },
+  { q: "Which neurotransmitter is generally excitatory, and which is generally inhibitory?",
+    opts: [
+      "Glutamate excitatory, GABA inhibitory",
+      "GABA excitatory, glutamate inhibitory",
+      "Both are always excitatory",
+      "Both are always inhibitory"
+    ], ans: 0,
+    exp: "Glutamate typically opens cation channels, depolarising the postsynaptic cell (excitatory). GABA opens chloride channels, hyperpolarising the cell (inhibitory)." },
+  { q: "Why can acetylcholine be either excitatory or inhibitory?",
+    opts: [
+      "It depends on the concentration released",
+      "It depends entirely on which receptor type the target cell expresses (e.g. nicotinic vs muscarinic)",
+      "Acetylcholine is never inhibitory",
+      "It depends on the time of day"
+    ], ans: 1,
+    exp: "Acetylcholine excites skeletal muscle via nicotinic receptors, but can inhibit the heart via muscarinic receptors. The same transmitter has different effects depending on the receptor expressed by the target cell." },
+  { q: "Which brain region is the primary centre for visual processing in fish?",
+    opts: ["Telencephalon","Cerebellum","Optic tectum (mesencephalon)","Medulla oblongata"], ans: 2,
+    exp: "The optic tectum, the dorsal part of the mesencephalon, is clearly layered and is where visual signals from the optic nerve are processed and integrated before movement responses are triggered." },
+  { q: "What hormone does the pineal gland produce, and what is it involved in regulating?",
+    opts: [
+      "Insulin, blood sugar regulation",
+      "Melatonin, daily and seasonal rhythms",
+      "Adrenaline, stress response",
+      "Cortisol, long-term stress"
+    ], ans: 1,
+    exp: "The pineal gland (corpus pineale) is directly light-sensitive and produces melatonin, which helps regulate circadian and seasonal rhythms, relevant to processes like salmon smoltification timing." },
+  { q: "What happens to the optic nerve fibres at the optic chiasm?",
+    opts: [
+      "They terminate without crossing",
+      "They cross completely to the opposite side of the brain",
+      "They synapse directly onto the pineal gland",
+      "They split evenly between both sides"
+    ], ans: 1,
+    exp: "The optic nerve crosses completely to the opposite side at the optic chiasm before terminating in the tectum opticum. Fish also lack stereoscopic vision, and each eye has an entirely separate visual field." },
+  { q: "Which cranial nerve is the largest and most extensively distributed, supplying nearly all visceral organs?",
+    opts: ["I: Olfactorius","V: Trigeminus","VIII: Statoacusticus","X: Vagus"], ans: 3,
+    exp: "The vagus nerve (X) is the largest cranial nerve. It carries sensory and parasympathetic motor fibres to the heart, gut, remaining gill arches and the lateral line, making it central to autonomic control." },
+  { q: "In the spinal cord, what is the functional difference between the dorsal horn and the ventral horn?",
+    opts: [
+      "Dorsal horn = motor, ventral horn = sensory",
+      "Dorsal horn = sensory, ventral horn = motor",
+      "Both are purely sensory",
+      "Both are purely motor"
+    ], ans: 1,
+    exp: "The dorsal horn processes sensory information (pain, temperature, touch) arriving via the dorsal root. The ventral horn contains motor neurons sending signals out to skeletal muscle via the ventral root." },
+  { q: "What is distinctive about Mauthner cells, and what behaviour are they responsible for?",
+    opts: [
+      "They are tiny interneurons responsible for slow digestion signals",
+      "They are a pair of very large neurons in the medulla oblongata that trigger the rapid C-start escape response",
+      "They are found only in the retina and control colour vision",
+      "They regulate heart rate exclusively"
+    ], ans: 1,
+    exp: "Mauthner cells are exceptionally large neurons (one per side) in the medulla oblongata with heavily myelinated axons running the length of the spinal cord. Firing one triggers powerful, near-simultaneous muscle contraction down one side of the body: the fast C-start escape response." },
+  { q: "How does the structure of a typical autonomic (sympathetic/parasympathetic) motor pathway differ from a somatic motor pathway?",
+    opts: [
+      "Autonomic pathways use a single neuron reaching directly from the CNS to the target, somatic pathways use two neurons",
+      "Autonomic pathways almost always use two neurons in series (pre-ganglionic and post-ganglionic), somatic pathways use one neuron reaching directly to skeletal muscle",
+      "There is no structural difference between them",
+      "Somatic pathways always originate in the hypothalamus"
+    ], ans: 1,
+    exp: "Somatic motor neurons run directly from the CNS to skeletal muscle. Autonomic pathways almost always involve two neurons: a pre-ganglionic neuron from the CNS synapsing onto a post-ganglionic neuron in a ganglion, which then reaches the target organ." },
+];
+
+let qIdx = 0, qScore = 0, qAnswered = false;
+
+function startQuiz() {
+  qIdx = 0; qScore = 0; qAnswered = false;
+  const qs = shuffle([...Array(QUESTIONS.length).keys()]).slice(0, 20);
+  window._quizOrder = qs;
+  document.getElementById('quiz-start').style.display = 'none';
+  document.getElementById('quiz-results').style.display = 'none';
+  document.getElementById('quiz-question').style.display = 'block';
+  renderQuestion();
+}
+
+function renderQuestion() {
+  qAnswered = false;
+  const q = QUESTIONS[window._quizOrder[qIdx]];
+  const pct = Math.round((qIdx / 20) * 100);
+  document.getElementById('quiz-fill').style.width = pct + '%';
+  document.getElementById('quiz-counter').textContent = (qIdx + 1) + ' / 20';
+  document.getElementById('quiz-score-badge').textContent = qScore + ' correct';
+  document.getElementById('quiz-q-text').textContent = q.q;
+  document.getElementById('quiz-exp').className = 'quiz-explanation';
+  document.getElementById('quiz-exp').textContent = q.exp;
+  document.getElementById('quiz-next').className = 'quiz-next-btn';
+
+  const shuffledOpts = shuffle(q.opts.map((o,i) => ({ text: o, orig: i })));
+  const optsDiv = document.getElementById('quiz-opts');
+  optsDiv.innerHTML = '';
+  shuffledOpts.forEach(o => {
+    const b = document.createElement('button');
+    b.className = 'quiz-opt';
+    b.textContent = o.text;
+    b.onclick = () => selectAnswer(o.orig === q.ans, b, shuffledOpts, q.ans, q.opts);
+    optsDiv.appendChild(b);
+  });
+}
+
+function selectAnswer(correct, btn, shuffledOpts, correctIdx, origOpts) {
+  if (qAnswered) return;
+  qAnswered = true;
+  const correctText = origOpts[correctIdx];
+  document.querySelectorAll('.quiz-opt').forEach(b => {
+    b.disabled = true;
+    if (b.textContent === correctText) b.classList.add(correct ? 'correct' : 'reveal');
+  });
+  btn.classList.add(correct ? 'correct' : 'wrong');
+  if (correct) qScore++;
+  document.getElementById('quiz-score-badge').textContent = qScore + ' correct';
+  document.getElementById('quiz-exp').classList.add('show');
+  document.getElementById('quiz-next').textContent = qIdx < 19 ? 'Next question →' : 'See results →';
+  document.getElementById('quiz-next').classList.add('show');
+}
+
+function nextQuestion() {
+  qIdx++;
+  if (qIdx >= 20) { showResults(); return; }
+  renderQuestion();
+}
+
+function showResults() {
+  document.getElementById('quiz-question').style.display = 'none';
+  document.getElementById('quiz-results').style.display = 'block';
+  document.getElementById('results-score').textContent = qScore + '/20';
+  const grades = [
+    [18, '🏆 Outstanding! Nervous system expert.', '#1de9a8'],
+    [15, '🥇 Excellent! Solid understanding.', '#1de9a8'],
+    [12, '👍 Good. Review a few more sections.', '#00c8ff'],
+    [8,  '📖 Decent start. Keep studying!', '#f4a535'],
+    [0,  '📚 Keep going. Re-read the chapter.', '#ff4757'],
+  ];
+  const [,label,color] = grades.find(([n]) => qScore >= n);
+  const el = document.getElementById('results-grade');
+  el.textContent = label;
+  el.style.color = color;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// FLASH CARDS
+// ═══════════════════════════════════════════════════════════════
+const CARDS = [
+  { term: 'Perikaryon (cell body)', def: 'The main body of a neuron, containing the nucleus, cytoplasm and protein-synthesis machinery. Receives and integrates incoming signals before they pass to the axon hillock.' },
+  { term: 'Axon hillock', def: 'The junction between the cell body and the axon. Acts as the neuron\'s trigger zone: incoming graded signals are summed here, and if they reach threshold, an action potential is initiated.' },
+  { term: 'Glial cell', def: 'A non-conducting support cell of the nervous system. Insulates, nourishes and supports neurons. Oligodendrocytes perform this role in the CNS, Schwann cells in the peripheral nervous system.' },
+  { term: 'Resting membrane potential', def: 'The steady voltage across a neuron\'s membrane when not firing, about −70 mV. Maintained by K⁺/Na⁺ leak channels and the active Na/K-ATPase pump.' },
+  { term: 'Threshold potential', def: 'The critical voltage (around −50 mV) that a neuron\'s membrane must reach for voltage-gated sodium channels to open and trigger an action potential.' },
+  { term: 'Depolarisation', def: 'The rising phase of an action potential, caused by rapid Na⁺ influx through voltage-gated channels, making the inside of the cell more positive.' },
+  { term: 'Repolarisation', def: 'The falling phase of an action potential. Na⁺ channels inactivate while slower K⁺ channels open fully, letting K⁺ leave the cell and restoring negative charge.' },
+  { term: 'Refractory period', def: 'The period after an action potential during which a new one cannot (absolute) or is harder to (relative) trigger. Ensures the signal only travels in one direction along the axon.' },
+  { term: 'Node of Ranvier', def: 'A short unmyelinated gap between segments of myelin along an axon. Densely packed with voltage-gated ion channels, the site where action potentials regenerate during saltatory conduction.' },
+  { term: 'Saltatory conduction', def: 'Fast signal propagation in myelinated axons, where the action potential appears to "jump" between nodes of Ranvier rather than regenerating continuously along the membrane.' },
+  { term: 'Synaptic cleft', def: 'The ~20 nanometre gap between the presynaptic axon terminal and the postsynaptic target cell, across which neurotransmitters diffuse at a chemical synapse.' },
+  { term: 'Ionotropic receptor', def: 'A receptor that is itself part of an ion channel. Neurotransmitter binding directly and rapidly opens the channel, producing a fast, brief change in membrane potential.' },
+  { term: 'Metabotropic receptor', def: 'A receptor not directly linked to an ion channel. Acts indirectly through G-proteins and intracellular second-messenger systems, producing slower but longer-lasting effects.' },
+  { term: 'Telencephalon', def: 'The most anterior brain region. Receives olfactory (smell) input via the olfactory bulb. Unlike in other vertebrates, it is not hollow in teleost fish.' },
+  { term: 'Optic tectum', def: 'The large, clearly layered dorsal part of the mesencephalon (midbrain). Fish\'s primary visual processing centre, receiving input from the optic nerve after it crosses at the optic chiasm.' },
+  { term: 'Cerebellum', def: 'The dorsal part of the metencephalon, responsible for coordinating movement. In teleosts it folds under the optic tectum in a structure called the valvula cerebelli.' },
+  { term: 'Vagus nerve (X)', def: 'The largest cranial nerve. Carries sensory and parasympathetic motor fibres to the heart, gut smooth muscle, the remaining gill arches, and the lateral line, central to autonomic control.' },
+  { term: 'Mauthner cell', def: 'One of a pair of exceptionally large neurons in the medulla oblongata with a heavily myelinated axon spanning the full spinal cord. Triggers the rapid C-start escape response.' },
+  { term: 'Truncus sympaticus', def: 'The sympathetic chain of ganglia lying dorsal to the kidneys, running nearly the full length of the spine. Where short pre-ganglionic sympathetic neurons synapse onto long post-ganglionic neurons.' },
+  { term: 'Autonomic tone', def: 'The constant background balance between simultaneous sympathetic and parasympathetic activity in an organ. Shifts in this balance adjust organ function to match the fish\'s changing needs.' },
+];
+
+let cardIdx = 0, seenCards = new Set();
+
+function renderCard() {
+  const c = CARDS[cardIdx];
+  document.getElementById('card-term').textContent = c.term;
+  document.getElementById('card-def').textContent = c.def;
+  document.getElementById('card-inner').classList.remove('flipped');
+  document.getElementById('fc-counter').textContent = (cardIdx + 1) + ' / ' + CARDS.length;
+  seenCards.add(cardIdx);
+  renderFCProgress();
+}
+
+function renderFCProgress() {
+  const wrap = document.getElementById('fc-progress');
+  wrap.innerHTML = '';
+  CARDS.forEach((_,i) => {
+    const d = document.createElement('div');
+    d.className = 'fc-dot' + (seenCards.has(i) ? ' seen' : '') + (i === cardIdx ? ' current' : '');
+    wrap.appendChild(d);
+  });
+}
+
+function flipCard() { document.getElementById('card-inner').classList.toggle('flipped'); }
+function prevCard() { cardIdx = (cardIdx - 1 + CARDS.length) % CARDS.length; renderCard(); }
+function nextCard() { cardIdx = (cardIdx + 1) % CARDS.length; renderCard(); }
+
+// ── Init ──────────────────────────────────────────────────────
+renderCard();
+</script>
+<script src="mobile.js"></script>
+</body>
+</html>
