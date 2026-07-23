@@ -269,6 +269,60 @@ nav {
 .fc-dot.seen { background: rgba(0,200,255,0.4); }
 .fc-dot.current { background: var(--neon-cyan); }
 
+/* ─── IMPULSE LAB (ACTION POTENTIAL) ─────────────────────────────── */
+.impulse-wrap { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; }
+.impulse-start, .impulse-over { text-align: center; padding: 22px 6px; }
+.il-icon { font-size: 36px; margin-bottom: 10px; }
+.impulse-start h3, .impulse-over h3 { font-size: 20px; font-weight: 700; margin-bottom: 8px; color: var(--text); }
+.impulse-lead { font-size: 14px; color: var(--text-dim); line-height: 1.7; max-width: 580px; margin: 0 auto 6px; }
+.impulse-lead strong { color: var(--text); font-weight: 600; }
+.il-legend { display: flex; flex-wrap: wrap; gap: 8px 16px; justify-content: center; margin: 18px auto 2px; max-width: 580px; }
+.il-legend div { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-dim); display: flex; align-items: center; gap: 8px; }
+.il-key { min-width: 22px; height: 22px; padding: 0 6px; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; border: 1px solid var(--border); color: var(--text); background: rgba(4,28,68,0.5); }
+
+.impulse-hud { display: flex; flex-wrap: wrap; gap: 8px 22px; align-items: center; justify-content: space-between; margin-bottom: 16px; font-family: 'JetBrains Mono', monospace; font-size: 13px; }
+.impulse-hud .hud-item { color: var(--text-dim); }
+.impulse-hud .hud-item span { color: var(--neon-cyan); font-weight: 700; }
+.hud-lives span { color: var(--neon-red); letter-spacing: 3px; }
+.hud-combo span { color: var(--neon-amber); }
+
+.scope-wrap { position: relative; border-radius: 12px; overflow: hidden; background: rgba(0,12,32,0.6); border: 1px solid rgba(0,200,255,0.12); }
+.scope-wrap svg { width: 100%; height: auto; display: block; }
+.scope-grid { stroke: rgba(30,100,210,0.14); stroke-width: 1; }
+.scope-refline { stroke-width: 1.2; stroke-dasharray: 5,5; fill: none; }
+.scope-reflabel { font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+.scope-trace { fill: none; stroke: var(--neon-cyan); stroke-width: 2.4; stroke-linejoin: round; stroke-linecap: round; filter: drop-shadow(0 0 5px rgba(0,200,255,0.5)); }
+
+.impulse-prompt {
+  position: absolute; left: 50%; top: 12px; transform: translateX(-50%);
+  background: rgba(4,12,30,0.82); border: 1px solid rgba(0,200,255,0.25);
+  border-radius: 999px; padding: 7px 18px; font-size: 13px; color: var(--text);
+  font-weight: 500; text-align: center; max-width: 92%; backdrop-filter: blur(4px);
+  transition: border-color .2s, color .2s;
+}
+.impulse-prompt.good { border-color: rgba(29,233,168,0.5); color: var(--neon-green); }
+.impulse-prompt.warn { border-color: rgba(244,165,53,0.6); color: var(--neon-amber); }
+.impulse-prompt.bad { border-color: rgba(255,71,87,0.6); color: var(--neon-red); }
+
+.impulse-controls { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 16px; }
+.il-btn {
+  padding: 13px 10px; border-radius: 12px; border: 1px solid var(--border);
+  background: rgba(4,28,68,0.5); color: var(--text); cursor: pointer;
+  font-family: 'Outfit', sans-serif; transition: all .15s; text-align: center;
+}
+.il-btn:hover { border-color: rgba(0,200,255,0.4); }
+.il-btn:active { transform: scale(0.97); }
+.il-btn-key { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 5px; }
+.il-btn-lbl { font-size: 13px; font-weight: 600; display: block; }
+.il-btn-sub { font-size: 11px; color: var(--text-dim); display: block; margin-top: 3px; }
+.il-btn.glow-cyan { border-color: rgba(0,200,255,0.6); box-shadow: var(--glow-cyan); background: rgba(0,200,255,0.1); }
+.il-btn.glow-green { border-color: rgba(29,233,168,0.6); box-shadow: var(--glow-green); background: rgba(29,233,168,0.1); }
+.il-btn.glow-amber { border-color: rgba(244,165,53,0.6); background: rgba(244,165,53,0.12); }
+@keyframes il-shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+.scope-wrap.shake { animation: il-shake .3s; }
+.il-final { font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--text-dim); margin-bottom: 6px; }
+.il-final span { color: var(--neon-cyan); font-weight: 700; }
+
 /* ─── RESET BTN ──────────────────────────────────────────────────── */
 .reset-btn {
   padding: 6px 14px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.08);
@@ -309,6 +363,7 @@ footer { border-top: 1px solid var(--border); padding: 20px 28px; display: flex;
     <button class="mode-tab" onclick="setMode('label')">⚡ Label the Neuron</button>
     <button class="mode-tab" onclick="setMode('quiz')">🧠 Nervous System Quiz</button>
     <button class="mode-tab" onclick="setMode('cards')">📚 Flash Cards</button>
+    <button class="mode-tab" onclick="setMode('impulse')">🎯 Impulse Lab</button>
   </div>
 
   <!-- ═══════════════════ STUDY NOTES ═══════════════════ -->
@@ -780,6 +835,75 @@ footer { border-top: 1px solid var(--border); padding: 20px 28px; display: flex;
     </div>
   </div>
 
+  <!-- ═══════════════════ IMPULSE LAB ═══════════════════ -->
+  <div class="game-panel" id="panel-impulse">
+    <div class="impulse-wrap">
+
+      <!-- Start screen -->
+      <div class="impulse-start" id="impulse-start">
+        <div class="il-icon">🎯</div>
+        <h3>Impulse Lab: Fire an Action Potential</h3>
+        <p class="impulse-lead">Carry a nerve impulse through its full cycle by firing the right ion channels at the right moment. Watch the live membrane trace and act on each phase before the window closes. You have <strong>3 lives</strong>, and each clean impulse builds your combo.</p>
+        <div class="il-legend">
+          <div><span class="il-key">S</span> Stimulate to reach threshold at −50 mV</div>
+          <div><span class="il-key">N</span> Open Na⁺ gates once at threshold</div>
+          <div><span class="il-key">K</span> Inactivate Na⁺ and open K⁺ at the peak</div>
+        </div>
+        <button class="big-btn" onclick="ilStart()">Start</button>
+      </div>
+
+      <!-- Game screen -->
+      <div id="impulse-game" style="display:none;">
+        <div class="impulse-hud">
+          <div class="hud-item hud-lives">Lives <span id="il-lives">♥♥♥</span></div>
+          <div class="hud-item">Score <span id="il-score">0</span></div>
+          <div class="hud-item">Fired <span id="il-aps">0</span></div>
+          <div class="hud-item hud-combo">Combo <span id="il-combo">0</span></div>
+          <div class="hud-item">Best <span id="il-best">0</span></div>
+        </div>
+
+        <div class="scope-wrap" id="il-scope-wrap">
+          <svg viewBox="0 0 700 300" id="il-scope" xmlns="http://www.w3.org/2000/svg">
+            <g id="il-grid"></g>
+            <polyline id="il-trace" class="scope-trace" points=""></polyline>
+            <g id="il-marks"></g>
+            <circle id="il-head" r="5" fill="#00c8ff"></circle>
+          </svg>
+          <div class="impulse-prompt" id="il-prompt">Stimulate the membrane to reach the threshold at −50 mV.</div>
+        </div>
+
+        <div class="impulse-controls">
+          <button class="il-btn" id="il-btn-stim" onclick="ilPress('stim')">
+            <span class="il-btn-key">S</span>
+            <span class="il-btn-lbl">⚡ Stimulate</span>
+            <span class="il-btn-sub">Inject current</span>
+          </button>
+          <button class="il-btn" id="il-btn-na" onclick="ilPress('na')">
+            <span class="il-btn-key">N</span>
+            <span class="il-btn-lbl">Open Na⁺ gates</span>
+            <span class="il-btn-sub">Activation gates</span>
+          </button>
+          <button class="il-btn" id="il-btn-nak" onclick="ilPress('nak')">
+            <span class="il-btn-key">K</span>
+            <span class="il-btn-lbl">Inactivate Na⁺ · open K⁺</span>
+            <span class="il-btn-sub">Repolarise</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Game over screen -->
+      <div class="impulse-over" id="impulse-over" style="display:none;">
+        <div class="il-icon">📟</div>
+        <div class="results-score" id="il-final-score">0</div>
+        <div class="results-sub">final score</div>
+        <div class="il-final">Impulses fired: <span id="il-final-aps">0</span></div>
+        <div class="il-final">Best this session: <span id="il-final-best">0</span></div>
+        <button class="big-btn" onclick="ilStart()">Try again</button>
+      </div>
+
+    </div>
+  </div>
+
 </div><!-- /page-wrap -->
 
 <footer>
@@ -794,10 +918,11 @@ if (sessionStorage.getItem('cr_auth') !== '1') {
 }
 
 // ── Mode switcher ─────────────────────────────────────────────
-const MODES = ['notes','label','quiz','cards'];
+const MODES = ['notes','label','quiz','cards','impulse'];
 function setMode(mode) {
   document.querySelectorAll('.mode-tab').forEach((t,i) => t.classList.toggle('active', MODES[i] === mode));
   document.querySelectorAll('.game-panel').forEach((p,i) => p.classList.toggle('active', 'panel-'+MODES[i] === 'panel-'+mode));
+  if (mode === 'impulse') ilEnter(); else ilLeave();
 }
 
 // ── Accordion ─────────────────────────────────────────────────
@@ -1165,8 +1290,263 @@ function flipCard() { document.getElementById('card-inner').classList.toggle('fl
 function prevCard() { cardIdx = (cardIdx - 1 + CARDS.length) % CARDS.length; renderCard(); }
 function nextCard() { cardIdx = (cardIdx + 1) % CARDS.length; renderCard(); }
 
+// ═══════════════════════════════════════════════════════════════
+// IMPULSE LAB: interactive action potential
+// ═══════════════════════════════════════════════════════════════
+const IL_REST = -70, IL_THRESH = -50, IL_PEAK = 40, IL_HYPER = -80;
+const IL_VHI = 52, IL_VLO = -92, IL_W = 700, IL_H = 300, IL_VIEW = 5.2;
+
+const IL = {
+  raf: null, state: 'idle', paused: false, ending: false,
+  lastTs: 0, tSec: 0, v: IL_REST, phase: 'rest',
+  points: [], marks: [],
+  lives: 3, score: 0, aps: 0, combo: 0, best: 0,
+  peakWindow: 0.95, refDur: 1.0, refTimer: 0,
+  windowActive: false, peakTimer: 0,
+  trace: null, headEl: null, marksEl: null, promptEl: null, scopeWrap: null,
+};
+
+function ilScaleY(v) { return 12 + ((IL_VHI - v) / (IL_VHI - IL_VLO)) * (IL_H - 24); }
+
+function ilInitScope() {
+  IL.trace = document.getElementById('il-trace');
+  IL.headEl = document.getElementById('il-head');
+  IL.marksEl = document.getElementById('il-marks');
+  IL.promptEl = document.getElementById('il-prompt');
+  IL.scopeWrap = document.getElementById('il-scope-wrap');
+  try { IL.best = parseInt(sessionStorage.getItem('ns_impulse_best') || '0', 10) || 0; } catch (e) { IL.best = 0; }
+
+  const grid = document.getElementById('il-grid');
+  const NS = 'http://www.w3.org/2000/svg';
+  const refs = [
+    { v: 40,  label: '+40 mV peak',    cls: 'scope-refline', color: 'rgba(29,233,168,0.35)' },
+    { v: 0,   label: '0 mV',           cls: 'scope-grid',    color: 'rgba(30,100,210,0.18)' },
+    { v: -50, label: '−50 mV threshold', cls: 'scope-refline', color: 'rgba(244,165,53,0.5)' },
+    { v: -70, label: '−70 mV rest',    cls: 'scope-refline', color: 'rgba(0,200,255,0.45)' },
+    { v: -80, label: '−80 mV',         cls: 'scope-grid',    color: 'rgba(30,100,210,0.18)' },
+  ];
+  refs.forEach(r => {
+    const y = ilScaleY(r.v);
+    const ln = document.createElementNS(NS, 'line');
+    ln.setAttribute('x1', 0); ln.setAttribute('x2', IL_W);
+    ln.setAttribute('y1', y); ln.setAttribute('y2', y);
+    ln.setAttribute('class', r.cls); ln.setAttribute('stroke', r.color);
+    grid.appendChild(ln);
+    const tx = document.createElementNS(NS, 'text');
+    tx.setAttribute('x', 8); tx.setAttribute('y', y - 5);
+    tx.setAttribute('class', 'scope-reflabel'); tx.setAttribute('fill', r.color);
+    tx.textContent = r.label;
+    grid.appendChild(tx);
+  });
+}
+
+function ilPrompt(msg, cls) {
+  IL.promptEl.textContent = msg;
+  IL.promptEl.className = 'impulse-prompt' + (cls ? ' ' + cls : '');
+}
+
+function ilGlow(which) {
+  const map = { stim: 'il-btn-stim', na: 'il-btn-na', nak: 'il-btn-nak' };
+  const cls = { stim: 'glow-cyan', na: 'glow-green', nak: 'glow-amber' };
+  ['stim', 'na', 'nak'].forEach(k => {
+    document.getElementById(map[k]).classList.remove('glow-cyan', 'glow-green', 'glow-amber');
+  });
+  if (which) document.getElementById(map[which]).classList.add(cls[which]);
+}
+
+function ilShake() {
+  IL.scopeWrap.classList.remove('shake');
+  void IL.scopeWrap.offsetWidth;
+  IL.scopeWrap.classList.add('shake');
+}
+
+function ilMark(type) { IL.marks.push({ t: IL.tSec, v: IL.v, type }); }
+
+function ilUpdateHud() {
+  document.getElementById('il-lives').textContent = '♥'.repeat(Math.max(0, IL.lives)) || '·';
+  document.getElementById('il-score').textContent = IL.score;
+  document.getElementById('il-aps').textContent = IL.aps;
+  document.getElementById('il-combo').textContent = IL.combo;
+  document.getElementById('il-best').textContent = IL.best;
+}
+
+function ilStart() {
+  IL.state = 'playing'; IL.paused = false; IL.ending = false;
+  IL.lastTs = 0; IL.tSec = 0; IL.v = IL_REST; IL.phase = 'rest';
+  IL.points = []; IL.marks = [];
+  IL.lives = 3; IL.score = 0; IL.aps = 0; IL.combo = 0;
+  IL.peakWindow = 0.95; IL.refDur = 1.0; IL.refTimer = 0;
+  IL.windowActive = false; IL.peakTimer = 0;
+  document.getElementById('impulse-start').style.display = 'none';
+  document.getElementById('impulse-over').style.display = 'none';
+  document.getElementById('impulse-game').style.display = 'block';
+  for (let i = 0; i < 80; i++) IL.points.push({ t: -IL_VIEW + i * (IL_VIEW / 80), v: IL_REST });
+  ilPrompt('Stimulate the membrane to reach the threshold at −50 mV.', '');
+  ilGlow('stim'); ilUpdateHud();
+  cancelAnimationFrame(IL.raf);
+  IL.raf = requestAnimationFrame(ilStep);
+}
+
+function ilStep(ts) {
+  if (IL.state !== 'playing' || IL.paused) return;
+  if (!IL.lastTs) IL.lastTs = ts;
+  let dt = (ts - IL.lastTs) / 1000;
+  IL.lastTs = ts;
+  if (dt > 0.05) dt = 0.05;
+  IL.tSec += dt;
+  ilUpdate(dt);
+  ilRender();
+  IL.raf = requestAnimationFrame(ilStep);
+}
+
+function ilUpdate(dt) {
+  const P = IL.phase;
+  if (P === 'rest') {
+    IL.v += (IL_REST - IL.v) * Math.min(1, 6 * dt) + (Math.random() - 0.5) * 0.8;
+  } else if (P === 'threshold') {
+    IL.v += ((IL_THRESH + 2) - IL.v) * Math.min(1, 3 * dt);
+    if (IL.v < IL_THRESH - 5) { IL.phase = 'rest'; ilPrompt('The graded potential faded. Stimulate again to reach threshold.', 'warn'); ilGlow('stim'); }
+  } else if (P === 'rising') {
+    IL.v += ((IL_PEAK + 8) - IL.v) * Math.min(1, 9 * dt);
+    if (IL.v > IL_PEAK) IL.v = IL_PEAK;
+    if (IL.v >= 25 && !IL.windowActive) { IL.windowActive = true; IL.peakTimer = 0; ilPrompt('Peak. Inactivate Na⁺ channels and open K⁺ channels now.', 'warn'); ilGlow('nak'); }
+    if (IL.windowActive) { IL.peakTimer += dt; if (IL.peakTimer > IL.peakWindow) ilFail('Na⁺ channels stayed open. The membrane latched at the peak.'); }
+  } else if (P === 'falling') {
+    IL.v += (IL_HYPER - IL.v) * Math.min(1, 5 * dt);
+    if (IL.v <= IL_HYPER + 1.5) { IL.phase = 'refractory'; IL.refTimer = 0; ilPrompt('Hyperpolarisation and refractory period. The membrane cannot fire yet, wait.', 'warn'); ilGlow(null); }
+  } else if (P === 'refractory') {
+    IL.refTimer += dt;
+    IL.v += (IL_REST - IL.v) * Math.min(1, 3.2 * dt);
+    if (IL.refTimer > IL.refDur && IL.v > IL_REST - 2) { IL.phase = 'rest'; ilPrompt('Resting potential restored. Stimulate to fire again.', ''); ilGlow('stim'); }
+  }
+  IL.points.push({ t: IL.tSec, v: IL.v });
+  const tMin = IL.tSec - IL_VIEW - 0.3;
+  while (IL.points.length && IL.points[0].t < tMin) IL.points.shift();
+  while (IL.marks.length && IL.marks[0].t < tMin) IL.marks.shift();
+}
+
+function ilPress(action) {
+  if (IL.state !== 'playing' || IL.paused || IL.ending) return;
+  const P = IL.phase;
+  if (action === 'stim') {
+    if (P === 'rest') {
+      IL.v = Math.min(IL.v + 9, -32);
+      if (IL.v >= IL_THRESH) { IL.phase = 'threshold'; ilPrompt('Threshold reached. Open the Na⁺ activation gates.', 'warn'); ilGlow('na'); }
+    } else if (P === 'threshold') {
+      IL.v = Math.min(IL.v + 4, -30);
+    } else if (P === 'refractory') {
+      ilPrompt('No effect. Absolute refractory period, Na⁺ channels are inactivated.', 'warn'); ilShake();
+    } else {
+      ilFail('Wrong step. You injected current in the middle of the impulse.');
+    }
+  } else if (action === 'na') {
+    if (P === 'threshold') {
+      IL.phase = 'rising'; IL.windowActive = false; ilPrompt('Depolarisation. Na⁺ rushing in.', 'good'); ilGlow(null);
+    } else if (P === 'refractory') {
+      ilPrompt('No effect. The Na⁺ channels are still inactivated.', 'warn'); ilShake();
+    } else {
+      ilFail(P === 'rest' ? 'Too early. You are below threshold, the Na⁺ gates will not open yet.' : 'Wrong step for this phase.');
+    }
+  } else if (action === 'nak') {
+    if (P === 'rising' && IL.windowActive) {
+      ilSuccess();
+    } else if (P === 'rising') {
+      ilFail('Too early. Wait for the peak before opening the K⁺ channels.');
+    } else {
+      ilFail('Wrong step for this phase.');
+    }
+  }
+}
+
+function ilSuccess() {
+  const acc = Math.max(0, 1 - Math.abs(IL_PEAK - IL.v) / 45);
+  const bonus = Math.round(acc * 50);
+  IL.combo++;
+  const gained = 100 + bonus + (IL.combo - 1) * 15;
+  IL.score += gained; IL.aps++;
+  IL.windowActive = false; IL.phase = 'falling';
+  ilPrompt('Repolarisation. K⁺ leaving the cell. Plus ' + gained + ' points.', 'good');
+  ilGlow(null); ilMark('good');
+  if (IL.aps % 3 === 0) { IL.peakWindow = Math.max(0.42, IL.peakWindow - 0.12); IL.refDur = Math.max(0.55, IL.refDur - 0.1); }
+  ilUpdateHud();
+}
+
+function ilFail(msg) {
+  IL.combo = 0; IL.lives--; IL.windowActive = false; IL.phase = 'falling';
+  ilGlow(null); ilMark('bad'); ilShake(); ilUpdateHud();
+  if (IL.lives <= 0) {
+    IL.ending = true;
+    ilPrompt(msg + ' Out of lives.', 'bad');
+    setTimeout(ilGameOver, 1300);
+  } else {
+    ilPrompt(msg, 'bad');
+  }
+}
+
+function ilGameOver() {
+  IL.state = 'over';
+  cancelAnimationFrame(IL.raf);
+  if (IL.score > IL.best) { IL.best = IL.score; try { sessionStorage.setItem('ns_impulse_best', IL.best); } catch (e) {} }
+  document.getElementById('impulse-game').style.display = 'none';
+  document.getElementById('impulse-over').style.display = 'block';
+  document.getElementById('il-final-score').textContent = IL.score;
+  document.getElementById('il-final-aps').textContent = IL.aps;
+  document.getElementById('il-final-best').textContent = IL.best;
+}
+
+function ilRender() {
+  const tMax = IL.tSec, tMin = tMax - IL_VIEW;
+  const toX = t => ((t - tMin) / IL_VIEW) * IL_W;
+  let pts = '';
+  for (const p of IL.points) { if (p.t < tMin - 0.3) continue; pts += toX(p.t).toFixed(1) + ',' + ilScaleY(p.v).toFixed(1) + ' '; }
+  IL.trace.setAttribute('points', pts.trim());
+
+  const hx = toX(tMax), hy = ilScaleY(IL.v);
+  IL.headEl.setAttribute('cx', hx.toFixed(1));
+  IL.headEl.setAttribute('cy', hy.toFixed(1));
+  let hc = '#00c8ff';
+  if (IL.phase === 'threshold') hc = '#f4a535';
+  else if (IL.phase === 'rising') hc = IL.windowActive ? '#f4a535' : '#1de9a8';
+  else if (IL.phase === 'refractory') hc = '#2a4560';
+  IL.headEl.setAttribute('fill', hc);
+
+  let m = '';
+  const NS = 'http://www.w3.org/2000/svg';
+  for (const mk of IL.marks) {
+    const x = toX(mk.t), y = ilScaleY(mk.v);
+    const col = mk.type === 'good' ? '#1de9a8' : '#ff4757';
+    m += '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="6" fill="none" stroke="' + col + '" stroke-width="2" opacity="0.8"/>';
+  }
+  IL.marksEl.innerHTML = m;
+}
+
+function ilEnter() {
+  if (IL.state === 'playing' && IL.paused) {
+    IL.paused = false; IL.lastTs = 0;
+    IL.raf = requestAnimationFrame(ilStep);
+  }
+}
+
+function ilLeave() {
+  if (IL.state === 'playing' && !IL.paused) {
+    IL.paused = true;
+    cancelAnimationFrame(IL.raf);
+  }
+}
+
+document.addEventListener('keydown', e => {
+  const panel = document.getElementById('panel-impulse');
+  if (!panel || !panel.classList.contains('active')) return;
+  if (IL.state !== 'playing' || IL.paused || IL.ending) return;
+  const k = e.key.toLowerCase();
+  if (k === 's' || k === ' ') { e.preventDefault(); ilPress('stim'); }
+  else if (k === 'n') { ilPress('na'); }
+  else if (k === 'k') { ilPress('nak'); }
+});
+
 // ── Init ──────────────────────────────────────────────────────
 renderCard();
+ilInitScope();
 </script>
 <script src="mobile.js"></script>
 </body>
