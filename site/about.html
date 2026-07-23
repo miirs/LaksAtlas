@@ -641,7 +641,55 @@ footer a:hover { color: var(--neon-cyan); }
     </div>
   </div>
 
+  <div class="divider"></div>
+
+  <!-- CLASSROOM -->
+  <div class="section" id="s6">
+    <div class="section-tag">Educators</div>
+    <h2 class="section-title">Classroom resources</h2>
+    <div class="section-body">
+      <p>
+        Structured materials for use in lectures and seminars. Access is restricted to course staff.
+      </p>
+    </div>
+    <button id="classroomBtn" onclick="openClassroomGate()" style="
+      display:inline-flex;align-items:center;gap:10px;
+      background:rgba(0,200,255,0.06);border:1px solid rgba(0,200,255,0.25);
+      color:#00c8ff;font-family:'JetBrains Mono',monospace;font-size:14px;
+      padding:12px 24px;border-radius:8px;cursor:pointer;transition:all .2s;margin-top:8px;">
+      🔒 Enter classroom
+    </button>
+  </div>
+
 </div><!-- /content-wrap -->
+
+<!-- CLASSROOM PASSWORD MODAL -->
+<div id="classroomModal" style="
+  display:none;position:fixed;inset:0;z-index:999;
+  background:rgba(4,9,26,0.88);backdrop-filter:blur(6px);
+  align-items:center;justify-content:center;">
+  <div style="
+    background:#0b1628;border:1px solid rgba(0,200,255,0.2);border-radius:14px;
+    padding:36px 40px;width:340px;max-width:90vw;text-align:center;">
+    <div style="font-size:28px;margin-bottom:12px;">🔒</div>
+    <div style="font-size:18px;font-weight:700;color:#d8e8f6;margin-bottom:6px;">Classroom access</div>
+    <div style="font-size:13px;color:#5e88aa;margin-bottom:24px;">Enter the course password to continue</div>
+    <input id="classroomPwInput" type="password" placeholder="Password" style="
+      width:100%;box-sizing:border-box;padding:10px 14px;
+      background:rgba(255,255,255,0.04);border:1px solid rgba(0,200,255,0.2);
+      border-radius:7px;color:#d8e8f6;font-size:15px;font-family:inherit;
+      outline:none;margin-bottom:8px;" onkeydown="if(event.key==='Enter')checkClassroomPw()">
+    <div id="classroomPwErr" style="font-size:12px;color:#ff4d6d;min-height:18px;margin-bottom:12px;"></div>
+    <div style="display:flex;gap:10px;justify-content:center;">
+      <button onclick="closeClassroomGate()" style="
+        padding:9px 20px;border-radius:7px;border:1px solid rgba(255,255,255,0.1);
+        background:transparent;color:#5e88aa;cursor:pointer;font-size:13px;">Cancel</button>
+      <button onclick="checkClassroomPw()" style="
+        padding:9px 20px;border-radius:7px;border:1px solid rgba(0,200,255,0.3);
+        background:rgba(0,200,255,0.08);color:#00c8ff;cursor:pointer;font-size:13px;">Enter</button>
+    </div>
+  </div>
+</div>
 
 <!-- FOOTER -->
 <footer>
@@ -650,6 +698,35 @@ footer a:hover { color: var(--neon-cyan); }
   <span>Contact: Miiro Virtanen, <a href="mailto:miiro.i.virtanen@nord.no">miiro.i.virtanen@nord.no</a></span>
 </footer>
 
+<script>
+// Classroom gate — password verified client-side via SHA-256 (plaintext never stored)
+const _CR_HASH = '54de7f606f2523cba8efac173fab42fb7f59d56ceff974c8fdb7342cf2cfe345';
+
+function openClassroomGate() {
+  document.getElementById('classroomModal').style.display = 'flex';
+  document.getElementById('classroomPwInput').value = '';
+  document.getElementById('classroomPwErr').textContent = '';
+  setTimeout(() => document.getElementById('classroomPwInput').focus(), 60);
+}
+function closeClassroomGate() {
+  document.getElementById('classroomModal').style.display = 'none';
+}
+async function checkClassroomPw() {
+  const pw = document.getElementById('classroomPwInput').value;
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pw));
+  const hex = Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+  if (hex === _CR_HASH) {
+    sessionStorage.setItem('cr_auth', '1');
+    window.location.href = 'classroom.html';
+  } else {
+    document.getElementById('classroomPwErr').textContent = 'Incorrect password';
+    document.getElementById('classroomPwInput').select();
+  }
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeClassroomGate();
+});
+</script>
 <script>
 // Play video once then pause on last frame
 const vid = document.getElementById('heroVideo');
