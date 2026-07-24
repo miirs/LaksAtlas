@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LaksAtlas: Norwegian Salmon Farming 2022</title>
+<title>LaksAtlas: The True Cost of Norwegian Salmon</title>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="mobile.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
@@ -81,37 +81,11 @@ nav{
   grid-template-columns:1fr auto 1fr;
   align-items:center;
   background:rgba(4,9,26,0.88);
-  backdrop-filter:blur(18px);
+  backdrop-filter:blur(20px);
   border-bottom:1px solid var(--border);
 }
 
-.nav-logo{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  text-decoration:none;
-}
-
-.nav-logo-text{
-  font-weight:800;
-  font-size:15px;
-  letter-spacing:2.6px;
-  text-transform:uppercase;
-  background:linear-gradient(135deg,var(--neon-cyan),#dbe7ff);
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-}
-
-.nav-logo-img{
-  height:40px;
-  width:auto;
-  display:block;
-  border-radius:8px;
-  padding:3px 10px;
-  background:rgba(255,255,255,0.96);
-  box-shadow:0 2px 12px rgba(0,0,0,0.35);
-}
-
+/* === SCOPE TOGGLE === */
 .scope-toggle{
   display:flex;
   background:rgba(255,255,255,0.04);
@@ -141,6 +115,33 @@ nav{
   background:linear-gradient(135deg,#1de9a8,#00c8ff);
   color:#04091a;
   box-shadow:0 0 12px rgba(0,200,255,0.2);
+}
+
+.nav-logo{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  text-decoration:none;
+}
+
+.nav-logo-text{
+  font-weight:800;
+  font-size:15px;
+  letter-spacing:2.6px;
+  text-transform:uppercase;
+  background:linear-gradient(135deg,var(--neon-cyan),#dbe7ff);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+.nav-logo-img{
+  height:40px;
+  width:auto;
+  display:block;
+  border-radius:8px;
+  padding:3px 10px;
+  background:rgba(255,255,255,0.96);
+  box-shadow:0 2px 12px rgba(0,0,0,0.35);
 }
 
 .nav-links{
@@ -207,11 +208,18 @@ nav{
 }
 
 .year-tab.active{
-  color:var(--bg);
-  background:linear-gradient(135deg,var(--neon-cyan),#dbe7ff);
-  border-color:rgba(58,239,255,0.75);
+  color:#04091a;
+  background:linear-gradient(135deg,var(--neon-cyan),#a8d8f8);
+  border-color:rgba(0,200,255,0.75);
   box-shadow:var(--glow-cyan);
   font-weight:700;
+}
+
+.compare-tab.active{
+  color:var(--bg);
+  background:linear-gradient(135deg,var(--neon-magenta),#ffd2e3);
+  border-color:rgba(255,77,148,0.75);
+  box-shadow:0 0 12px rgba(255,77,148,0.18), 0 0 32px rgba(255,77,148,0.08);
 }
 
 .compare-tab{
@@ -268,10 +276,10 @@ nav{
 .hero::before{
   content:'';
   position:absolute;
-  width:820px;
-  height:820px;
+  width:900px;
+  height:900px;
   border-radius:50%;
-  background:radial-gradient(circle,rgba(255,85,99,0.08) 0%,transparent 68%);
+  background:radial-gradient(circle,rgba(0,100,220,0.09) 0%,transparent 65%);
   top:50%;
   left:50%;
   transform:translate(-50%,-50%);
@@ -337,7 +345,7 @@ nav{
 .hero-mini-stats{
   margin-top:34px;
   display:grid;
-  grid-template-columns:repeat(4, minmax(130px, 1fr));
+  grid-template-columns:repeat(3, minmax(140px, 1fr));
   gap:14px;
   width:min(760px,100%);
   opacity:0;
@@ -347,7 +355,7 @@ nav{
 .hero-mini-card{
   background:var(--bg-card);
   border:1px solid var(--border);
-  border-radius:12px;
+  border-radius:var(--radius-sm) var(--radius-sm) 0 var(--radius-sm);
   padding:16px 18px;
   box-shadow:var(--shadow-card);
 }
@@ -365,13 +373,6 @@ nav{
   font-size:24px;
   font-weight:800;
   line-height:1;
-}
-
-.hero-mini-sub{
-  font-size:11px;
-  color:var(--text-muted);
-  font-family:'JetBrains Mono',monospace;
-  margin-top:4px;
 }
 
 .scroll-indicator{
@@ -650,7 +651,7 @@ footer a:hover{
 /* === RESPONSIVE === */
 @media(max-width:900px){
   .two-col{grid-template-columns:1fr}
-  .hero-mini-stats{grid-template-columns:1fr 1fr}
+  .hero-mini-stats{grid-template-columns:1fr}
 }
 
 @media(max-width:768px){
@@ -694,10 +695,6 @@ footer a:hover{
 
   .cta-section{
     padding:90px 20px;
-  }
-
-  .hero-mini-stats{
-    grid-template-columns:1fr 1fr;
   }
 }
 /* === GOVERNMENT TARGET BAR === */
@@ -744,7 +741,7 @@ footer a:hover{
     <a href="global.html" class="scope-btn scope-gl">Global</a>
   </div>
   <div class="nav-links">
-    <a href="norway.html">Overview</a>
+    <a href="norway.html" class="active">Overview</a>
     <a href="map.html">Live Map</a>
     <a href="about.html">About</a>
   </div>
@@ -764,25 +761,25 @@ footer a:hover{
 
 <!-- HERO -->
 <div class="hero">
-  <div class="hero-label">Norwegian Salmon & Trout Farming, 2022</div>
-  <div class="hero-number" id="heroCounter" data-target="221.0">0.0M</div>
+  <div class="hero-label">Norwegian Salmon & Trout Farming, 2024</div>
+  <div class="hero-number" id="heroCounter" data-target="239.9">0.0M</div>
   <div class="hero-unit">fish lost in production</div>
   <div class="hero-subtitle">
-    In 2022, <strong>64.7 million fish were lost in sea cages</strong> and
-    <strong>156.3 million juveniles were lost in smolt facilities</strong>.
-    Of the <strong>452.2 million smolt</strong> put to sea, <strong>14.3% were lost</strong>
+    In 2024, <strong>70.3 million fish were lost in sea cages</strong> and
+    <strong>169.6 million juveniles were lost in smolt facilities</strong>.
+    Of the <strong>460 million smolt</strong> put to sea, <strong>15.3% were lost</strong>
     before ever reaching slaughter.
   </div>
-  <div class="hero-year">Source: Fiskeridirektoratet, Official Statistics</div>
+  <div class="hero-year">Source: Fiskeridirektoratet, Official Statistics, updated 28.05.2025</div>
 
 <div class="year-tabs-wrap">
   <div class="year-tabs">
-<a href="norway.html" class="year-tab">2025</a>
-<a href="2024.html" class="year-tab">2024</a>
-<a href="2023.html" class="year-tab">2023</a>
-<a href="2022.html" class="year-tab active">2022</a>
-<a href="2021.html" class="year-tab">2021</a>
-<a href="2020.html" class="year-tab">2020</a>
+    <a href="norway.html" class="year-tab">2025</a>
+    <a href="2024.html" class="year-tab active">2024</a>
+    <a href="2023.html" class="year-tab">2023</a>
+    <a href="2022.html" class="year-tab">2022</a>
+    <a href="2021.html" class="year-tab">2021</a>
+    <a href="2020.html" class="year-tab">2020</a>
   </div>
   <a href="comparison.html" class="compare-tab">Yearly Comparisons</a>
 </div>
@@ -803,28 +800,28 @@ footer a:hover{
   <a href="mortality-preview.html" style="display:inline-flex;align-items:center;gap:6px;margin-top:12px;padding:6px 14px;border:1px solid rgba(168,85,247,0.4);border-radius:6px;color:var(--neon-magenta);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;font-family:'JetBrains Mono',monospace;text-decoration:none;transition:all .2s;background:rgba(168,85,247,0.05)" onmouseover="this.style.background='rgba(168,85,247,0.12)';this.style.borderColor='rgba(168,85,247,0.7)'" onmouseout="this.style.background='rgba(168,85,247,0.05)';this.style.borderColor='rgba(168,85,247,0.4)'">Preview 2026 →</a>
 </div>
 
-  <div class="hero-mini-stats" style="grid-template-columns:repeat(4, minmax(130px, 1fr));">
-    <div class="hero-mini-card">
-      <div class="hero-mini-label">Sea Phase Losses</div>
-      <div class="hero-mini-value" style="color:var(--neon-red)">64.7M</div>
-      <div style="font-size:13px;font-weight:700;color:var(--neon-red);margin-top:4px;font-family:'JetBrains Mono',monospace;opacity:0.7">14.3% loss rate</div>
-    </div>
-    <div class="hero-mini-card">
-      <div class="hero-mini-label">Smolt Phase Losses</div>
-      <div class="hero-mini-value" style="color:var(--neon-magenta)">156.3M</div>
-      <div style="font-size:13px;font-weight:700;color:var(--neon-magenta);margin-top:4px;font-family:'JetBrains Mono',monospace;opacity:0.7">25.7% loss rate</div>
-    </div>
-    <div class="hero-mini-card">
-      <div class="hero-mini-label">Sea Loss Rate</div>
-      <div class="hero-mini-value" style="color:var(--neon-cyan)">14.3%</div>
-      <div style="font-size:13px;font-weight:700;color:var(--text-muted);margin-top:4px;font-family:'JetBrains Mono',monospace">of smolt put to sea</div>
-    </div>
-    <div class="hero-mini-card">
-      <div class="hero-mini-label">Smolt Loss Rate</div>
-      <div class="hero-mini-value" style="color:var(--neon-purple)">25.7%</div>
-      <div style="font-size:13px;font-weight:700;color:var(--text-muted);margin-top:4px;font-family:'JetBrains Mono',monospace">of juveniles produced</div>
-    </div>
+<div class="hero-mini-stats" style="grid-template-columns:repeat(4, minmax(130px, 1fr));">
+  <div class="hero-mini-card">
+    <div class="hero-mini-label">Sea Phase Losses</div>
+    <div class="hero-mini-value" style="color:var(--neon-red)">70.3M</div>
+    <div style="font-size:13px;font-weight:700;color:var(--neon-red);margin-top:4px;font-family:'JetBrains Mono',monospace;opacity:0.7">15.3% loss rate</div>
   </div>
+  <div class="hero-mini-card">
+    <div class="hero-mini-label">Smolt Phase Losses</div>
+    <div class="hero-mini-value" style="color:var(--neon-magenta)">169.6M</div>
+    <div style="font-size:13px;font-weight:700;color:var(--neon-magenta);margin-top:4px;font-family:'JetBrains Mono',monospace;opacity:0.7">26.9% loss rate</div>
+  </div>
+  <div class="hero-mini-card">
+    <div class="hero-mini-label">Sea Loss Rate</div>
+    <div class="hero-mini-value" style="color:var(--neon-cyan)">15.3%</div>
+    <div style="font-size:13px;font-weight:700;color:var(--text-muted);margin-top:4px;font-family:'JetBrains Mono',monospace">of smolt put to sea</div>
+  </div>
+  <div class="hero-mini-card">
+    <div class="hero-mini-label">Smolt Loss Rate</div>
+    <div class="hero-mini-value" style="color:var(--neon-purple)">26.9%</div>
+    <div style="font-size:13px;font-weight:700;color:var(--text-muted);margin-top:4px;font-family:'JetBrains Mono',monospace">of juveniles produced</div>
+  </div>
+</div>
 
   <div class="scroll-indicator">
     <span>Scroll to explore</span>
@@ -833,13 +830,13 @@ footer a:hover{
 </div>
 
 <!-- GOVERNMENT TARGET -->
-<div class="gov-target" id="govTarget" data-stocked="452199" data-loss="64720" data-rate="14.3">
+<div class="gov-target" id="govTarget" data-stocked="459955" data-loss="70337" data-rate="15.3">
   <div class="gov-target-eyebrow">Norwegian Government Target</div>
   <div class="gov-target-headline">Goal: reduce sea losses to 5%</div>
   <div class="gov-target-desc">
     Norway's government has set a target of reducing salmon sea losses to
     <strong style="color:var(--neon-green)">5%</strong> of all fish put to sea.
-    In 2022, the industry lost <strong>64.7 million fish</strong>, nearly three times the 22.6 million that would be lost at the 5% target. That's <strong>42.1 million excess losses</strong> above the government's goal.
+    In 2024, the industry lost <strong>70.3 million fish</strong>, nearly three times the 23.0 million that would be lost at the 5% target. That's <strong>47.3 million excess losses</strong> every year above the government's goal.
     The percentage hides the scale, this is hundreds of thousands of fish lost above target every single day.
   </div>
   <div class="mort-bar-outer">
@@ -864,7 +861,7 @@ footer a:hover{
     <div class="mort-stat-card">
       <div class="mort-stat-lbl">Actual Losses</div>
       <div class="mort-stat-val" style="color:var(--neon-red)"><span id="mortActualM">0.0</span>M fish</div>
-      <div class="mort-stat-sub">lost at sea in 2022</div>
+      <div class="mort-stat-sub">lost at sea in 2024</div>
     </div>
     <div class="mort-stat-card">
       <div class="mort-stat-lbl">Excess Losses</div>
@@ -881,56 +878,56 @@ footer a:hover{
 
 <!-- 01 -->
 <div class="section reveal">
-  <div class="section-label">01 · 2022 At A Glance</div>
+  <div class="section-label">01 · 2024 At A Glance</div>
   <div class="section-title">The numbers behind Norwegian salmon</div>
   <div class="stat-grid">
     <div class="stat-block">
       <div class="stat-block-label">Smolt Put To Sea</div>
-      <div class="stat-block-value cyan">452.2M</div>
+      <div class="stat-block-value cyan">460.0M</div>
       <div class="stat-block-sub">juvenile fish released</div>
-      <div class="stat-trend neutral">↑ +5.2% vs 2021</div>
+      <div class="stat-trend neutral">↑ +1.8% vs 2023</div>
     </div>
     <div class="stat-block">
       <div class="stat-block-label">Sea Phase Losses</div>
-      <div class="stat-block-value red">64.7M</div>
+      <div class="stat-block-value red">70.3M</div>
       <div class="stat-block-sub">lost in sea cages</div>
-      <div class="stat-trend bad">↑ +1.1% vs 2021</div>
+      <div class="stat-trend good">↓ -2.4% vs 2023</div>
     </div>
     <div class="stat-block">
       <div class="stat-block-label">Sea Loss Rate</div>
-      <div class="stat-block-value red">14.3%</div>
+      <div class="stat-block-value red">15.3%</div>
       <div class="stat-block-sub">of fish put to sea</div>
-      <div class="stat-trend good">↓ -0.6pp vs 2021</div>
+      <div class="stat-trend good">↓ -0.6pp vs 2023</div>
     </div>
     <div class="stat-block">
       <div class="stat-block-label">Smolt Phase Losses</div>
-      <div class="stat-block-value magenta">156.3M</div>
+      <div class="stat-block-value magenta">169.6M</div>
       <div class="stat-block-sub">juveniles lost on land</div>
-      <div class="stat-trend bad">↑ +7.9% vs 2021</div>
+      <div class="stat-trend bad">↑ +7.6% vs 2023</div>
     </div>
     <div class="stat-block">
       <div class="stat-block-label">Production Sold</div>
       <div class="stat-block-value cyan">3.30M t</div>
       <div class="stat-block-sub">tonnes round weight</div>
-      <div class="stat-trend dim">≈ flat vs 2021</div>
+      <div class="stat-trend neutral">↑ +0.9% vs 2023</div>
     </div>
     <div class="stat-block">
       <div class="stat-block-label">Cleaner Fish Used</div>
-      <div class="stat-block-value amber">33.4M</div>
+      <div class="stat-block-value amber">22.5M</div>
       <div class="stat-block-sub">wrasse & lumpfish</div>
-      <div class="stat-trend neutral">↓ -26.8% vs 2021</div>
+      <div class="stat-trend neutral">↓ -25.5% vs 2023</div>
     </div>
     <div class="stat-block">
       <div class="stat-block-label">Industry Revenue</div>
-      <div class="stat-block-value cyan">107.7B NOK</div>
+      <div class="stat-block-value cyan">109.5B NOK</div>
       <div class="stat-block-sub">total sales value</div>
-      <div class="stat-trend good">↑ +34.6% vs 2021</div>
+      <div class="stat-trend neutral">↓ -3.5% vs 2023</div>
     </div>
     <div class="stat-block">
       <div class="stat-block-label">Farm Escapes</div>
-      <div class="stat-block-value amber">59,600</div>
+      <div class="stat-block-value red">39,300</div>
       <div class="stat-block-sub">fish escaped to sea</div>
-      <div class="stat-trend good">↓ -13.5% vs 2021</div>
+      <div class="stat-trend bad">↑ +135% vs 2023</div>
     </div>
   </div>
 </div>
@@ -940,11 +937,13 @@ footer a:hover{
   <div class="section-label">02 · Is It Getting Better?</div>
   <div class="section-title">Sea loss rate has barely improved in 30 years</div>
   <div class="section-desc">
-    In 2022, 14.3% of all fish put to sea were lost, below the multi-year average but still far from the government's 5% target.
+    Despite industry promises of better welfare, the share of fish lost
+    at sea has fluctuated between 13–22% since the mid-1990s. In 2024, 15.3%
+    of all fish put to sea were lost.
   </div>
   <div class="chart-container">
     <div class="chart-title">Sea Phase Loss Rate</div>
-    <div class="chart-subtitle">Losses as % of smolt put to sea, 1994–2022</div>
+    <div class="chart-subtitle">Losses as % of smolt put to sea, 1994–2024</div>
     <div class="chart-wrap"><canvas id="mortalityRateChart"></canvas></div>
   </div>
 </div>
@@ -956,11 +955,11 @@ footer a:hover{
   <div class="section-desc">
     As the industry has scaled from under 100 million to nearly 500 million fish
     put to sea, the absolute number of losses has grown in lockstep. From 10 million
-    fish lost in 1994 to 64.7 million in 2022.
+    fish lost in 1994 to 70 million in 2024.
   </div>
   <div class="chart-container">
     <div class="chart-title">Fish Put to Sea vs. Fish Lost at Sea</div>
-    <div class="chart-subtitle">Millions of fish, 1994–2022</div>
+    <div class="chart-subtitle">Millions of fish, 1994–2024</div>
     <div class="chart-wrap"><canvas id="inputVsDeathChart"></canvas></div>
   </div>
 </div>
@@ -968,16 +967,16 @@ footer a:hover{
 <!-- 04 -->
 <div class="section reveal">
   <div class="section-label">04 · The Hidden Cost</div>
-  <div class="section-title">156 million juveniles are lost before reaching the sea</div>
+  <div class="section-title">170 million juveniles are lost before reaching the sea</div>
   <div class="section-desc">
-    The smolt and juvenile phase is hidden from public eyes. Yet in 2022, losses
+    The smolt and juvenile phase is hidden from public eyes. Yet in 2024, losses
     in land-based facilities were more than double the losses at sea.
     These fish are lost in hatcheries and smolt facilities from disease, handling,
     and production failures.
   </div>
   <div class="chart-container">
     <div class="chart-title">Sea Phase vs. Smolt Phase Losses</div>
-    <div class="chart-subtitle">Millions of fish lost, 2005–2022 · smolt split into natural deaths + fry destruction (stacked)</div>
+    <div class="chart-subtitle">Millions of fish lost, 2005–2024 · smolt split into natural deaths + fry destruction (stacked)</div>
     <div class="chart-wrap"><canvas id="combinedChart"></canvas></div>
     <label style="display:inline-flex;align-items:center;gap:8px;margin-top:12px;cursor:pointer;user-select:none;font-size:12px;color:var(--text-dim);font-family:'JetBrains Mono',monospace">
       <input type="checkbox" id="toggleCulled" checked style="accent-color:var(--neon-amber);width:14px;height:14px;cursor:pointer">
@@ -991,52 +990,57 @@ footer a:hover{
   <div class="section-label">05 · What the Veterinary Institute Says</div>
   <div class="section-title">Disease, injuries, and unknown causes dominate mortality</div>
   <div class="section-desc">
-    The Veterinary Institute's 2022 fish health report shows that losses are not just a matter of scale,
-    but of cause. Infectious disease, injuries and trauma, and losses of unknown cause together account for
-    most recorded loss events in Norwegian aquaculture.
+    The Veterinary Institute's 2024 fish health report breaks down <em>mortality</em>, fish confirmed dead, by cause.
+    Infectious disease, injuries and trauma, and deaths of unknown cause together account for most recorded mortality events in Norwegian aquaculture.
   </div>
 
   <div class="chart-container" style="border-color:rgba(58,239,255,0.15)">
-    <div class="chart-title" style="color:var(--neon-cyan)">Key findings from Fiskehelserapporten 2022</div>
-    <div class="chart-subtitle">Veterinærinstituttet · Report 1a – 2023</div>
+    <div class="chart-title" style="color:var(--neon-cyan)">Key findings from Fiskehelserapporten 2024</div>
+    <div class="chart-subtitle">Veterinærinstituttet · Report 1a – 2025</div>
 
     <div style="color:var(--text-dim);font-size:15px;line-height:1.9;max-width:1000px">
       <p style="margin-bottom:16px">
-        The national sea-phase loss rate held at <strong style="color:var(--text)">around 14–15%</strong>
-        in 2022. Cause-of-death data from the <strong style="color:var(--text)">AquaCloud industry database</strong>
-        (~47% of active sea localities) shows registered dead fish by category:
+        The Norwegian government has set a target to <strong style="color:var(--text)">reduce sea losses to 5%</strong>
+        across all farmed species, roughly a third of the current level. The Veterinary Institute reports
+        <strong style="color:var(--text)">mortality</strong> (confirmed deaths) using cause-of-death
+        data from the <strong style="color:var(--text)">AquaCloud industry database</strong>, covering approximately
+        <strong style="color:var(--text)">47% of active sea localities</strong> in 2024. The figures below show
+        the share of registered dead fish by cause of death, not real industry-wide prevalence, and highlight the main categories:
       </p>
 
       <div class="vet-stat-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0 8px 0">
         <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:22px;text-align:center">
-          <div style="font-size:42px;font-weight:850;color:var(--neon-red);line-height:1">28.1%</div>
+          <div style="font-size:42px;font-weight:850;color:var(--neon-red);line-height:1">32.9%</div>
           <div style="font-size:12px;color:var(--text-muted);font-family:'JetBrains Mono',monospace;margin-top:8px">Infectious diseases (A)</div>
         </div>
         <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:22px;text-align:center">
-          <div style="font-size:42px;font-weight:850;color:var(--neon-amber);line-height:1">32.2%</div>
+          <div style="font-size:42px;font-weight:850;color:var(--neon-amber);line-height:1">26.6%</div>
           <div style="font-size:12px;color:var(--text-muted);font-family:'JetBrains Mono',monospace;margin-top:8px">Injuries & trauma (C)</div>
         </div>
         <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:22px;text-align:center">
-          <div style="font-size:42px;font-weight:850;color:var(--text-dim);line-height:1">33.2%</div>
+          <div style="font-size:42px;font-weight:850;color:var(--text-dim);line-height:1">21.2%</div>
           <div style="font-size:12px;color:var(--text-muted);font-family:'JetBrains Mono',monospace;margin-top:8px">Unknown cause (F)</div>
         </div>
       </div>
       <p style="font-size:12px;color:var(--text-muted);font-family:'JetBrains Mono',monospace;margin-bottom:16px">
-        Remaining 6.5%: physiological causes 4.5%, other 1.6%, environmental 0.4% · Source: Table 2.4.2, Fiskehelserapporten 2024
+        Remaining 19.4%: environmental conditions 8.8% (mainly jellyfish), physiological causes 5.7%, other 4.8%
       </p>
 
       <p style="margin-bottom:12px">
-        Key events in 2022 included continued high levels of <strong style="color:var(--text)">cardiomyopathy syndrome (CMS)</strong>,
-        <strong style="color:var(--text)">winter sores</strong> (Moritella viscosa) in northern production areas,
-        and a fall in ISA cases to 17 after the 2021 spike.
+        The same report also breaks mortality down by specific named cause rather than broad category.
+        In that finer breakdown, the top three causes of death were <strong style="color:var(--text)">winter sores</strong>
+        caused by the bacterium <em>Moritella viscosa</em> (13%), <strong style="color:var(--text)">unspecified handling injuries</strong>
+        (12%), and <strong style="color:var(--text)">unknown specific cause</strong> (12%), a subset of the 21.2% unknown category above where no further detail was recorded.
+        A notable new entry: <strong style="color:var(--text)">jellyfish damage</strong> accounted for ~75% of the 8.8% environmental category, driven by a marine heatwave in northern waters.
       </p>
 
       <p style="margin-bottom:12px">
-        Pancreas Disease remained elevated at 96 cases, while lice violations continued their multi-year decline to 798 · the lowest level since 2013.
+        Finnmark's extreme loss rate is partly explained by having <strong style="color:var(--text)">very few active localities</strong>,
+        meaning individual catastrophic events weigh heavily on the regional statistics.
       </p>
 
       <p style="font-size:12px;color:var(--text-muted);font-family:'JetBrains Mono',monospace;margin-top:20px">
-        Source: Fiskehelserapporten 2022, Veterinærinstituttet (Rapport 1a – 2023)
+        Source: Fiskehelserapporten 2024, Veterinærinstituttet (Rapport 1a – 2025)
       </p>
     </div>
   </div>
@@ -1045,20 +1049,21 @@ footer a:hover{
 <!-- 06 · Disease & Sea Lice -->
 <div class="section reveal">
   <div class="section-label">06 · Disease & Sea Lice</div>
-  <div class="section-title">ISA falls back. Lice violations reach decade low.</div>
+  <div class="section-title">ISA remains elevated. Lice violations nearly doubled in 2024.</div>
   <div class="section-desc">
-    ISA fell back to 17 cases in 2022 after the 2021 spike of 29. Pancreas Disease (PD) remained elevated at 96.
-    Lice violations fell to 798 · the lowest recorded since 2013, continuing a sustained multi-year improvement.
+    Infectious Salmon Anaemia (ISA) has remained persistently elevated since 2020, recording 21 cases in both 2023 and 2024 · compared to a low of 6 in 2019.
+    Pancreas Disease (PD) peaked at 159 cases in 2020 and has declined since. Meanwhile, lice limit violations
+    nearly doubled from 556 in 2023 to 1,092 in 2024 · the highest since 2019.
   </div>
   <div class="two-col">
     <div class="chart-container">
       <div class="chart-title">Disease Outbreaks Per Year</div>
-      <div class="chart-subtitle"><span class="chip chip-isa">ISA</span> & <span class="chip chip-pd">PD</span> confirmed cases, 2013–2022 · Source: Barentswatch / Veterinærinstituttet</div>
+      <div class="chart-subtitle"><span class="chip chip-isa">ISA</span> & <span class="chip chip-pd">PD</span> confirmed cases, 2013–2025 · Source: Barentswatch / Veterinærinstituttet</div>
       <div class="chart-wrap"><canvas id="diseaseChart"></canvas></div>
     </div>
     <div class="chart-container">
       <div class="chart-title">Lice Limit Violations Per Year</div>
-      <div class="chart-subtitle"><span class="chip chip-lice">Lice</span> weekly violations above 0.5 adult female, 2013–2022</div>
+      <div class="chart-subtitle"><span class="chip chip-lice">Lice</span> weekly violations above 0.5 adult female, 2013–2025</div>
       <div class="chart-wrap"><canvas id="liceChart"></canvas></div>
     </div>
   </div>
@@ -1067,16 +1072,17 @@ footer a:hover{
 <!-- 07 · Regional Analysis -->
 <div class="section reveal">
   <div class="section-label">07 · Regional Breakdown</div>
-  <div class="section-title">Nearly 2x difference in loss rate between Norway's best and worst regions</div>
+  <div class="section-title">A 4x difference in loss rate between Norway's best and worst regions</div>
   <div class="section-desc">
-    Nordland led production (366,000 tonnes) with the lowest loss rate at 10.2%. Rogaland had the worst at 19.3%,
-    nearly twice as high. Vestland had the most absolute losses at 18.3M fish.
-    Note: In 2022, Troms and Finnmark were administratively combined as one county.
+    Nordland has the lowest loss rate (7.6%) while producing 360,000 tonnes.
+    Finnmark loses 30% of all fish put to sea, four times worse. For every 1,000 tonnes
+    produced, Finnmark loses 85,000 fish while Nordland loses just 21,000. But is this
+    about farm density, or something else entirely?
   </div>
 
   <div class="chart-container">
     <div class="chart-title">Loss Rate vs. Production by Region</div>
-    <div class="chart-subtitle">2022 · loss rate % (bar) with production volume overlay (line) · Source: Fiskeridirektoratet</div>
+    <div class="chart-subtitle">2024 · loss rate % (bar) with production volume overlay (line) · Source: Fiskeridirektoratet</div>
     <div class="chart-wrap"><canvas id="regionalMortChart"></canvas></div>
   </div>
 
@@ -1102,23 +1108,23 @@ footer a:hover{
   <div class="stat-grid" style="margin-top:32px">
     <div class="stat-block">
       <div class="stat-block-label">Best: Nordland</div>
-      <div class="stat-block-value green">10.2%</div>
-      <div class="stat-block-sub">loss rate · 366kt produced · 212 active localities</div>
+      <div class="stat-block-value green">7.6%</div>
+      <div class="stat-block-sub">loss rate · 360kt produced · 217 active localities</div>
     </div>
     <div class="stat-block">
-      <div class="stat-block-label">Worst: Rogaland</div>
-      <div class="stat-block-value red">19.3%</div>
-      <div class="stat-block-sub">loss rate · 105kt produced · 60 active localities</div>
+      <div class="stat-block-label">Worst: Finnmark</div>
+      <div class="stat-block-value red">30.0%</div>
+      <div class="stat-block-sub">loss rate · 128kt produced · 83 active localities</div>
     </div>
     <div class="stat-block">
       <div class="stat-block-label">Most Losses: Vestland</div>
-      <div class="stat-block-value amber">18.3M</div>
-      <div class="stat-block-sub">fish lost · 374kt produced · 271 active localities</div>
+      <div class="stat-block-value amber">15.9M</div>
+      <div class="stat-block-sub">fish lost · 386kt produced · 273 active localities</div>
     </div>
     <div class="stat-block">
       <div class="stat-block-label">Most Localities: Vestland</div>
-      <div class="stat-block-value cyan">271</div>
-      <div class="stat-block-sub">active farm sites · more than any other region in 2022</div>
+      <div class="stat-block-value cyan">273</div>
+      <div class="stat-block-sub">active farm sites · more than any other region in 2024</div>
     </div>
   </div>
 </div>
@@ -1128,12 +1134,13 @@ footer a:hover{
   <div class="section-label">08 · Cleaner Fish</div>
   <div class="section-title">Millions of fish used as living lice-removers</div>
   <div class="section-desc">
-    Usage peaked at 61 million in 2019 and has declined significantly to 33.4 million in 2022,
-    as the industry shifted away from biological lice treatment toward mechanical delousing methods.
+    The industry deploys wrasse and lumpfish into salmon cages to eat sea lice.
+    Usage peaked at 61 million in 2019 but has since declined to 22.5 million in 2024,
+    partly due to high cleaner fish loss rates and a shift toward mechanical delousing.
   </div>
   <div class="chart-container">
     <div class="chart-title">Cleaner Fish Deployed Per Year</div>
-    <div class="chart-subtitle">Millions of individuals, 1998–2022</div>
+    <div class="chart-subtitle">Millions of individuals, 1998–2024</div>
     <div class="chart-wrap"><canvas id="cleanerChart"></canvas></div>
   </div>
 </div>
@@ -1167,25 +1174,25 @@ Chart.defaults.plugins.legend.labels.boxWidth = 12;
 Chart.defaults.plugins.legend.labels.padding = 16;
 
 /* =========================================================================
-   VERIFIED DATA FROM FISKERIDIREKTORATET XLSX FILES — TRIMMED TO 2022
+   VERIFIED DATA FROM FISKERIDIREKTORATET XLSX FILES
 ========================================================================= */
-const Y94=['1994','1995','1996','1997','1998','1999','2000','2001','2002','2003','2004','2005','2006','2007','2008','2009','2010','2011','2012','2013','2014','2015','2016','2017','2018','2019','2020','2021','2022'];
+const Y94=['1994','1995','1996','1997','1998','1999','2000','2001','2002','2003','2004','2005','2006','2007','2008','2009','2010','2011','2012','2013','2014','2015','2016','2017','2018','2019','2020','2021','2022','2023','2024'];
 
-const SMOLT_INPUT=[89147,108068,110658,120595,121394,141873,155015,159441,162426,158444,165001,175030,200430,224819,239343,250079,277503,308570,303754,314373,330669,346399,340839,361309,374861,400647,411923,429819,452199];
+const SMOLT_INPUT=[89147,108068,110658,120595,121394,141873,155015,159441,162426,158444,165001,175030,200430,224819,239343,250079,277503,308570,303754,314373,330669,346399,340839,361309,374861,400647,411923,429819,452199,452001,459955];
 
-const SEA_LOSS=[9797,12607,15706,19037,27182,21574,19774,25590,33376,34771,28326,27590,34621,42658,49329,48479,50101,53533,41303,43671,46659,55314,59023,61070,56301,65138,63735,64046,64720];
+const SEA_LOSS=[9797,12607,15706,19037,27182,21574,19774,25590,33376,34771,28326,27590,34621,42658,49329,48479,50101,53533,41303,43671,46659,55314,59023,61070,56301,65138,63735,64046,64720,72010,70337];
 
 const SEA_RATE=SMOLT_INPUT.map((s,i)=>s>0?+(SEA_LOSS[i]/s*100).toFixed(1):0);
 
-const Y98=['1998','1999','2000','2001','2002','2003','2004','2005','2006','2007','2008','2009','2010','2011','2012','2013','2014','2015','2016','2017','2018','2019','2020','2021','2022'];
-const PROD=[820977,947160,976535,1012381,1091134,1156314,1254257,1290161,1384693,1643598,1645641,1873220,1988422,2246836,2613546,2479752,2654683,2752706,2642942,2606704,2700695,2895062,2969394,3314945,3301126];
+const Y98=['1998','1999','2000','2001','2002','2003','2004','2005','2006','2007','2008','2009','2010','2011','2012','2013','2014','2015','2016','2017','2018','2019','2020','2021','2022','2023','2024'];
+const PROD=[820977,947160,976535,1012381,1091134,1156314,1254257,1290161,1384693,1643598,1645641,1873220,1988422,2246836,2613546,2479752,2654683,2752706,2642942,2606704,2700695,2895062,2969394,3314945,3301126,3266242,3298306];
 
-const SMOLT_Y=['2005','2006','2007','2008','2009','2010','2011','2012','2013','2014','2015','2016','2017','2018','2019','2020','2021','2022'];
-const SMOLT_LOSS=[83763,93727,112278,127424,110332,124790,158874,192616,217114,133032,143960,118399,119680,111823,110059,122596,144925,156303];
-const SMOLT_DEST=[30554,28453,36409,48329,45238,64435,80717,132834,133871,60302,64161,53270,52931,43655,45072,62684,67845,77646];
+const SMOLT_Y=['2005','2006','2007','2008','2009','2010','2011','2012','2013','2014','2015','2016','2017','2018','2019','2020','2021','2022','2023','2024'];
+const SMOLT_LOSS=[83763,93727,112278,127424,110332,124790,158874,192616,217114,133032,143960,118399,119680,111823,110059,122596,144925,156303,157628,169581];
+const SMOLT_DEST=[30554,28453,36409,48329,45238,64435,80717,132834,133871,60302,64161,53270,52931,43655,45072,62684,67845,77646,86806,97097];
 
-const CLEAN_Y=['1998','1999','2000','2001','2002','2003','2004','2005','2006','2007','2008','2009','2010','2011','2012','2013','2014','2015','2016','2017','2018','2019','2020','2021','2022'];
-const CLEAN=[2369,2619,1876,2321,1573,1539,1135,781,682,1564,1697,4883,10977,10639,13903,16206,24467,26409,37359,54575,48929,61035,51543,45575,33443];
+const CLEAN_Y=['1998','1999','2000','2001','2002','2003','2004','2005','2006','2007','2008','2009','2010','2011','2012','2013','2014','2015','2016','2017','2018','2019','2020','2021','2022','2023','2024'];
+const CLEAN=[2369,2619,1876,2321,1573,1539,1135,781,682,1564,1697,4883,10977,10639,13903,16206,24467,26409,37359,54575,48929,61035,51543,45575,33443,30227,22512];
 
 /* =========================================================================
    CHART 1: Mortality Rate
@@ -1359,9 +1366,9 @@ document.getElementById('toggleCulled').addEventListener('change',function(){
 /* =========================================================================
    CHART 6: Disease outbreaks (ISA & PD)
 ========================================================================= */
-const DISEASE_Y=['2013','2014','2015','2016','2017','2018','2019','2020','2021','2022'];
-const ISA_CASES=[9,7,16,18,12,13,6,28,29,17];
-const PD_CASES=[85,121,123,120,155,145,145,159,92,96];
+const DISEASE_Y=['2013','2014','2015','2016','2017','2018','2019','2020','2021','2022','2023','2024','2025'];
+const ISA_CASES=[9,7,16,18,12,13,6,28,29,17,21,21,22];
+const PD_CASES=[85,121,123,120,155,145,145,159,92,96,57,51,44];
 
 new Chart(document.getElementById('diseaseChart'),{
   type:'bar',
@@ -1411,8 +1418,8 @@ new Chart(document.getElementById('diseaseChart'),{
 /* =========================================================================
    CHART 7: Lice violations per year
 ========================================================================= */
-const LICE_Y=['2013','2014','2015','2016','2017','2018','2019','2020','2021','2022'];
-const LICE_VIOL=[1462,2306,1643,1209,1112,962,1186,982,827,798];
+const LICE_Y=['2013','2014','2015','2016','2017','2018','2019','2020','2021','2022','2023','2024','2025'];
+const LICE_VIOL=[1462,2306,1643,1209,1112,962,1186,982,827,798,556,1092,1061];
 
 new Chart(document.getElementById('liceChart'),{
   type:'bar',
@@ -1422,11 +1429,11 @@ new Chart(document.getElementById('liceChart'),{
       label:'Lice violations',
       data:LICE_VIOL,
       backgroundColor:LICE_VIOL.map((v,i)=>{
-        if(i===LICE_VIOL.length-1) return 'rgba(255,191,71,0.62)';
+        if(i>=LICE_VIOL.length-2) return 'rgba(255,191,71,0.62)';
         return 'rgba(255,191,71,0.30)';
       }),
       borderColor:LICE_VIOL.map((v,i)=>{
-        if(i===LICE_VIOL.length-1) return 'rgba(255,191,71,1)';
+        if(i>=LICE_VIOL.length-2) return 'rgba(255,191,71,1)';
         return 'rgba(255,191,71,0.56)';
       }),
       borderWidth:1,
@@ -1455,13 +1462,13 @@ new Chart(document.getElementById('liceChart'),{
 });
 
 /* =========================================================================
-   REGIONAL DATA — 2022 (6 regions: Troms og Finnmark combined)
+   REGIONAL DATA
 ========================================================================= */
-const REGIONS = ['Troms og\nFinnmark','Nordland','Trøndelag','Møre og\nRomsdal','Vestland','Rogaland'];
-const REG_DEATHS = [15061, 9333, 8014, 6613, 18254, 5804];
-const REG_PROD =   [355324, 366133, 311603, 121363, 374380, 104777];
-const REG_SMOLT =  [101118, 91261, 62376, 58759, 97138, 30009];
-const REG_LOCS =   [195, 212, 161, 80, 271, 60];
+const REGIONS = ['Finnmark','Troms','Nordland','Trøndelag','Møre og\nRomsdal','Vestland','Rogaland'];
+const REG_DEATHS = [10868, 9840, 7524, 13722, 8112, 15866, 3204];
+const REG_PROD =   [128002, 200830, 360192, 324740, 125765, 386472, 99814];
+const REG_SMOLT =  [36249, 61831, 98792, 66669, 67352, 98925, 30786];
+const REG_LOCS =   [83, 117, 217, 157, 78, 273, 59];
 const REG_MORT_RATE = REG_SMOLT.map((s,i) => +(REG_DEATHS[i]/s*100).toFixed(1));
 const REG_DEATHS_PER_KT = REG_PROD.map((p,i) => +(REG_DEATHS[i]/(p/1000)).toFixed(0));
 
@@ -1515,7 +1522,7 @@ new Chart(document.getElementById('regionalMortChart'),{
       label:ctx => ctx.dataset.yAxisID==='y' ? 'Loss rate: '+ctx.parsed.y+'%' : 'Production: '+ctx.parsed.y.toFixed(0)+'k tonnes'
     }}},
     scales:{
-      y:{beginAtZero:true,max:25,grid:{color:'rgba(255,255,255,0.03)'},ticks:{callback:v=>v+'%',color:'#ff5563'},title:{display:true,text:'Loss Rate (%)',color:'#ff5563',font:{size:11}}},
+      y:{beginAtZero:true,max:40,grid:{color:'rgba(255,255,255,0.03)'},ticks:{callback:v=>v+'%',color:'#ff5563'},title:{display:true,text:'Loss Rate (%)',color:'#ff5563',font:{size:11}}},
       y1:{position:'right',beginAtZero:true,grid:{display:false},ticks:{callback:v=>v+'kt',color:'#3aefff'},title:{display:true,text:'Production (1000t)',color:'#3aefff',font:{size:11}}},
       x:{grid:{display:false},ticks:{font:{size:10}}}
     }
@@ -1574,12 +1581,12 @@ new Chart(document.getElementById('regionalEffChart'),{
    x-axis = mean nearest-neighbour distance (km) from Barentswatch API coords
    Lower x = farms genuinely clustered together in that region
 ========================================================================= */
-const REGION_COLORS = ['#ff5563','#5dff9d','#3aefff','#ffbf47','#a86bff','#ff9933'];
-const REGION_NAMES_SHORT = ['Troms og F.','Nordland','Trøndelag','Møre og R.','Vestland','Rogaland'];
-const REGION_NAMES_FULL  = ['Troms og Finnmark','Nordland','Trøndelag','Møre og Romsdal','Vestland','Rogaland'];
+const REGION_COLORS = ['#ff5563','#ff4d94','#5dff9d','#3aefff','#ffbf47','#a86bff','#ff9933'];
+const REGION_NAMES_SHORT = ['Finnmark','Troms','Nordland','Trøndelag','Møre og R.','Vestland','Rogaland'];
+const REGION_NAMES_FULL  = ['Finnmark','Troms','Nordland','Trøndelag','Møre og Romsdal','Vestland','Rogaland'];
 
 (function(){
-  var YEAR = 2022;
+  var YEAR = 2024;
   fetch('../data/localities_geo_' + YEAR + '.json')
     .then(function(r){ return r.ok ? r.json() : Promise.reject('not found'); })
     .then(function(d){

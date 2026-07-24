@@ -26,7 +26,7 @@ from pathlib import Path
 # CONFIG
 # ---------------------------------------------------------------------------
 
-YEARS = [2020, 2021, 2022, 2023, 2024]
+YEARS = [2020, 2021, 2022, 2023, 2024, 2025]
 WEEK  = 26   # mid-year snapshot
 
 TOKEN_URL = "https://id.barentswatch.no/connect/token"

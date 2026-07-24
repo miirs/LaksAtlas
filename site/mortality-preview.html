@@ -230,10 +230,11 @@ footer a:hover{color:var(--neon-cyan)}
     <a href="javascript:history.back()" class="back-link">← Back</a>
     <br><br>
     <div class="page-tag">Preview, not official statistics</div>
-    <h1 class="page-title">A first look at<br><span>2025 and 2026</span></h1>
+    <h1 class="page-title">A first look at<br><span>2026</span></h1>
     <p class="page-lead">
+      2025 figures are now official, see the <a href="norway.html" style="color:var(--neon-magenta)">2025 year page</a>.
       Fiskeridirektoratet has not yet published full escape, sea lice violation or disease outbreak
-      figures for 2025 or 2026, so those years are left out of the main dashboard and comparisons.
+      figures for 2026, so that year is left out of the main dashboard and comparisons.
       As an early, unofficial signal in the meantime, the Norwegian Veterinary Institute's Laksetap
       tracker publishes monthly mortality risk estimates, drawn from the same underlying farm reports
       companies file with Fiskeridirektoratet. This page previews that data. It is a different metric,
@@ -251,8 +252,8 @@ footer a:hover{color:var(--neon-cyan)}
     <div class="section-title">Mortality risk, national median, 2020 to 2026</div>
     <div class="section-desc">
       Each point is the median monthly mortality risk across all reporting localities nationwide.
-      The dimmer segment covers 2020 through 2024, years with full official Fiskeridirektoratet
-      data elsewhere on this site. The brighter segment is the 2025 to 2026 preview window.
+      The dimmer segment covers 2020 through 2025, years with full official Fiskeridirektoratet
+      data elsewhere on this site. The brighter segment is the 2026 preview window.
     </div>
     <div class="chart-container">
       <div class="chart-title">National Monthly Mortality Risk, %</div>
@@ -287,9 +288,9 @@ footer a:hover{color:var(--neon-cyan)}
     </div>
     <div class="callout callout-amber">
       <div class="callout-label" style="color:var(--neon-amber)">Why this isn't on the main year pages</div>
-      <p>The main LaksAtlas year pages (2020 to 2024) use Fiskeridirektoratet's official annual statistics,
+      <p>The main LaksAtlas year pages (2020 to 2025) use Fiskeridirektoratet's official annual statistics,
       which classify every fish removed from stock into four categories: dead fish, slaughterhouse rejects,
-      escapees and other. That full breakdown is not yet published for 2025 or 2026. Mixing this preview's
+      escapees and other. That full breakdown is not yet published for 2026. Mixing this preview's
       mortality risk percentage into those comparisons would understate total losses, since it only covers
       one of the four categories and uses a different calculation method. It will be replaced with official
       figures once Fiskeridirektoratet publishes them.</p>
@@ -312,11 +313,11 @@ footer a:hover{color:var(--neon-cyan)}
   const salmon = data.national.salmon;
   const trout = data.national.rainbowtrout;
   const labels = salmon.map(r=>r.date);
-  const split = labels.findIndex(d=>d>='2025-01');
+  const split = labels.findIndex(d=>d>='2026-01');
 
   const latestSalmon = salmon[salmon.length-1];
   const latestTrout = trout[trout.length-1];
-  const preview2025Count = labels.filter(d=>d>='2025-01').length;
+  const preview2026Count = labels.filter(d=>d>='2026-01').length;
 
   document.getElementById('statRow').innerHTML = `
     <div class="stat-card">
@@ -335,14 +336,14 @@ footer a:hover{color:var(--neon-cyan)}
       <div class="stat-card-sub">median, IQR ${latestTrout.q1}% to ${latestTrout.q3}%</div>
     </div>
     <div class="stat-card">
-      <div class="stat-card-label">2025 to 2026 coverage</div>
-      <div class="stat-card-value" style="color:var(--neon-amber)">${preview2025Count} mo.</div>
+      <div class="stat-card-label">2026 coverage</div>
+      <div class="stat-card-value" style="color:var(--neon-amber)">${preview2026Count} mo.</div>
       <div class="stat-card-sub">months of preview data so far</div>
     </div>
   `;
 
   document.getElementById('chartSubtitle').textContent =
-    `National median, ${labels[0]} to ${labels[labels.length-1]} · dim = 2020-2024, bright = 2025-2026 preview`;
+    `National median, ${labels[0]} to ${labels[labels.length-1]} · dim = 2020-2025, bright = 2026 preview`;
 
   function splitSeries(vals){
     const dim = vals.map((v,i)=> i < split ? v : null);
@@ -359,10 +360,10 @@ footer a:hover{color:var(--neon-cyan)}
     data:{
       labels,
       datasets:[
-        {label:'Salmon (2020-2024)', data:sSplit.dim, borderColor:'rgba(0,200,255,0.35)', backgroundColor:'transparent', borderWidth:1.5, pointRadius:0, tension:0.25},
-        {label:'Salmon (2025-2026 preview)', data:sSplit.bright, borderColor:'#00c8ff', backgroundColor:'rgba(0,200,255,0.10)', borderWidth:2.2, pointRadius:0, tension:0.25, fill:true},
-        {label:'Rainbow trout (2020-2024)', data:tSplit.dim, borderColor:'rgba(29,233,168,0.30)', backgroundColor:'transparent', borderWidth:1.5, pointRadius:0, tension:0.25},
-        {label:'Rainbow trout (2025-2026 preview)', data:tSplit.bright, borderColor:'#1de9a8', backgroundColor:'rgba(29,233,168,0.08)', borderWidth:2.2, pointRadius:0, tension:0.25, fill:true}
+        {label:'Salmon (2020-2025)', data:sSplit.dim, borderColor:'rgba(0,200,255,0.35)', backgroundColor:'transparent', borderWidth:1.5, pointRadius:0, tension:0.25},
+        {label:'Salmon (2026 preview)', data:sSplit.bright, borderColor:'#00c8ff', backgroundColor:'rgba(0,200,255,0.10)', borderWidth:2.2, pointRadius:0, tension:0.25, fill:true},
+        {label:'Rainbow trout (2020-2025)', data:tSplit.dim, borderColor:'rgba(29,233,168,0.30)', backgroundColor:'transparent', borderWidth:1.5, pointRadius:0, tension:0.25},
+        {label:'Rainbow trout (2026 preview)', data:tSplit.bright, borderColor:'#1de9a8', backgroundColor:'rgba(29,233,168,0.08)', borderWidth:2.2, pointRadius:0, tension:0.25, fill:true}
       ]
     },
     options:{
