@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LaksAtlas Classroom: Challenges of Living in Water</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="mobile.css">
+<style>
+:root {
+  --bg: #04091a; --bg-soft: #071425; --bg-card: rgba(4,28,68,0.52);
+  --border: rgba(30,100,210,0.18); --text: #d8e8f6; --text-dim: #5e88aa;
+  --text-muted: #2a4560; --neon-cyan: #00c8ff; --neon-green: #1de9a8;
+  --neon-amber: #f4a535; --neon-red: #ff4757;
+  --glow-cyan: 0 0 14px rgba(0,200,255,0.22), 0 0 40px rgba(0,200,255,0.08);
+  --glow-green: 0 0 14px rgba(29,233,168,0.22);
+  --radius-lg: 18px; --radius-md: 12px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: 'Outfit', sans-serif; min-height: 100vh; }
+
+nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(4,9,26,0.92); backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 28px; height: 56px;
+  display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
+}
+.nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.nav-logo-name { font-size: 15px; font-weight: 700; color: var(--text); }
+.nav-logo-name span { color: var(--neon-cyan); }
+.nav-links { display: flex; gap: 20px; justify-self: end; align-items: center; }
+.nav-links a { font-size: 13px; color: var(--text-dim); text-decoration: none; transition: color .15s; }
+.nav-links a:hover { color: var(--neon-cyan); }
+.back-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12px; color: var(--text-dim); text-decoration: none;
+  border: 1px solid var(--border); border-radius: 6px; padding: 5px 12px;
+  transition: all .2s;
+}
+.back-btn:hover { color: var(--neon-cyan); border-color: rgba(0,200,255,0.3); }
+
+.page-wrap { max-width: 900px; margin: 0 auto; padding: 40px 24px 100px; }
+
+.topic-header { margin-bottom: 32px; }
+.topic-tag {
+  font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--neon-cyan);
+  letter-spacing: .12em; text-transform: uppercase; margin-bottom: 8px;
+}
+.topic-title { font-size: clamp(24px,4vw,40px); font-weight: 800; color: var(--text); margin-bottom: 8px; }
+.topic-sub { font-size: 14px; color: var(--text-dim); }
+
+/* MODE TABS */
+.mode-tabs { display: flex; gap: 8px; margin-bottom: 28px; flex-wrap: wrap; }
+.mode-tab {
+  padding: 9px 20px; border-radius: 8px; border: 1px solid var(--border);
+  background: transparent; color: var(--text-dim); font-family: 'Outfit', sans-serif;
+  font-size: 14px; font-weight: 500; cursor: pointer; transition: all .2s;
+}
+.mode-tab:hover { border-color: rgba(0,200,255,0.3); color: var(--text); }
+.mode-tab.active {
+  background: rgba(0,200,255,0.08); border-color: rgba(0,200,255,0.4);
+  color: var(--neon-cyan); box-shadow: var(--glow-cyan);
+}
+
+.game-panel { display: none; }
+.game-panel.active { display: block; }
+
+/* ─── STUDY NOTES ───────────────────────────────────────────────── */
+.notes-intro {
+  font-size: 14px; color: var(--text-dim); line-height: 1.7;
+  margin-bottom: 24px; padding: 16px 20px;
+  background: rgba(0,200,255,0.04); border: 1px solid rgba(0,200,255,0.1);
+  border-radius: 10px;
+}
+.accordion { display: flex; flex-direction: column; gap: 8px; }
+.acc-item { border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
+.acc-header {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 18px; cursor: pointer;
+  background: rgba(4,28,68,0.35); transition: background .2s;
+  list-style: none; user-select: none;
+}
+.acc-header:hover { background: rgba(4,28,68,0.6); }
+.acc-icon { font-size: 20px; flex-shrink: 0; }
+.acc-title { font-size: 15px; font-weight: 600; color: var(--text); flex: 1; }
+.acc-subtitle { font-size: 12px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
+.acc-chevron { color: var(--text-muted); font-size: 12px; flex-shrink: 0; transition: transform .25s; }
+.acc-item.open .acc-chevron { transform: rotate(90deg); }
+.acc-body {
+  max-height: 0; overflow: hidden;
+  transition: max-height .35s ease, padding .25s ease;
+  padding: 0 20px; background: rgba(2,12,32,0.45);
+}
+.acc-item.open .acc-body { max-height: 2400px; padding: 18px 20px 22px; }
+.acc-body p { font-size: 14px; color: var(--text-dim); line-height: 1.75; margin-bottom: 12px; }
+.acc-body p:last-child { margin-bottom: 0; }
+.acc-body strong { color: var(--text); font-weight: 600; }
+.acc-body em { color: var(--neon-cyan); font-style: normal; font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+.note-table { width: 100%; border-collapse: collapse; margin: 10px 0 12px; font-size: 13px; }
+.note-table th { text-align: left; padding: 6px 10px; color: var(--neon-cyan); font-weight: 600; border-bottom: 1px solid rgba(0,200,255,0.15); font-family: 'JetBrains Mono', monospace; font-size: 11px; text-transform: uppercase; }
+.note-table td { padding: 7px 10px; border-bottom: 1px solid rgba(30,100,210,0.08); color: var(--text-dim); vertical-align: top; }
+.note-table tr:last-child td { border-bottom: none; }
+.note-table td:first-child { color: var(--text); font-weight: 500; white-space: nowrap; }
+.note-pill {
+  display: inline-block; font-family: 'JetBrains Mono', monospace; font-size: 11px;
+  padding: 2px 8px; border-radius: 999px; margin: 2px 3px 2px 0;
+  background: rgba(0,200,255,0.07); border: 1px solid rgba(0,200,255,0.18); color: var(--neon-cyan);
+}
+.note-pill.green { background: rgba(29,233,168,0.07); border-color: rgba(29,233,168,0.2); color: #1de9a8; }
+.note-pill.amber { background: rgba(244,165,53,0.07); border-color: rgba(244,165,53,0.2); color: #f4a535; }
+.note-pill.red { background: rgba(255,71,87,0.07); border-color: rgba(255,71,87,0.2); color: #ff4757; }
+.notes-ready-bar {
+  margin-top: 24px; padding: 14px 18px; border-radius: 10px;
+  background: rgba(29,233,168,0.06); border: 1px solid rgba(29,233,168,0.2);
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;
+}
+.notes-ready-bar span { font-size: 14px; color: var(--text-dim); }
+.notes-ready-bar button {
+  padding: 9px 22px; border-radius: 8px;
+  border: 1px solid rgba(29,233,168,0.4); background: rgba(29,233,168,0.08);
+  color: #1de9a8; font-size: 13px; font-family: 'Outfit', sans-serif; cursor: pointer;
+  transition: all .2s;
+}
+.notes-ready-bar button:hover { background: rgba(29,233,168,0.16); }
+
+/* ─── QUIZ ───────────────────────────────────────────────────────── */
+.quiz-wrap { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 28px; }
+.quiz-meta { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; gap: 10px; flex-wrap: wrap; }
+.quiz-progress-bar { flex: 1; height: 5px; background: rgba(255,255,255,0.05); border-radius: 3px; min-width: 80px; }
+.quiz-progress-fill { height: 100%; background: var(--neon-cyan); border-radius: 3px; transition: width .3s; }
+.quiz-counter { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-dim); white-space: nowrap; }
+.quiz-score-badge {
+  font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--neon-green);
+  background: rgba(29,233,168,0.08); border: 1px solid rgba(29,233,168,0.2);
+  padding: 3px 10px; border-radius: 999px;
+}
+.quiz-q { font-size: 17px; font-weight: 600; color: var(--text); margin-bottom: 20px; line-height: 1.5; }
+.quiz-opts { display: grid; gap: 10px; }
+.quiz-opt {
+  padding: 12px 16px; border-radius: 9px; border: 1px solid rgba(0,200,255,0.15);
+  background: rgba(0,200,255,0.03); color: var(--text); font-size: 14px;
+  font-family: 'Outfit', sans-serif; cursor: pointer; text-align: left;
+  transition: all .15s;
+}
+.quiz-opt:hover:not(:disabled) { border-color: rgba(0,200,255,0.4); background: rgba(0,200,255,0.08); }
+.quiz-opt.correct { background: rgba(29,233,168,0.12); border-color: #1de9a8; color: #1de9a8; }
+.quiz-opt.wrong   { background: rgba(255,71,87,0.10); border-color: #ff4757;  color: #ff4757;  }
+.quiz-opt.reveal  { background: rgba(29,233,168,0.06); border-color: rgba(29,233,168,0.3); color: #1de9a8; }
+.quiz-opt:disabled { cursor: default; }
+.quiz-explanation {
+  margin-top: 14px; padding: 12px 15px; border-radius: 9px;
+  background: rgba(0,200,255,0.05); border-left: 3px solid rgba(0,200,255,0.4);
+  font-size: 13px; color: var(--text-dim); line-height: 1.6; display: none;
+}
+.quiz-explanation.show { display: block; }
+.quiz-next-btn {
+  margin-top: 16px; padding: 10px 24px; border-radius: 8px;
+  border: 1px solid rgba(0,200,255,0.35); background: rgba(0,200,255,0.08);
+  color: var(--neon-cyan); font-size: 14px; font-family: 'Outfit', sans-serif;
+  cursor: pointer; transition: all .2s; display: none;
+}
+.quiz-next-btn.show { display: inline-block; }
+.quiz-next-btn:hover { background: rgba(0,200,255,0.15); box-shadow: var(--glow-cyan); }
+
+.quiz-start, .quiz-results { text-align: center; padding: 20px 0; }
+.big-btn {
+  display: inline-block; padding: 13px 32px; border-radius: 10px;
+  border: 1px solid rgba(0,200,255,0.35); background: rgba(0,200,255,0.08);
+  color: var(--neon-cyan); font-size: 15px; font-family: 'Outfit', sans-serif;
+  cursor: pointer; transition: all .2s; margin-top: 12px;
+}
+.big-btn:hover { background: rgba(0,200,255,0.18); box-shadow: var(--glow-cyan); }
+.results-score {
+  font-size: 52px; font-weight: 800; color: var(--neon-cyan);
+  font-family: 'JetBrains Mono', monospace; margin-bottom: 4px;
+}
+.results-sub { font-size: 16px; color: var(--text-dim); margin-bottom: 8px; }
+.results-grade { font-size: 22px; font-weight: 700; margin-bottom: 20px; }
+
+/* ─── FLASHCARDS ─────────────────────────────────────────────────── */
+.fc-wrap { display: flex; flex-direction: column; align-items: center; gap: 20px; }
+.fc-nav { display: flex; align-items: center; gap: 16px; }
+.fc-counter { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--text-dim); }
+.fc-arrow {
+  width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--border);
+  background: transparent; color: var(--text-dim); font-size: 16px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; transition: all .2s;
+}
+.fc-arrow:hover { border-color: rgba(0,200,255,0.35); color: var(--neon-cyan); }
+.fc-hint { font-size: 12px; color: var(--text-muted); }
+
+.card-scene { width: 100%; max-width: 620px; height: 220px; perspective: 900px; cursor: pointer; }
+.card-inner { width: 100%; height: 100%; transition: transform .55s; transform-style: preserve-3d; position: relative; }
+.card-inner.flipped { transform: rotateY(180deg); }
+.card-face {
+  position: absolute; inset: 0; backface-visibility: hidden;
+  border-radius: var(--radius-lg); border: 1px solid var(--border);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 28px 36px; text-align: center;
+}
+.card-front { background: rgba(0,30,70,0.45); }
+.card-back  { background: rgba(0,50,30,0.35); border-color: rgba(29,233,168,0.2); transform: rotateY(180deg); }
+.card-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: .1em; margin-bottom: 10px; }
+.card-front .card-label { color: rgba(0,200,255,0.5); }
+.card-back  .card-label { color: rgba(29,233,168,0.5); }
+.card-term { font-size: 24px; font-weight: 700; color: var(--neon-cyan); }
+.card-def  { font-size: 14px; color: var(--text); line-height: 1.6; }
+.card-flip-hint { font-size: 11px; color: var(--text-muted); margin-top: 10px; }
+
+.fc-progress { width: 100%; max-width: 620px; display: flex; gap: 5px; flex-wrap: wrap; justify-content: center; }
+.fc-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.08); transition: background .3s; }
+.fc-dot.seen { background: rgba(0,200,255,0.4); }
+.fc-dot.current { background: var(--neon-cyan); }
+
+/* ─── DIFFUSION RATE LAB ─────────────────────────────────────────── */
+.dl-wrap { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; }
+.dl-start, .dl-over { text-align: center; padding: 22px 6px; }
+.dl-icon { font-size: 36px; margin-bottom: 10px; }
+.dl-start h3, .dl-over h3 { font-size: 20px; font-weight: 700; margin-bottom: 8px; color: var(--text); }
+.dl-lead { font-size: 14px; color: var(--text-dim); line-height: 1.7; max-width: 580px; margin: 0 auto 6px; }
+.dl-lead strong { color: var(--text); font-weight: 600; }
+.dl-formula {
+  font-family: 'JetBrains Mono', monospace; font-size: 15px; color: var(--neon-cyan);
+  background: rgba(0,200,255,0.06); border: 1px solid rgba(0,200,255,0.18);
+  border-radius: 10px; padding: 10px 18px; display: inline-block; margin: 14px auto 4px;
+}
+
+.dl-hud { display: flex; flex-wrap: wrap; gap: 8px 22px; align-items: center; justify-content: space-between; margin-bottom: 16px; font-family: 'JetBrains Mono', monospace; font-size: 13px; }
+.dl-hud .hud-item { color: var(--text-dim); }
+.dl-hud .hud-item span { color: var(--neon-cyan); font-weight: 700; }
+.dl-hud-lives span { color: var(--neon-red); letter-spacing: 3px; }
+.dl-hud-combo span { color: var(--neon-amber); }
+
+.dl-timer-row { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+.dl-timer-bar { flex: 1; height: 6px; background: rgba(255,255,255,0.06); border-radius: 3px; overflow: hidden; }
+.dl-timer-fill { height: 100%; background: var(--neon-green); border-radius: 3px; transition: width .1s linear, background .3s; }
+
+.dl-scenario {
+  border-radius: 12px; padding: 16px 18px; margin-bottom: 18px;
+  background: rgba(0,12,32,0.55); border: 1px solid rgba(0,200,255,0.12);
+}
+.dl-scenario-title { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+.dl-scenario-desc { font-size: 13px; color: var(--text-dim); line-height: 1.6; }
+.dl-scenario-dc { margin-top: 8px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--neon-cyan); }
+
+.dl-readout { display: flex; align-items: baseline; justify-content: center; gap: 8px; margin: 4px 0 6px; }
+.dl-readout-val { font-family: 'JetBrains Mono', monospace; font-size: 34px; font-weight: 800; color: var(--text); }
+.dl-readout-val.good { color: var(--neon-green); }
+.dl-readout-unit { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--text-muted); }
+
+.dl-gauge { position: relative; height: 30px; border-radius: 8px; background: rgba(0,12,32,0.6); border: 1px solid rgba(0,200,255,0.12); margin-bottom: 4px; overflow: hidden; }
+.dl-gauge-target { position: absolute; top: 0; bottom: 0; background: rgba(29,233,168,0.18); border-left: 1px solid rgba(29,233,168,0.55); border-right: 1px solid rgba(29,233,168,0.55); }
+.dl-gauge-needle { position: absolute; top: -3px; bottom: -3px; width: 3px; background: #00c8ff; box-shadow: 0 0 8px rgba(0,200,255,0.8); transition: left .06s linear, background .15s; }
+.dl-gauge-needle.hit { background: #1de9a8; box-shadow: 0 0 10px rgba(29,233,168,0.9); }
+.dl-gauge-labels { display: flex; justify-content: space-between; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-muted); margin-bottom: 22px; }
+
+.dl-slider-block { margin-bottom: 16px; }
+.dl-slider-label { display: flex; justify-content: space-between; align-items: baseline; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-dim); margin-bottom: 8px; }
+.dl-slider-label span { color: var(--neon-cyan); font-weight: 700; }
+.dl-slider-sub { font-size: 11px; color: var(--text-muted); font-family: 'Outfit', sans-serif; }
+input[type=range].dl-range {
+  width: 100%; -webkit-appearance: none; appearance: none;
+  height: 6px; border-radius: 3px; background: rgba(255,255,255,0.08); outline: none; cursor: pointer;
+}
+input[type=range].dl-range::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%;
+  background: var(--neon-cyan); box-shadow: var(--glow-cyan); cursor: pointer; border: 2px solid #04091a;
+}
+input[type=range].dl-range::-moz-range-thumb {
+  width: 18px; height: 18px; border-radius: 50%; background: var(--neon-cyan);
+  border: 2px solid #04091a; box-shadow: var(--glow-cyan); cursor: pointer;
+}
+input[type=range].dl-range.dl-range-x::-webkit-slider-thumb { background: var(--neon-amber); }
+input[type=range].dl-range.dl-range-x::-moz-range-thumb { background: var(--neon-amber); }
+
+.dl-confirm-row { margin-top: 18px; text-align: center; }
+.dl-confirm-btn {
+  padding: 13px 32px; border-radius: 10px; border: 1px solid rgba(29,233,168,0.4);
+  background: rgba(29,233,168,0.1); color: var(--neon-green); font-size: 15px;
+  font-family: 'Outfit', sans-serif; cursor: pointer; transition: all .2s;
+}
+.dl-confirm-btn:hover { background: rgba(29,233,168,0.2); box-shadow: var(--glow-green); }
+.dl-prompt { margin-top: 14px; font-size: 13px; color: var(--text-dim); min-height: 18px; text-align: center; transition: color .2s; }
+.dl-prompt.good { color: var(--neon-green); }
+.dl-prompt.bad { color: var(--neon-red); }
+
+@keyframes dl-shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+.dl-wrap.shake { animation: dl-shake .3s; }
+.dl-final { font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--text-dim); margin-bottom: 6px; }
+.dl-final span { color: var(--neon-cyan); font-weight: 700; }
+
+/* ─── RESET BTN ──────────────────────────────────────────────────── */
+.reset-btn {
+  padding: 6px 14px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.08);
+  background: transparent; color: var(--text-muted); font-size: 12px;
+  font-family: 'Outfit', sans-serif; cursor: pointer; transition: all .2s;
+}
+.reset-btn:hover { border-color: rgba(255,71,87,0.3); color: #ff4757; }
+
+footer { border-top: 1px solid var(--border); padding: 20px 28px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; font-size: 12px; color: var(--text-muted); }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">
+    <svg width="26" height="26" viewBox="0 0 32 32" fill="none">
+      <ellipse cx="16" cy="16" rx="14" ry="10" stroke="#00c8ff" stroke-width="1.5" opacity=".4"/>
+      <path d="M4 16 Q10 8 16 16 Q22 24 28 16" stroke="#00c8ff" stroke-width="2" fill="none"/>
+      <circle cx="16" cy="16" r="2.5" fill="#00c8ff" opacity=".7"/>
+    </svg>
+    <span class="nav-logo-name">Laks<span>Atlas</span></span>
+  </a>
+  <div></div>
+  <div class="nav-links">
+    <a href="classroom.html" class="back-btn">← Classroom</a>
+  </div>
+</nav>
+
+<div class="page-wrap">
+  <div class="topic-header">
+    <div class="topic-tag">Chapter 01 · Challenges of Living in Water</div>
+    <h1 class="topic-title">Challenges of Living in Water</h1>
+    <p class="topic-sub">Water as a physical and chemical medium, gas exchange and diffusion, freshwater vs. saltwater osmotic challenges, and how acidification and water treatment shape fish physiology.</p>
+  </div>
+
+  <div class="mode-tabs">
+    <button class="mode-tab active" onclick="setMode('notes')">📖 Study Notes</button>
+    <button class="mode-tab" onclick="setMode('lab')">💧 Diffusion Rate Lab</button>
+    <button class="mode-tab" onclick="setMode('quiz')">🧠 Water Chemistry Quiz</button>
+    <button class="mode-tab" onclick="setMode('cards')">📚 Flash Cards</button>
+  </div>
+
+  <!-- ═══════════════════ STUDY NOTES ═══════════════════ -->
+  <div class="game-panel active" id="panel-notes" style="display:block">
+
+    <div class="notes-intro">
+      Read through each section before testing yourself. Click a topic heading to expand it.
+      Key terms appear in <em>monospace</em>. These are the words to know for the games.
+    </div>
+
+    <div class="accordion">
+
+      <!-- 1 WATER AS A MEDIUM -->
+      <div class="acc-item" id="acc0">
+        <div class="acc-header" onclick="toggleAcc(0)">
+          <span class="acc-icon">💧</span>
+          <div style="flex:1">
+            <div class="acc-title">Water as a Medium</div>
+            <div class="acc-subtitle">Polarity · hydrogen bonds · heat capacity · viscosity</div>
+          </div>
+          <span class="acc-chevron">▶</span>
+        </div>
+        <div class="acc-body">
+          <p>A water molecule (H2O) is a <strong>polar covalent</strong> molecule: oxygen's higher electronegativity pulls the shared electrons closer to itself, and the roughly <em>105°</em> angle between the two hydrogen atoms gives the molecule a permanent charge asymmetry, a negative oxygen end and positive hydrogen ends. This is the source of <strong>hydrogen bonding</strong>, weak attractions that constantly form and break between water molecules.</p>
+          <p>In liquid water these bonds are transient. Below freezing they lock into a rigid lattice, ice, which is <strong>less dense</strong> than liquid water because the fixed lattice spaces molecules further apart. This is why ice floats, and it is fairly unique among common substances.</p>
+          <p>Water's phase transitions define the Celsius scale (0°C freezing, 100°C boiling at sea-level pressure; boiling point drops with altitude). Freshwater is <strong>densest at 4°C</strong>, lighter both above and below that point, and dissolved ions shift both density and freezing point.</p>
+          <p>Two more physical properties matter enormously for aquatic life: <strong>high heat capacity</strong> (water resists temperature change, so it warms and cools slowly, lagging air temperature by weeks or months, e.g. coastal sea-surface temperatures are often coldest in March), and <strong>high viscosity</strong> (resistance to flow), which shapes body form and gas-exchange organ design because moving through water is energetically expensive.</p>
+        </div>
+      </div>
+
+      <!-- 2 STRATIFICATION -->
+      <div class="acc-item" id="acc1">
+        <div class="acc-header" onclick="toggleAcc(1)">
+          <span class="acc-icon">🌊</span>
+          <div style="flex:1">
+            <div class="acc-title">Stratification: Lakes &amp; Fjords</div>
+            <div class="acc-subtitle">Thermocline · turnover · sill fjords · anoxic bottom water</div>
+          </div>
+          <span class="acc-chevron">▶</span>
+        </div>
+        <div class="acc-body">
+          <p>Lakes stratify seasonally as temperature-driven density differences layer the water column. In winter, ice cover blocks both gas exchange with the atmosphere and wind-driven mixing. In spring and autumn, once the whole column reaches a uniform 4°C, density differences vanish and the lake fully mixes, called <strong>turnover</strong>. Summer heating then re-stratifies the lake, forming a <strong>thermocline</strong>, the sharp transition layer between warm surface water and colder, denser water below.</p>
+          <p>Oxygen follows this same layering. Bottom water and sediment, cut off from atmospheric exchange, can become <strong>hypoxic</strong> (oxygen-poor) or <strong>anoxic</strong> (oxygen-free) as respiration consumes oxygen faster than it is replenished.</p>
+          <p><strong>Fjords</strong> stratify too: incoming river freshwater is much lighter than salty seawater, forming an outflowing brackish surface layer that drives a compensating inflow of colder, saltier water at depth. A <strong>sill fjord</strong>, with a shallow underwater threshold near its mouth, can trap this deep basin water with very limited exchange, sometimes leading to permanent or seasonal bottom hypoxia.</p>
+          <p>Extreme natural examples exist: the <strong>Black Sea and Baltic Sea</strong> have permanently anoxic bottom water, while the <strong>Red Sea and Gulf of Mexico</strong> show seasonal hypoxia, increasingly worsened by human-driven eutrophication and climate change.</p>
+        </div>
+      </div>
+
+      <!-- 3 GASES & DIFFUSION -->
+      <div class="acc-item" id="acc2">
+        <div class="acc-header" onclick="toggleAcc(2)">
+          <span class="acc-icon">💨</span>
+          <div style="flex:1">
+            <div class="acc-title">Gases in Water &amp; Diffusion</div>
+            <div class="acc-subtitle">Partial pressure · Fick's Law · solubility vs. temperature</div>
+          </div>
+          <span class="acc-chevron">▶</span>
+        </div>
+        <div class="acc-body">
+          <p>The atmosphere is roughly <strong>78% nitrogen (N2)</strong>, <strong>21% oxygen (O2)</strong>, with the remainder trace gases including CO2 (~0.04%). Atmospheric pressure at sea level is about 101.3 kPa, falling roughly 1 kPa per 80 m of altitude. Each gas contributes its own share, its <strong>partial pressure</strong>, to the total.</p>
+          <p>At equilibrium, a gas's partial pressure is the same in water as in the air above it, regardless of temperature or salinity. The actual <em>concentration</em> of dissolved gas molecules is not constant, though: it falls as temperature or salinity rises, because warmer, saltier water simply holds fewer gas molecules per volume at the same partial pressure.</p>
+          <table class="note-table">
+            <tr><th>Variable</th><th>Meaning</th></tr>
+            <tr><td>D</td><td>Diffusion coefficient, gas-specific, roughly inversely related to the square root of molecular weight</td></tr>
+            <tr><td>A</td><td>Exchange surface area</td></tr>
+            <tr><td>C1 − C2</td><td>Concentration gradient across the membrane</td></tr>
+            <tr><td>X</td><td>Diffusion distance (membrane thickness)</td></tr>
+          </table>
+          <p><strong>Fick's Law</strong> describes diffusion rate: <em>J = D·A·(C1−C2)/X</em>. Of these variables, <strong>A and X are the two an organism (or an aquaculture engineer) can actively manipulate</strong> to change exchange capacity, by growing more gill surface area or thinning the diffusion barrier.</p>
+          <p>Because gas solubility falls as temperature rises while a fish's metabolic oxygen demand rises with temperature too, warm water pulls fish physiology in two opposing directions at once, less oxygen available exactly when more is needed.</p>
+        </div>
+      </div>
+
+      <!-- 4 O2, CO2 & BICARBONATE BUFFER -->
+      <div class="acc-item" id="acc3">
+        <div class="acc-header" onclick="toggleAcc(3)">
+          <span class="acc-icon">🫧</span>
+          <div style="flex:1">
+            <div class="acc-title">Oxygen, CO2 &amp; the Bicarbonate Buffer</div>
+            <div class="acc-subtitle">Respiration · hemoglobin · the bicarbonate system</div>
+          </div>
+          <span class="acc-chevron">▶</span>
+        </div>
+        <div class="acc-body">
+          <p><strong>Respiration</strong> converts biochemical energy using O2 as the final electron acceptor: C6H12O6 + 6O2 → 6CO2 + 6H2O (+ ATP). This reaction in mitochondria does not always run cleanly to completion, producing reactive intermediates called <strong>reactive oxygen species (ROS)</strong> or free radicals, kept in check by antioxidant enzyme systems.</p>
+          <p>Water holds far fewer O2 molecules per volume than air, generally under 4% as many at equilibrium. To supply metabolically active tissue, fish rely on <strong>hemoglobin</strong>, an iron-containing (heme) transport protein in red blood cells that binds O2 in weak, reversible bonds. This lets far more oxygen be carried per volume of blood than could exist as free dissolved gas, while still preserving the partial-pressure gradient that keeps diffusion moving.</p>
+          <p><strong>CO2</strong> is far more soluble in water than O2 or N2 because it reacts chemically with water rather than just physically dissolving: <em>CO2 + H2O ↔ H2CO3 ↔ HCO3⁻ + H+</em>. This is the <strong>bicarbonate buffer system</strong>, the most important inorganic pH buffer in both natural water and the body. The reaction is naturally slow (the enzyme carbonic anhydrase speeds it up enormously in vivo), and its equilibrium position shifts with pH.</p>
+          <p><strong>Nitrogen (N2)</strong> is biologically inert but its low solubility matters practically: warming or increasing salinity can push water into <strong>gas supersaturation</strong> before the excess N2 has time to diffuse back out, a real hazard in aquaculture water systems.</p>
+        </div>
+      </div>
+
+      <!-- 5 WATER CHEMISTRY -->
+      <div class="acc-item" id="acc4">
+        <div class="acc-header" onclick="toggleAcc(4)">
+          <span class="acc-icon">⚗️</span>
+          <div style="flex:1">
+            <div class="acc-title">Water Chemistry: pH, Ions &amp; Humus</div>
+            <div class="acc-subtitle">Kw and pH · Na+/Cl− · Ca2+/Mg2+ buffering · conductivity</div>
+          </div>
+          <span class="acc-chevron">▶</span>
+        </div>
+        <div class="acc-body">
+          <p>Water self-ionises: <em>2H2O ↔ H3O+ + OH−</em>, with equilibrium constant Kw = 1.0×10⁻¹⁴. Taking −log[H3O+] gives the <strong>pH scale</strong>, where 7 is neutral. Rainwater is naturally slightly acidic (around pH 5.6) from reacting with atmospheric CO2; seawater is basic thanks to its high carbonate/bicarbonate content, built up over geological time from weathered limestone.</p>
+          <p>The dominant seawater ions are <strong>Na+ and Cl−</strong>, which over geological time built up to today's ~30–36‰ salinity. Divalent cations <strong>Ca2+ and Mg2+</strong> vary widely in freshwater depending on catchment geology, whether it drains limestone or acidic, slow-weathering bedrock, and directly control a water body's buffering capacity.</p>
+          <p>Total ion content can be estimated quickly by measuring <strong>conductivity</strong> (µS/cm or mS/m). Norwegian freshwater typically runs 0.4–15 mS/m, reflecting generally ion-poor bedrock.</p>
+          <p><strong>Humus</strong> (measured as total or dissolved organic carbon, TOC/DOC) consists of weak organic acids from decomposed matter. It browns water, lowers pH, and can bind and transport metals and organic pollutants, an important complication for water treatment and disinfection in aquaculture.</p>
+        </div>
+      </div>
+
+      <!-- 6 FRESHWATER VS SALTWATER -->
+      <div class="acc-item" id="acc5">
+        <div class="acc-header" onclick="toggleAcc(5)">
+          <span class="acc-icon">🧂</span>
+          <div style="flex:1">
+            <div class="acc-title">Freshwater vs. Saltwater: the Osmotic Squeeze</div>
+            <div class="acc-subtitle">Chloride cells (MRC) · calcium's protective role</div>
+          </div>
+          <span class="acc-chevron">▶</span>
+        </div>
+        <div class="acc-body">
+          <p>A freshwater bony fish is, physiologically, <strong>"a bag of ions swimming in almost pure water"</strong>: its body fluids sit around 300 mOsm, while the surrounding water is close to 0–10 mOsm. Osmosis constantly drives water into the fish and ions out of it, especially across the large, thin, highly permeable gill surface.</p>
+          <p>Fish counter this with a very dilute urine to void the excess water, while salts that are still lost must be actively reclaimed. Specialised <strong>chloride cells</strong> (also called mitochondria-rich cells, MRC) on the gill surface, powered by <strong>Na-K-ATPase, Mg2-ATPase and carbonic anhydrase</strong>, handle this energy-costly active ion uptake.</p>
+          <p>Water chemistry directly affects how hard this is: higher ion content (higher conductivity) makes uptake cheaper, and <strong>calcium</strong> plays an outsized protective role by stabilising membranes and reducing how leaky they are to water and ions. Extremely calcium-poor water, such as high-mountain lakes, can limit fish survival even with zero pollution; trout can struggle when Ca2+ falls below about 0.5 mg/L for long periods, while Arctic char tolerates lower calcium levels than brown trout. In very ion-poor water, fish can partly compensate by increasing chloride-cell density on the gills.</p>
+        </div>
+      </div>
+
+      <!-- 7 ECOTOXICOLOGY BASICS -->
+      <div class="acc-item" id="acc6">
+        <div class="acc-header" onclick="toggleAcc(6)">
+          <span class="acc-icon">☠️</span>
+          <div style="flex:1">
+            <div class="acc-title">Ecotoxicology Basics</div>
+            <div class="acc-subtitle">NOEC/LOEC/LC50 · additive vs. synergistic effects · BLM</div>
+          </div>
+          <span class="acc-chevron">▶</span>
+        </div>
+        <div class="acc-body">
+          <p>Three thresholds define how toxicity is measured: <strong>NOEC</strong> (No Observed Effect Concentration, the highest dose producing no measurable harm), <strong>LOEC</strong> (Lowest Observed Effect Concentration, the lowest dose that does), and <strong>LC50</strong> (the concentration lethal to 50% of test fish within a set exposure window, commonly <em>96 hours</em>).</p>
+          <p>Real exposures are mixtures, not single substances, and combined effects can be <strong>additive</strong> (effects simply sum), <strong>synergistic</strong> (worse than additive, a "cocktail effect"), or <strong>antagonistic</strong> (less than additive). For example, inorganic aluminium and certain pesticides can jointly damage gill enzymes even at doses that would each be sub-lethal alone.</p>
+          <p>Toxicity is not fixed: fish tolerate short high-concentration spikes better than the same total dose spread over continuous long-term exposure, and effects are generally weakest near a fish's optimal temperature and a near-neutral pH (6.5–7.5), while low oxygen, high CO2, and low calcium/hardness all tend to make toxicity worse.</p>
+          <p>The <strong>biotic ligand model (BLM)</strong> predicts a metal's toxicity from its binding affinity (log K) to a biological surface like gill tissue, weighed against competition from other ions and organic matter (like humus) already in the water. The silver ion is thought to be the single most toxic metal ion studied; aluminium is the best-documented case in Norwegian waters because of acid rain.</p>
+        </div>
+      </div>
+
+      <!-- 8 ACIDIFICATION -->
+      <div class="acc-item" id="acc7">
+        <div class="acc-header" onclick="toggleAcc(7)">
+          <span class="acc-icon">🌧️</span>
+          <div style="flex:1">
+            <div class="acc-title">Acidification &amp; Aluminium Toxicity</div>
+            <div class="acc-subtitle">Al speciation · smolt sensitivity · mixing zones</div>
+          </div>
+          <span class="acc-chevron">▶</span>
+        </div>
+        <div class="acc-body">
+          <p><strong>Acid rain</strong> forms when sulphur and nitrogen compounds from fossil-fuel combustion react in the atmosphere to form sulphuric and nitric acid, pushing rainfall well below its natural pH of ~5.6. Acidified water itself is usually not the core problem for fish, it is the <strong>metals it mobilises from soil and bedrock</strong>, above all aluminium.</p>
+          <p><strong>Al3+</strong> dominates in acidic water and, due to its high charge and small ionic radius, binds strongly to and damages negatively-charged gill surfaces. Toxicity depends heavily on chemical form ("speciation"): <strong>labile aluminium (LAl / Ali)</strong>, mostly inorganic hydroxide forms, is the toxic fraction, while aluminium bound to organic matter (humus) is far less toxic.</p>
+          <p>H+ increases gill membrane permeability, causing passive ion leakage, while aluminium separately poisons the enzyme systems (carbonic anhydrase, Na-K-ATPase) that drive active ion uptake in chloride cells. Together these mechanisms can cause rapid, sometimes fatal, salt loss.</p>
+          <p><strong>Atlantic salmon smolt</strong> are exceptionally vulnerable in the weeks before seawater migration: the freshwater isoform of Na-K-ATPase (<em>α1a</em>) is being replaced by a seawater isoform (<em>α1b</em>) that is extremely aluminium-sensitive. A brief acid/Al exposure can suppress this enzyme for weeks, reducing seawater survival even without any freshwater mortality, partly because affected smolt linger longer in estuaries, more exposed to sea lice and predators.</p>
+          <p>A further complication is the <strong>mixing zone</strong>: when acidic, aluminium-rich water mixes with neutral or limed water, Al briefly polymerises into intermediate, highly gill-reactive forms before eventually settling into harmless, inert particles. Water that looks safe once fully mixed can be acutely toxic for the first few minutes, a temperature-dependent window, roughly 3 minutes at 16–18°C versus over an hour at 5–6°C.</p>
+        </div>
+      </div>
+
+      <!-- 9 WATER TREATMENT -->
+      <div class="acc-item" id="acc8">
+        <div class="acc-header" onclick="toggleAcc(8)">
+          <span class="acc-icon">🧪</span>
+          <div style="flex:1">
+            <div class="acc-title">Water Treatment in Aquaculture</div>
+            <div class="acc-subtitle">Liming · silicate lye · target pH 6.5–6.7</div>
+          </div>
+          <span class="acc-chevron">▶</span>
+        </div>
+        <div class="acc-body">
+          <p>Because raw pH alone does not define toxicity (see mixing zones above), the practical target for smolt production water is neutralising to <strong>pH 6.5–6.7</strong>, which raises pH <em>and</em> builds calcium/buffering capacity, actively reducing aluminium's toxicity rather than just its concentration.</p>
+          <table class="note-table">
+            <tr><th>Method</th><th>Notes</th></tr>
+            <tr><td>Limestone products</td><td>Crushed limestone, lime slurry, shell sand filters, chalk. Adds calcium and buffering capacity</td></tr>
+            <tr><td>Lye / soda (NaOH, Na2CO3)</td><td>Raises pH but lacks calcium's protective effect. Overdosing risks forming toxic aluminate</td></tr>
+            <tr><td>Silicate lye (Na4SiO4)</td><td>Most widely used in Norwegian smolt facilities. Rapidly binds low-molecular Al, preventing the mixing-zone reaction, effective even at pH 5.8–5.9</td></tr>
+            <tr><td>Seawater (~3%)</td><td>Raises pH, calcium and ionic strength together</td></tr>
+          </table>
+          <p><strong>Flowing water systems</strong> are hardest to treat because they can never stop and must stay chemically stable even in cold conditions, which slow the neutralisation reaction. If silicate lye is combined with seawater dosing, the silicate must always be added <em>before</em> the seawater, to avoid creating an estuarine-style mixing zone inside the fish tanks themselves.</p>
+        </div>
+      </div>
+
+      <!-- 10 OTHER TOXIC METALS -->
+      <div class="acc-item" id="acc9">
+        <div class="acc-header" onclick="toggleAcc(9)">
+          <span class="acc-icon">⚠️</span>
+          <div style="flex:1">
+            <div class="acc-title">Toxic Metals Beyond Aluminium</div>
+            <div class="acc-subtitle">Fe, Mn, Zn, Cd, Cu, Co, Ni, Pb, Cr · life-stage sensitivity</div>
+          </div>
+          <span class="acc-chevron">▶</span>
+        </div>
+        <div class="acc-body">
+          <p>Most metals act as ions in water; their binding to gill surfaces and uptake into the body depend on charge and ionic radius, and some enter through ion channels meant for essential nutrients they chemically resemble.</p>
+          <p>Different metals matter for different reasons: <strong>iron (Fe)</strong> and <strong>manganese (Mn)</strong> tend to be more of a physical clogging/precipitation problem on gills than pure enzyme poisons. <strong>Zinc (Zn)</strong> and <strong>copper (Cu)</strong> are essential micronutrients at trace levels but toxic in excess, and copper is unusual in being roughly equally toxic in both seawater and freshwater. <strong>Cadmium (Cd), cobalt (Co), nickel (Ni), lead (Pb)</strong> and <strong>chromium (Cr)</strong> round out the metals routinely tracked in Norwegian water-quality assessments.</p>
+          <p>Sensitivity varies by species, strain and life stage in a pattern similar to aluminium: salmon eggs are most vulnerable around hatching, when the pH-sensitive hatching enzyme <em>chorionic dehydrogenase</em> is active; yolk-sac fry show extended yolk absorption and higher deformity rates under poor water quality; and, as with acidification, the <strong>smolt stage</strong> remains the single most sensitive life stage overall.</p>
+        </div>
+      </div>
+
+    </div><!-- /accordion -->
+
+    <div class="notes-ready-bar">
+      <span>Ready to test yourself?</span>
+      <button onclick="setMode('lab')">Start: Diffusion Rate Lab →</button>
+    </div>
+
+  </div>
+
+  <!-- ═══════════════════ DIFFUSION RATE LAB ═══════════════════ -->
+  <div class="game-panel" id="panel-lab">
+    <div class="dl-wrap" id="dl-wrap">
+
+      <!-- Start screen -->
+      <div class="dl-start" id="dl-start">
+        <div class="dl-icon">💧</div>
+        <h3>Diffusion Rate Lab: Match the Gill to the Demand</h3>
+        <p class="dl-lead">Every round drops you into a real scenario from the chapter. You're given the <strong>concentration gradient (ΔC)</strong> the fish faces. You control the two variables a gill can actually adjust: <strong>surface area (A)</strong> and <strong>membrane thickness (X)</strong>. Tune both sliders to bring the diffusion rate into the target zone before time runs out, across <strong>10 rounds</strong> and <strong>3 lives</strong>.</p>
+        <div class="dl-formula">J = D · A · (C1 − C2) / X</div>
+        <p class="dl-lead" style="margin-top:10px;font-size:12px;">More area or a bigger gradient raises the rate. A thicker membrane lowers it.</p>
+        <button class="big-btn" onclick="dlStart()">Start</button>
+      </div>
+
+      <!-- Game screen -->
+      <div id="dl-game" style="display:none;">
+        <div class="dl-hud">
+          <div class="hud-item dl-hud-lives">Lives <span id="dl-lives">♥♥♥</span></div>
+          <div class="hud-item">Score <span id="dl-score">0</span></div>
+          <div class="hud-item">Round <span id="dl-round">1</span> / 10</div>
+          <div class="hud-item dl-hud-combo">Combo <span id="dl-combo">0</span></div>
+          <div class="hud-item">Best <span id="dl-best">0</span></div>
+        </div>
+
+        <div class="dl-timer-row">
+          <div class="dl-timer-bar"><div class="dl-timer-fill" id="dl-timer-fill" style="width:100%"></div></div>
+        </div>
+
+        <div class="dl-scenario">
+          <div class="dl-scenario-title" id="dl-scenario-title"></div>
+          <div class="dl-scenario-desc" id="dl-scenario-desc"></div>
+          <div class="dl-scenario-dc" id="dl-scenario-dc"></div>
+        </div>
+
+        <div class="dl-readout">
+          <span class="dl-readout-val" id="dl-readout-val">0</span>
+          <span class="dl-readout-unit">J (target zone in green)</span>
+        </div>
+        <div class="dl-gauge-labels"><span>0</span><span id="dl-gauge-max">100</span></div>
+        <div class="dl-gauge" id="dl-gauge">
+          <div class="dl-gauge-target" id="dl-gauge-target"></div>
+          <div class="dl-gauge-needle" id="dl-gauge-needle"></div>
+        </div>
+
+        <div class="dl-slider-block">
+          <div class="dl-slider-label">Gill surface area <span id="dl-a-val">5.0</span> <span class="dl-slider-sub">↑ raises J</span></div>
+          <input type="range" class="dl-range" id="dl-slider-a" min="1" max="10" step="0.5" value="5" oninput="dlUpdate()">
+        </div>
+        <div class="dl-slider-block">
+          <div class="dl-slider-label">Membrane thickness <span id="dl-x-val">5.0</span> <span class="dl-slider-sub">↓ raises J</span></div>
+          <input type="range" class="dl-range dl-range-x" id="dl-slider-x" min="1" max="10" step="0.5" value="5" oninput="dlUpdate()">
+        </div>
+
+        <div class="dl-confirm-row">
+          <button class="dl-confirm-btn" onclick="dlConfirm()">🔬 Confirm exchange</button>
+          <div class="dl-prompt" id="dl-prompt">Adjust both sliders until the needle sits inside the green zone.</div>
+        </div>
+      </div>
+
+      <!-- Game over / mission complete screen -->
+      <div class="dl-over" id="dl-over" style="display:none;">
+        <div class="dl-icon" id="dl-over-icon">📟</div>
+        <h3 id="dl-over-title">Exchange failed</h3>
+        <div class="results-score" id="dl-final-score">0</div>
+        <div class="results-sub">final score</div>
+        <div class="results-grade" id="dl-over-grade"></div>
+        <div class="dl-final">Rounds cleared: <span id="dl-final-rounds">0</span> / 10</div>
+        <div class="dl-final">Best combo: <span id="dl-final-combo">0</span></div>
+        <div class="dl-final">Best this session: <span id="dl-final-best">0</span></div>
+        <button class="big-btn" onclick="dlStart()">Play again</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════ QUIZ ═══════════════════ -->
+  <div class="game-panel" id="panel-quiz">
+    <div class="quiz-wrap">
+
+      <!-- Start screen -->
+      <div class="quiz-start" id="quiz-start">
+        <div style="font-size:36px;margin-bottom:10px;">🧠</div>
+        <div style="font-size:20px;font-weight:700;margin-bottom:8px;">Water Chemistry Quiz</div>
+        <div style="font-size:14px;color:var(--text-dim);margin-bottom:4px;">20 questions covering water's physical properties, gas diffusion, water chemistry, osmoregulation basics, ecotoxicology, acidification and water treatment.</div>
+        <div style="font-size:13px;color:var(--text-muted);">Based on chapter 1 of Fiskefysiologi (Rosseland &amp; Kristensen, NMBU / Nord universitet).</div>
+        <button class="big-btn" onclick="startQuiz()">Start Quiz</button>
+      </div>
+
+      <!-- Question screen -->
+      <div id="quiz-question" style="display:none;">
+        <div class="quiz-meta">
+          <div class="quiz-progress-bar"><div class="quiz-progress-fill" id="quiz-fill" style="width:0%"></div></div>
+          <div class="quiz-counter" id="quiz-counter">1 / 20</div>
+          <div class="quiz-score-badge" id="quiz-score-badge">0 correct</div>
+        </div>
+        <div class="quiz-q" id="quiz-q-text"></div>
+        <div class="quiz-opts" id="quiz-opts"></div>
+        <div class="quiz-explanation" id="quiz-exp"></div>
+        <button class="quiz-next-btn" id="quiz-next" onclick="nextQuestion()">Next question →</button>
+      </div>
+
+      <!-- Results screen -->
+      <div class="quiz-results" id="quiz-results" style="display:none;">
+        <div style="font-size:36px;margin-bottom:10px;">🏆</div>
+        <div class="results-score" id="results-score"></div>
+        <div class="results-sub">out of 20 questions</div>
+        <div class="results-grade" id="results-grade"></div>
+        <button class="big-btn" onclick="startQuiz()">Try again</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════ FLASH CARDS ═══════════════════ -->
+  <div class="game-panel" id="panel-cards">
+    <div class="fc-wrap">
+      <div class="fc-nav">
+        <button class="fc-arrow" onclick="prevCard()">&#8592;</button>
+        <span class="fc-counter" id="fc-counter">1 / 21</span>
+        <button class="fc-arrow" onclick="nextCard()">&#8594;</button>
+      </div>
+
+      <div class="fc-hint">Click the card to reveal the definition</div>
+
+      <div class="card-scene" onclick="flipCard()">
+        <div class="card-inner" id="card-inner">
+          <div class="card-face card-front">
+            <div class="card-label">Term</div>
+            <div class="card-term" id="card-term"></div>
+            <div class="card-flip-hint">tap to flip</div>
+          </div>
+          <div class="card-face card-back">
+            <div class="card-label">Definition</div>
+            <div class="card-def" id="card-def"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="fc-progress" id="fc-progress"></div>
+    </div>
+  </div>
+
+</div><!-- /page-wrap -->
+
+<footer>
+  <span>LaksAtlas Classroom: Educational use only</span>
+  <span>Source: Rosseland BO &amp; Kristensen T (Fiskefysiologi, ch. 1). NMBU / Nord universitet.</span>
+</footer>
+
+<script>
+// ── Auth check ────────────────────────────────────────────────
+if (sessionStorage.getItem('cr_auth') !== '1') {
+  document.body.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:12px;text-align:center;padding:40px;font-family:Outfit,sans-serif;background:#04091a;color:#5e88aa"><div style="font-size:36px">🔒</div><h2 style="font-size:18px">Access restricted</h2><p style="font-size:14px">Return to the <a href="about.html" style="color:#00c8ff">About page</a> to sign in.</p></div>';
+}
+
+// ── Mode switcher ─────────────────────────────────────────────
+const MODES = ['notes','lab','quiz','cards'];
+function setMode(mode) {
+  document.querySelectorAll('.mode-tab').forEach((t,i) => t.classList.toggle('active', MODES[i] === mode));
+  document.querySelectorAll('.game-panel').forEach((p,i) => p.classList.toggle('active', 'panel-'+MODES[i] === 'panel-'+mode));
+  if (mode === 'lab') dlEnter(); else dlLeave();
+}
+
+// ── Accordion ─────────────────────────────────────────────────
+function toggleAcc(idx) {
+  const item = document.getElementById('acc' + idx);
+  const isOpen = item.classList.contains('open');
+  item.classList.toggle('open', !isOpen);
+}
+
+function shuffle(arr) { return [...arr].sort(() => Math.random() - .5); }
+
+// ═══════════════════════════════════════════════════════════════
+// QUIZ
+// ═══════════════════════════════════════════════════════════════
+const QUESTIONS = [
+  { q: "Why does ice float on liquid water?",
+    opts: [
+      "Ice is chemically different from liquid water",
+      "The rigid hydrogen-bonded lattice in ice spaces molecules further apart, making it less dense than liquid water",
+      "Ice contains trapped air bubbles that make it buoyant",
+      "Water's viscosity increases at 0°C"
+    ], ans: 1,
+    exp: "In ice, hydrogen bonds lock into a fixed lattice structure that spaces water molecules further apart than in liquid water, making solid ice less dense. This is fairly unique among common substances." },
+  { q: "At what temperature is fresh water at its densest?",
+    opts: ["0°C", "4°C", "10°C", "100°C"], ans: 1,
+    exp: "Fresh water reaches maximum density at 4°C. It is lighter both above and below that temperature, which drives seasonal lake stratification." },
+  { q: "Which property of water explains why coastal sea temperatures often lag weeks behind air temperature?",
+    opts: ["Low viscosity", "High heat capacity", "Low gas solubility", "High electronegativity"], ans: 1,
+    exp: "Water's high heat capacity means it takes a lot of energy to change its temperature. It warms and cools slowly, so sea temperatures lag behind air temperature by weeks or months." },
+  { q: "In a stratified lake in summer, what is the thermocline?",
+    opts: [
+      "The layer where temperature changes most sharply between warm surface water and colder bottom water",
+      "The permanent bottom sediment layer",
+      "A synonym for the sill in a fjord",
+      "The layer richest in dissolved oxygen"
+    ], ans: 0,
+    exp: "The thermocline is the transition zone where temperature (and therefore density) changes sharply, separating a warm, mixed surface layer from colder, denser water below." },
+  { q: "What causes a \"sill fjord\" to develop poorly-exchanged, sometimes anoxic bottom water?",
+    opts: [
+      "A shallow sill (threshold) at the fjord mouth restricts deep-water exchange with the open sea",
+      "Fresh water sinks to the bottom",
+      "Tides prevent any water from entering the fjord",
+      "The fjord has no connection to a river"
+    ], ans: 0,
+    exp: "A shallow sill near the fjord mouth can trap deep basin water, sharply limiting its exchange with open-sea water and allowing oxygen to be depleted over time." },
+  { q: "Which of these correctly states Fick's Law of diffusion?",
+    opts: [
+      "J = D · A · (C1 − C2) / X",
+      "J = D + A + (C1 − C2) + X",
+      "J = A / (D · (C1 − C2))",
+      "J = X / (D · A)"
+    ], ans: 0,
+    exp: "Fick's Law: diffusion rate J equals the diffusion coefficient (D) times the exchange area (A) times the concentration gradient (C1−C2), divided by the diffusion distance (X)." },
+  { q: "According to Fick's Law, which two variables can a fish (or an aquaculture engineer) actively adjust to change gas-exchange capacity?",
+    opts: [
+      "Exchange surface area and diffusion distance (membrane thickness)",
+      "Water temperature and salinity",
+      "Atmospheric pressure and gravity",
+      "The diffusion coefficient of the gas"
+    ], ans: 0,
+    exp: "Surface area (A) and diffusion distance (X) are the variables an organism's design, or an engineer's system design, can actively change. D is fixed for a given gas, and the gradient depends on external conditions." },
+  { q: "As water temperature rises, what happens to dissolved gas solubility and a fish's metabolic O2 demand?",
+    opts: [
+      "Solubility falls while metabolic demand rises — the opposite directions",
+      "Both rise together",
+      "Both fall together",
+      "Solubility rises while demand falls"
+    ], ans: 0,
+    exp: "Warmer water holds less dissolved oxygen at equilibrium, while a fish's (cold-blooded) metabolism speeds up and demands more oxygen. These opposing trends make warm water especially physiologically stressful." },
+  { q: "Why is CO2 far more soluble in water than O2 or N2?",
+    opts: [
+      "CO2 reacts chemically with water to form carbonic acid/bicarbonate, not just physically dissolving",
+      "CO2 molecules are smaller",
+      "CO2 has a higher molecular weight",
+      "CO2 does not follow Fick's Law"
+    ], ans: 0,
+    exp: "Unlike O2 and N2, CO2 reacts chemically with water (CO2 + H2O ↔ H2CO3 ↔ HCO3⁻ + H+), which pulls far more of it into solution than simple physical dissolution would allow." },
+  { q: "What is the primary role of hemoglobin in fish blood, from a diffusion standpoint?",
+    opts: [
+      "It binds O2 so far more oxygen can be carried per volume of blood than could remain as dissolved gas, while preserving the partial-pressure gradient",
+      "It transports CO2 exclusively",
+      "It raises blood pH",
+      "It reduces the need for gills entirely"
+    ], ans: 0,
+    exp: "Hemoglobin's heme groups bind O2 in weak, reversible bonds, taking oxygen out of simple solution so blood can carry far more O2 per volume than water could hold as dissolved gas, without collapsing the diffusion gradient." },
+  { q: "What is the main function of chloride cells (mitochondria-rich cells, MRC) on a freshwater fish's gills?",
+    opts: [
+      "Actively taking up ions (like Na+ and Cl−) from the dilute surrounding water to replace losses",
+      "Excreting excess salt",
+      "Producing melatonin",
+      "Regulating body temperature"
+    ], ans: 0,
+    exp: "In freshwater, ions constantly diffuse out of the fish into the dilute surrounding water. Chloride cells use Na-K-ATPase, Mg2-ATPase and carbonic anhydrase to actively reclaim these ions from the water." },
+  { q: "Why can extremely calcium-poor water (e.g. high-mountain lakes) limit fish survival even with zero pollution?",
+    opts: [
+      "Calcium stabilises gill membranes and reduces ion/water leakiness; without it fish struggle to maintain salt balance",
+      "Fish need calcium only for their skeleton",
+      "Calcium is toxic in freshwater",
+      "Low calcium increases water density"
+    ], ans: 0,
+    exp: "Calcium plays a protective structural role in gill membranes, reducing their permeability to water and ions. Without enough of it, fish can lose the ability to hold their salt balance even in unpolluted water." },
+  { q: "What does LC50 measure in ecotoxicology?",
+    opts: [
+      "The concentration of a substance lethal to 50% of test fish within a set exposure period (commonly 96 hours)",
+      "The concentration that causes no observable effect",
+      "The pH at which fish die",
+      "The percentage of oxygen in the water"
+    ], ans: 0,
+    exp: "LC50 (\"lethal concentration, 50%\") is the standard toxicology measure: the dose that kills half of an exposed test population within a defined exposure window, commonly 96 hours for fish studies." },
+  { q: "If two pollutants together cause more harm than the simple sum of their individual effects, this is called:",
+    opts: ["A synergistic effect", "An additive effect", "An antagonistic effect", "A biotic ligand effect"], ans: 0,
+    exp: "A synergistic (or potentiated) effect is when a combination is worse than the sum of its parts, for example inorganic aluminium and certain pesticides jointly damaging gill enzymes." },
+  { q: "What does the biotic ligand model (BLM) use to predict a metal's toxicity?",
+    opts: [
+      "The metal's binding affinity to a biological surface (like gill tissue) weighed against competition from other ions and organic matter",
+      "Only the total metal concentration in water",
+      "The fish's swimming speed",
+      "Water temperature alone"
+    ], ans: 0,
+    exp: "The BLM combines a metal's binding strength (log K) to a biological surface with how much competing material, like humus or other ions, is present in the water to bind it instead, giving a more realistic toxicity estimate than raw concentration alone." },
+  { q: "Why is acidified water itself often not the main problem for fish, according to this chapter?",
+    opts: [
+      "It's mainly the metals mobilised from soil/bedrock by acidity, especially aluminium, that cause the damage",
+      "Fish cannot sense pH",
+      "Acid rain never reaches lakes",
+      "Acidic water always evaporates faster"
+    ], ans: 0,
+    exp: "Low pH alone is rarely the direct killer. Acidic water mobilises metals, above all aluminium, from soil and bedrock, and it is those metals that cause the physiological damage." },
+  { q: "Which enzyme system, essential to seawater-type ion regulation, is especially aluminium-sensitive and drives extreme acid/Al sensitivity in salmon smolt just before seawater migration?",
+    opts: [
+      "The α1b seawater isoform of Na-K-ATPase",
+      "Carbonic anhydrase in red blood cells",
+      "Chorionic dehydrogenase",
+      "Melatonin synthase"
+    ], ans: 0,
+    exp: "As smolt approach seawater migration, gill Na-K-ATPase shifts from a freshwater isoform (α1a) to a seawater isoform (α1b), which is extremely sensitive to aluminium. A brief exposure can suppress it for weeks." },
+  { q: "What is a \"mixing zone\" in the context of liming acidified water?",
+    opts: [
+      "A brief period after acidic, aluminium-rich water mixes with neutral/limed water, where aluminium temporarily forms highly gill-reactive intermediate species before settling into harmless particles",
+      "The zone where seawater and freshwater physically touch in a fjord",
+      "A permanent safe buffer zone around a fish farm",
+      "The layer of ice on a frozen lake"
+    ], ans: 0,
+    exp: "During mixing, aluminium passes through an unstable polymerisation process. In this brief window it is at its most gill-reactive, so water that will eventually be safe can be acutely toxic for the first few minutes." },
+  { q: "Why is silicate lye (sodium silicate) widely used to neutralise water in Norwegian smolt facilities?",
+    opts: [
+      "It rapidly binds low-molecular-weight aluminium and prevents the harmful polymerisation/mixing-zone reaction, working even at lower pH",
+      "It is the cheapest possible option with no drawbacks",
+      "It removes all dissolved oxygen",
+      "It converts freshwater directly into seawater"
+    ], ans: 0,
+    exp: "Silicate binds rapidly to low-molecular aluminium at high pH, preventing the dangerous mixing-zone polymerisation reaction. This lets it work effectively at a lower target pH than pure liming (5.8-5.9) with a shorter required contact time." },
+  { q: "What is the target pH range for neutralised water supplying an Atlantic salmon smolt facility?",
+    opts: ["5.0-5.5", "6.5-6.7", "8.5-9.0", "4.0-4.5"], ans: 1,
+    exp: "The practical target is pH 6.5-6.7. This range both raises pH and builds enough calcium/buffering capacity to actively reduce aluminium toxicity, not just its concentration." },
+];
+
+let qIdx = 0, qScore = 0, qAnswered = false;
+
+function startQuiz() {
+  qIdx = 0; qScore = 0; qAnswered = false;
+  const qs = shuffle([...Array(QUESTIONS.length).keys()]).slice(0, 20);
+  window._quizOrder = qs;
+  document.getElementById('quiz-start').style.display = 'none';
+  document.getElementById('quiz-results').style.display = 'none';
+  document.getElementById('quiz-question').style.display = 'block';
+  renderQuestion();
+}
+
+function renderQuestion() {
+  qAnswered = false;
+  const q = QUESTIONS[window._quizOrder[qIdx]];
+  const pct = Math.round((qIdx / 20) * 100);
+  document.getElementById('quiz-fill').style.width = pct + '%';
+  document.getElementById('quiz-counter').textContent = (qIdx + 1) + ' / 20';
+  document.getElementById('quiz-score-badge').textContent = qScore + ' correct';
+  document.getElementById('quiz-q-text').textContent = q.q;
+  document.getElementById('quiz-exp').className = 'quiz-explanation';
+  document.getElementById('quiz-exp').textContent = q.exp;
+  document.getElementById('quiz-next').className = 'quiz-next-btn';
+
+  const shuffledOpts = shuffle(q.opts.map((o,i) => ({ text: o, orig: i })));
+  const optsDiv = document.getElementById('quiz-opts');
+  optsDiv.innerHTML = '';
+  shuffledOpts.forEach(o => {
+    const b = document.createElement('button');
+    b.className = 'quiz-opt';
+    b.textContent = o.text;
+    b.onclick = () => selectAnswer(o.orig === q.ans, b, shuffledOpts, q.ans, q.opts);
+    optsDiv.appendChild(b);
+  });
+}
+
+function selectAnswer(correct, btn, shuffledOpts, correctIdx, origOpts) {
+  if (qAnswered) return;
+  qAnswered = true;
+  const correctText = origOpts[correctIdx];
+  document.querySelectorAll('.quiz-opt').forEach(b => {
+    b.disabled = true;
+    if (b.textContent === correctText) b.classList.add(correct ? 'correct' : 'reveal');
+  });
+  btn.classList.add(correct ? 'correct' : 'wrong');
+  if (correct) qScore++;
+  document.getElementById('quiz-score-badge').textContent = qScore + ' correct';
+  document.getElementById('quiz-exp').classList.add('show');
+  document.getElementById('quiz-next').textContent = qIdx < 19 ? 'Next question →' : 'See results →';
+  document.getElementById('quiz-next').classList.add('show');
+}
+
+function nextQuestion() {
+  qIdx++;
+  if (qIdx >= 20) { showResults(); return; }
+  renderQuestion();
+}
+
+function showResults() {
+  document.getElementById('quiz-question').style.display = 'none';
+  document.getElementById('quiz-results').style.display = 'block';
+  document.getElementById('results-score').textContent = qScore + '/20';
+  const grades = [
+    [18, '🏆 Outstanding! Water physiology expert.', '#1de9a8'],
+    [15, '🥇 Excellent! Solid understanding.', '#1de9a8'],
+    [12, '👍 Good. Review a few more sections.', '#00c8ff'],
+    [8,  '📖 Decent start. Keep studying!', '#f4a535'],
+    [0,  '📚 Keep going. Re-read the chapter.', '#ff4757'],
+  ];
+  const [,label,color] = grades.find(([n]) => qScore >= n);
+  const el = document.getElementById('results-grade');
+  el.textContent = label;
+  el.style.color = color;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// FLASH CARDS
+// ═══════════════════════════════════════════════════════════════
+const CARDS = [
+  { term: 'Polar molecule (H2O)', def: 'A molecule with an asymmetric charge distribution from unequal electron sharing, here between oxygen and hydrogen, giving water a negative oxygen end and positive hydrogen ends. The basis for hydrogen bonding.' },
+  { term: 'Hydrogen bond', def: 'A weak attraction between water molecules that constantly forms and breaks in liquid water, but locks into a fixed lattice in ice, which is why ice is less dense than liquid water.' },
+  { term: 'Thermocline', def: 'The sharp temperature-transition layer separating warm surface water from colder, denser deep water in a stratified lake, fjord or sea.' },
+  { term: 'Turnover (lake mixing)', def: 'The seasonal (spring/autumn) homogenisation of a lake\'s water column once temperature-driven density differences disappear near 4°C.' },
+  { term: 'Sill fjord', def: 'A fjord with a shallow underwater threshold near its mouth that restricts exchange of deep basin water with the open sea, often leading to stagnant, low-oxygen bottom water.' },
+  { term: 'Partial pressure', def: 'A gas\'s individual share of total pressure in a mixture. At equilibrium it is equal in water and air, regardless of temperature or salinity.' },
+  { term: "Fick's Law of diffusion", def: 'J = D·A·(C1−C2)/X. Diffusion rate depends on the diffusion coefficient, exchange surface area, concentration gradient, and diffusion distance.' },
+  { term: 'Diffusion coefficient (D)', def: 'A gas-specific constant describing how fast it diffuses, roughly inversely related to the square root of its molecular weight.' },
+  { term: 'Bicarbonate buffer system', def: 'CO2 + H2O ↔ H2CO3 ↔ HCO3⁻ + H+. The most important inorganic pH buffer in both natural water and the body.' },
+  { term: 'Reactive oxygen species (ROS)', def: 'Reactive free-radical byproducts of incomplete oxygen reduction in mitochondria. Neutralised by antioxidant enzyme systems.' },
+  { term: 'Conductivity', def: 'A quick proxy measurement (µS/cm or mS/m) for the total ion content of water, used to estimate ion availability without a full chemical analysis.' },
+  { term: 'Humus / TOC', def: 'Dissolved organic material from decomposed matter that browns water, lowers pH, and can bind and transport metals and pollutants.' },
+  { term: 'Chloride cell (MRC)', def: 'A mitochondria-rich cell on the gill that actively takes up ions from dilute freshwater, using Na-K-ATPase, Mg2-ATPase and carbonic anhydrase.' },
+  { term: 'Osmolality', def: 'The total solute concentration of a body fluid. A freshwater fish\'s body fluids sit near 300 mOsm against surrounding water near 0-10 mOsm.' },
+  { term: 'NOEC', def: 'No Observed Effect Concentration: the highest tested dose of a substance that produces no measurable harm.' },
+  { term: 'LC50', def: 'The concentration of a substance lethal to 50% of a test population within a defined exposure period, commonly 96 hours.' },
+  { term: 'Biotic ligand model (BLM)', def: 'A model predicting metal toxicity from its binding affinity to a biological surface, weighed against competition from other ions and organic matter in the water.' },
+  { term: 'Labile aluminium (Ali / LAl)', def: 'The toxic, inorganic (mostly hydroxide) form of dissolved aluminium, as opposed to the far less toxic organically-bound (humus-complexed) form.' },
+  { term: 'Mixing zone', def: 'The brief, chemically unstable period after acidic aluminium-rich water mixes with neutral or limed water, when aluminium is at its most gill-reactive.' },
+  { term: 'α1a / α1b Na-K-ATPase', def: 'The freshwater and seawater isoforms of the gill enzyme driving ion regulation. The seawater isoform (α1b) is extremely aluminium-sensitive during smolt migration.' },
+  { term: 'Silicate lye', def: 'Sodium silicate mixed with lye, the most common water-treatment method in Norwegian smolt facilities. Binds aluminium and prevents mixing-zone toxicity.' },
+];
+
+let cardIdx = 0, seenCards = new Set();
+
+function renderCard() {
+  const c = CARDS[cardIdx];
+  document.getElementById('card-term').textContent = c.term;
+  document.getElementById('card-def').textContent = c.def;
+  document.getElementById('card-inner').classList.remove('flipped');
+  document.getElementById('fc-counter').textContent = (cardIdx + 1) + ' / ' + CARDS.length;
+  seenCards.add(cardIdx);
+  renderFCProgress();
+}
+
+function renderFCProgress() {
+  const wrap = document.getElementById('fc-progress');
+  wrap.innerHTML = '';
+  CARDS.forEach((_,i) => {
+    const d = document.createElement('div');
+    d.className = 'fc-dot' + (seenCards.has(i) ? ' seen' : '') + (i === cardIdx ? ' current' : '');
+    wrap.appendChild(d);
+  });
+}
+
+function flipCard() { document.getElementById('card-inner').classList.toggle('flipped'); }
+function prevCard() { cardIdx = (cardIdx - 1 + CARDS.length) % CARDS.length; renderCard(); }
+function nextCard() { cardIdx = (cardIdx + 1) % CARDS.length; renderCard(); }
+
+// ═══════════════════════════════════════════════════════════════
+// DIFFUSION RATE LAB
+// ═══════════════════════════════════════════════════════════════
+const DL_ROUNDS = [
+  { title: 'Resting salmon, cold oxygen-rich fjord', desc: 'Low metabolic demand, plenty of dissolved O2 available. A gentle warm-up round.', dc: 20, target: [35,55], time: 22 },
+  { title: 'Smolt in a sun-warmed, hypoxic surface layer', desc: 'Warm water holds less oxygen, and the gradient driving diffusion in is weak. You will need to compensate with gill design.', dc: 8, target: [28,42], time: 20 },
+  { title: 'Trout in a tannin-stained humic lake', desc: 'Cool water, moderate gradient, but humus in the water complicates everything else about this habitat.', dc: 24, target: [55,75], time: 19 },
+  { title: 'Burst swimming sprint, warm river water', desc: 'High-intensity activity spikes metabolic O2 demand sharply, even though the water is warm and gas-poor.', dc: 18, target: [75,95], time: 17 },
+  { title: 'Stratified fjord bottom water, near anoxia', desc: 'Deep basin water trapped behind a sill. The gradient is barely there, push the gill design to its limits.', dc: 4, target: [14,20], time: 18 },
+  { title: 'Sedentary flatfish on the seabed', desc: 'Low metabolic demand at rest. Overbuilding gill area here just wastes energy, match supply to demand.', dc: 20, target: [8,16], time: 16 },
+  { title: 'Gill epithelium thickened by acid/aluminium damage', desc: 'Acidified water has damaged the gill epithelium, thickening the diffusion barrier. Thickness is locked high this round, compensate with area.', dc: 22, target: [22,32], time: 18, xMin: 6 },
+  { title: 'Smoltification: seawater-type gill remodelling underway', desc: 'The gill is actively remodelling for seawater entry. Demand is high and the clock is tight.', dc: 16, target: [65,85], time: 14 },
+  { title: 'Crowded hatchery tank, high stocking density', desc: 'Warm water, lots of fish, steady moderate demand.', dc: 12, target: [45,60], time: 13 },
+  { title: 'Final push: adult salmon returning to spawn', desc: 'Cold autumn river, exhausting upstream swim. The last round, tightest margin yet.', dc: 28, target: [45,60], time: 12 },
+];
+
+const DL = {
+  state: 'idle', paused: false,
+  round: 0, lives: 3, score: 0, combo: 0, best: 0, bestCombo: 0,
+  timeLeft: 0, timeTotal: 0, raf: null, lastTs: 0,
+  a: 5, x: 5, wrapEl: null,
+};
+
+function dlInit() {
+  DL.wrapEl = document.getElementById('dl-wrap');
+  try { DL.best = parseInt(sessionStorage.getItem('lw_diffusion_best') || '0', 10) || 0; } catch (e) { DL.best = 0; }
+}
+
+function dlShake() {
+  DL.wrapEl.classList.remove('shake');
+  void DL.wrapEl.offsetWidth;
+  DL.wrapEl.classList.add('shake');
+}
+
+function dlUpdateHud() {
+  document.getElementById('dl-lives').textContent = '♥'.repeat(Math.max(0, DL.lives)) || '·';
+  document.getElementById('dl-score').textContent = DL.score;
+  document.getElementById('dl-round').textContent = Math.min(DL.round + 1, 10);
+  document.getElementById('dl-combo').textContent = DL.combo;
+  document.getElementById('dl-best').textContent = DL.best;
+}
+
+function dlStart() {
+  DL.state = 'playing'; DL.paused = false;
+  DL.round = 0; DL.lives = 3; DL.score = 0; DL.combo = 0; DL.bestCombo = 0;
+  document.getElementById('dl-start').style.display = 'none';
+  document.getElementById('dl-over').style.display = 'none';
+  document.getElementById('dl-game').style.display = 'block';
+  dlUpdateHud();
+  dlLoadRound();
+  cancelAnimationFrame(DL.raf);
+  DL.lastTs = 0;
+  DL.raf = requestAnimationFrame(dlStep);
+}
+
+function dlLoadRound() {
+  const r = DL_ROUNDS[DL.round];
+  DL.timeTotal = r.time;
+  DL.timeLeft = r.time;
+  DL.a = 5; DL.x = 5;
+
+  const sliderA = document.getElementById('dl-slider-a');
+  const sliderX = document.getElementById('dl-slider-x');
+  sliderA.min = 1; sliderA.max = 10; sliderA.value = 5;
+  sliderX.min = r.xMin || 1; sliderX.max = 10; sliderX.value = Math.max(5, r.xMin || 5);
+  DL.a = parseFloat(sliderA.value);
+  DL.x = parseFloat(sliderX.value);
+
+  document.getElementById('dl-scenario-title').textContent = r.title;
+  document.getElementById('dl-scenario-desc').textContent = r.desc + (r.xMin ? ' (Membrane thickness cannot go below ' + r.xMin + ' this round.)' : '');
+  document.getElementById('dl-scenario-dc').textContent = 'Given: concentration gradient ΔC = ' + r.dc;
+
+  const gmax = Math.ceil((10 * r.dc / (r.xMin || 1)) * 1.05);
+  document.getElementById('dl-gauge-max').textContent = gmax;
+  const targetPct1 = (r.target[0] / gmax) * 100;
+  const targetPct2 = (r.target[1] / gmax) * 100;
+  const tEl = document.getElementById('dl-gauge-target');
+  tEl.style.left = targetPct1 + '%';
+  tEl.style.width = Math.max(1, targetPct2 - targetPct1) + '%';
+
+  document.getElementById('dl-prompt').textContent = 'Adjust both sliders until the needle sits inside the green zone.';
+  document.getElementById('dl-prompt').className = 'dl-prompt';
+  document.getElementById('dl-timer-fill').style.background = 'var(--neon-green)';
+
+  dlUpdateHud();
+  dlUpdate();
+}
+
+function dlCurrentJ() {
+  const r = DL_ROUNDS[DL.round];
+  return (DL.a * r.dc) / DL.x;
+}
+
+function dlUpdate() {
+  DL.a = parseFloat(document.getElementById('dl-slider-a').value);
+  DL.x = parseFloat(document.getElementById('dl-slider-x').value);
+  document.getElementById('dl-a-val').textContent = DL.a.toFixed(1);
+  document.getElementById('dl-x-val').textContent = DL.x.toFixed(1);
+
+  const r = DL_ROUNDS[DL.round];
+  const j = dlCurrentJ();
+  const gmax = parseFloat(document.getElementById('dl-gauge-max').textContent);
+  const inZone = j >= r.target[0] && j <= r.target[1];
+
+  const valEl = document.getElementById('dl-readout-val');
+  valEl.textContent = Math.round(j);
+  valEl.classList.toggle('good', inZone);
+
+  const needle = document.getElementById('dl-gauge-needle');
+  needle.style.left = Math.min(99, Math.max(0, (j / gmax) * 100)) + '%';
+  needle.classList.toggle('hit', inZone);
+}
+
+function dlConfirm() {
+  if (DL.state !== 'playing' || DL.paused) return;
+  const r = DL_ROUNDS[DL.round];
+  const j = dlCurrentJ();
+  const inZone = j >= r.target[0] && j <= r.target[1];
+
+  if (inZone) {
+    const mid = (r.target[0] + r.target[1]) / 2;
+    const halfWidth = (r.target[1] - r.target[0]) / 2;
+    const acc = Math.max(0, 1 - Math.abs(j - mid) / (halfWidth || 1));
+    const speedFrac = Math.max(0, DL.timeLeft / DL.timeTotal);
+    DL.combo++;
+    DL.bestCombo = Math.max(DL.bestCombo, DL.combo);
+    const gained = Math.round(100 + acc * 50 + speedFrac * 30 + (DL.combo - 1) * 15);
+    DL.score += gained;
+    document.getElementById('dl-prompt').textContent = 'Exchange locked in. +' + gained + ' points.';
+    document.getElementById('dl-prompt').className = 'dl-prompt good';
+    dlUpdateHud();
+    dlAdvance(true);
+  } else {
+    DL.combo = 0;
+    DL.lives--;
+    dlShake();
+    dlUpdateHud();
+    if (DL.lives <= 0) {
+      dlFinish(false);
+    } else {
+      document.getElementById('dl-prompt').textContent = 'Outside the target zone. Adjust and try again.';
+      document.getElementById('dl-prompt').className = 'dl-prompt bad';
+    }
+  }
+}
+
+function dlTimeout() {
+  DL.combo = 0;
+  DL.lives--;
+  dlShake();
+  dlUpdateHud();
+  if (DL.lives <= 0) {
+    dlFinish(false);
+  } else {
+    document.getElementById('dl-prompt').textContent = 'Time ran out on that round.';
+    document.getElementById('dl-prompt').className = 'dl-prompt bad';
+    dlAdvance(false);
+  }
+}
+
+function dlAdvance(fromSuccess) {
+  DL.round++;
+  if (DL.round >= 10) {
+    dlFinish(true);
+    return;
+  }
+  setTimeout(() => { if (DL.state === 'playing') dlLoadRound(); }, fromSuccess ? 500 : 300);
+}
+
+function dlFinish(won) {
+  DL.state = 'over';
+  cancelAnimationFrame(DL.raf);
+  if (DL.score > DL.best) { DL.best = DL.score; try { sessionStorage.setItem('lw_diffusion_best', DL.best); } catch (e) {} }
+  document.getElementById('dl-game').style.display = 'none';
+  document.getElementById('dl-over').style.display = 'block';
+  document.getElementById('dl-final-score').textContent = DL.score;
+  document.getElementById('dl-final-rounds').textContent = Math.min(DL.round, 10);
+  document.getElementById('dl-final-combo').textContent = DL.bestCombo;
+  document.getElementById('dl-final-best').textContent = DL.best;
+
+  const icon = document.getElementById('dl-over-icon');
+  const title = document.getElementById('dl-over-title');
+  const grade = document.getElementById('dl-over-grade');
+  if (won) {
+    icon.textContent = '🏁';
+    title.textContent = 'All rounds cleared';
+    const grades = [
+      [1100, 'Flawless gill design across every scenario.', '#1de9a8'],
+      [850,  'Strong run. Your diffusion tuning was sharp.', '#1de9a8'],
+      [600,  'Cleared it, with some rough exchanges.', '#00c8ff'],
+      [0,    'You made it through. Revisit Fick\'s Law and try again.', '#f4a535'],
+    ];
+    const [,label,color] = grades.find(([n]) => DL.score >= n);
+    grade.textContent = label; grade.style.color = color;
+  } else {
+    icon.textContent = '📟';
+    title.textContent = 'Out of lives';
+    grade.textContent = ''; grade.style.color = '';
+  }
+}
+
+function dlStep(ts) {
+  if (DL.state !== 'playing' || DL.paused) return;
+  if (!DL.lastTs) DL.lastTs = ts;
+  let dt = (ts - DL.lastTs) / 1000;
+  DL.lastTs = ts;
+  if (dt > 0.05) dt = 0.05;
+
+  DL.timeLeft -= dt;
+  const frac = Math.max(0, DL.timeLeft / DL.timeTotal);
+  const fill = document.getElementById('dl-timer-fill');
+  fill.style.width = (frac * 100) + '%';
+  fill.style.background = frac < 0.25 ? 'var(--neon-red)' : (frac < 0.5 ? 'var(--neon-amber)' : 'var(--neon-green)');
+
+  if (DL.timeLeft <= 0) {
+    DL.timeLeft = 0;
+    dlTimeout();
+  }
+
+  DL.raf = requestAnimationFrame(dlStep);
+}
+
+function dlEnter() {
+  if (DL.state === 'playing' && DL.paused) {
+    DL.paused = false; DL.lastTs = 0;
+    DL.raf = requestAnimationFrame(dlStep);
+  }
+}
+
+function dlLeave() {
+  if (DL.state === 'playing' && !DL.paused) {
+    DL.paused = true;
+    cancelAnimationFrame(DL.raf);
+  }
+}
+
+// ── Init ──────────────────────────────────────────────────────
+renderCard();
+dlInit();
+</script>
+<script src="mobile.js"></script>
+</body>
+</html>
