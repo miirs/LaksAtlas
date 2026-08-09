@@ -69,6 +69,7 @@ def compute_stats(localities):
     avg_lice = round(sum(lice_vals) / len(lice_vals), 4) if lice_vals else None
     avg_temp = round(sum(temp_vals) / len(temp_vals), 2) if temp_vals else None
     disease_count = sum(1 for l in localities if l.get("diseases"))
+    treated = sum(1 for l in localities if l.get("liceTreatments"))
     municipalities = len({(l.get("municipality") or {}).get("name") for l in localities if (l.get("municipality") or {}).get("name")})
     return {
         "totalLocalities": total,
@@ -79,6 +80,7 @@ def compute_stats(localities):
         "avgLice": avg_lice,
         "avgTemp": avg_temp,
         "diseaseCount": disease_count,
+        "treated": treated,
         "municipalities": municipalities,
     }
 
@@ -125,6 +127,13 @@ def main():
     token_time = time.time()
 
     existing = load_existing()
+    # One-time backfill: entries saved before the "treated" field existed are
+    # missing it. Drop those so they get re-fetched and completed below,
+    # instead of silently sitting with treated=undefined forever.
+    stale = [w for w in existing["weeks"] if "treated" not in w]
+    if stale:
+        print(f"Backfilling 'treated' field: dropping {len(stale)} pre-existing entries to re-fetch\n")
+    existing["weeks"] = [w for w in existing["weeks"] if "treated" in w]
     existing_keys = {(w["year"], w["week"]) for w in existing["weeks"]}
     print(f"Existing entries: {len(existing_keys)}\n")
 
@@ -174,6 +183,7 @@ def main():
             time.sleep(DELAY)
 
         print(f"  -> {year_fetched} weeks fetched\n")
+        save(existing)  # persist after each year so a long backfill can't lose progress
 
     save(existing)
     print(f"\nDone. Fetched {total_fetched} new weeks, skipped {total_skipped} existing.")

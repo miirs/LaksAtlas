@@ -378,6 +378,7 @@ header { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; padding: 0 2
       <div class="filter-divider"></div>
       <label class="filter-item"><input type="checkbox" id="filterOnLand"><div class="filter-dot filter-dot-ring" style="border-color:#7dd3fc"></div>Highlight land-based<span class="filter-count" id="countOnLand">—</span></label>
       <label class="filter-item"><input type="checkbox" id="filterSlaughter"><div class="filter-dot filter-dot-ring" style="border-color:#fca5a5"></div>Highlight slaughter cages<span class="filter-count" id="countSlaughter">—</span></label>
+      <label class="filter-item"><input type="checkbox" id="filterTreated"><div class="filter-dot filter-dot-ring" style="border-color:#00f0ff"></div>Highlight lice treatments<span class="filter-count" id="countTreated">—</span></label>
       <div class="filter-divider"></div>
       <label class="filter-item"><input type="checkbox" id="filterTemp"><div class="filter-dot" style="background:linear-gradient(135deg,#1a1aff,#ff3b4a);width:10px;height:10px"></div>Sea temperature layer</label>
     </div>
@@ -403,7 +404,7 @@ header { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; padding: 0 2
   <div class="legend-item grey"><div class="legend-dot"></div> Fallow</div>
 </div>
 <div class="map-legend" id="facilityLegend" style="display:none;">
-  <span style="font-size:10px;color:var(--text-muted);font-family:'JetBrains Mono',monospace;">🏗 dashed ring = land-based &nbsp; 🔪 double ring = slaughter cage</span>
+  <span style="font-size:10px;color:var(--text-muted);font-family:'JetBrains Mono',monospace;">🏗 dashed ring = land-based &nbsp; 🔪 double ring = slaughter cage &nbsp; 🧪 dotted cyan ring = lice treatment this week</span>
 </div>
 
 <script>
@@ -429,6 +430,7 @@ let allMarkersForZoom = [];
 let diseaseStatusRegistry = {};   // locality no -> disease code -> {latest_status, subtype, since week, ...}
 let onLandLayer = L.layerGroup();
 let slaughterLayer = L.layerGroup();
+let treatedLayer = L.layerGroup();
 
 // =========================================================================
 // SECTION: WEEK NAVIGATION STATE
@@ -967,7 +969,8 @@ function plotLocalities(localities) {
   allMarkersForZoom = [];
   onLandLayer.clearLayers();
   slaughterLayer.clearLayers();
-  let onLandCount = 0, slaughterCount = 0;
+  treatedLayer.clearLayers();
+  let onLandCount = 0, slaughterCount = 0, treatedRingCount = 0;
 
   function getDotSize(baseRadius) {
     const zoom = map.getZoom();
@@ -1076,6 +1079,10 @@ function plotLocalities(localities) {
       slaughterCount++;
       L.circleMarker([lat, lng], { radius: getDotSize(status.radius) + 6, fill: false, color: '#fca5a5', weight: 1.5, opacity: 0.85 }).addTo(slaughterLayer);
     }
+    if (treatments.length > 0) {
+      treatedRingCount++;
+      L.circleMarker([lat, lng], { radius: getDotSize(status.radius) + 4, fill: false, color: '#00f0ff', weight: 1.5, opacity: 0.85, dashArray: '1,4' }).addTo(treatedLayer);
+    }
   });
 
   // Create layer groups
@@ -1088,6 +1095,7 @@ function plotLocalities(localities) {
   });
   if (document.getElementById('filterOnLand').checked) onLandLayer.addTo(map);
   if (document.getElementById('filterSlaughter').checked) slaughterLayer.addTo(map);
+  if (document.getElementById('filterTreated').checked) treatedLayer.addTo(map);
 
   // Update counts in filter panel
   document.getElementById('countGood').textContent = markersByStatus.good.length;
@@ -1098,6 +1106,7 @@ function plotLocalities(localities) {
   document.getElementById('countNoLicense').textContent = markersByStatus.no_license.length;
   document.getElementById('countOnLand').textContent = onLandCount;
   document.getElementById('countSlaughter').textContent = slaughterCount;
+  document.getElementById('countTreated').textContent = treatedRingCount;
 
   // Resize on zoom
   map.on('zoomend', () => {
@@ -1165,12 +1174,17 @@ function setupFilters() {
     if (e.target.checked) map.addLayer(slaughterLayer); else map.removeLayer(slaughterLayer);
     updateFacilityLegend();
   });
+  document.getElementById('filterTreated').addEventListener('change', (e) => {
+    if (e.target.checked) map.addLayer(treatedLayer); else map.removeLayer(treatedLayer);
+    updateFacilityLegend();
+  });
 }
 
 function updateFacilityLegend() {
   const onLand = document.getElementById('filterOnLand').checked;
   const slaughter = document.getElementById('filterSlaughter').checked;
-  document.getElementById('facilityLegend').style.display = (onLand || slaughter) ? 'block' : 'none';
+  const treated = document.getElementById('filterTreated').checked;
+  document.getElementById('facilityLegend').style.display = (onLand || slaughter || treated) ? 'block' : 'none';
 }
 
 // =========================================================================
@@ -1451,6 +1465,7 @@ const BV_IDLE = [
   [0.10, 0.52],  // Sea Temp         — mid-left
   [0.22, 0.44],  // Temp×Lice corr  — satellite (inner, near Sea Temp)
   [0.66, 0.22],  // Week×Lice corr  — satellite (inner, right of Avg Lice/Fish)
+  [0.50, 0.50],  // Lice Treatments — dead centre, clear of every other bubble
 ];
 
 // ---- Pearson correlation helper ------------------------------------------
@@ -1524,6 +1539,10 @@ const BV_METRICS = [
     source:'5year', chartType:'correlation', satellite:'avgLice',
     corrX:'week', corrXLabel:'Week of Year', corrXFmt: v=>`W${v}`,
     val: d => { const pts=d.filter(w=>w.year>=2021&&w.year<=2024&&w.avgLice!=null); const r=_pearsonR(pts.map(p=>p.week),pts.map(p=>p.avgLice)); return r!=null?'r\u200a=\u200a'+r.toFixed(2):'—'; } },
+
+  { key:'treated', label:'Lice Treatments', unit:'farms/wk · 5yr avg', color:'#00f0ff', r:105,
+    source:'5year', chartType:'weekly-by-year-5yr',
+    val: d => { const vs=d.filter(w=>w.year>=2021&&w.year<=2024&&w.treated!=null).map(w=>w.treated); return vs.length?Math.round(vs.reduce((a,b)=>a+b)/vs.length):'—'; } },
 ];
 
 const YEAR_COLORS = ['#5e88aa','#3a7bbf','#1da8d4','#00c8ff','#1de9a8','#f4a535','#ff4757','#a855f7','#ff9933','#ff4d94'];
@@ -1989,7 +2008,7 @@ function _bvRenderCorrelation(m, startY, endY){
 function _bvRender5YearWeekly(m, startY, endY){
   const canvas = _bvChartCanvas();
   if(_bvChart){ _bvChart.destroy(); _bvChart = null; }
-  const extr = { avgLice: w=>w.avgLice, aboveLimit: w=>w.aboveLimit, seaTemp: w=>w.avgTemp };
+  const extr = { avgLice: w=>w.avgLice, aboveLimit: w=>w.aboveLimit, seaTemp: w=>w.avgTemp, treated: w=>w.treated };
   const fn = extr[m.key];
   const wNums = Array.from({length:52}, (_,i)=>i+1);
   const years = [...new Set(_bv5YearData.filter(w=>w.year>=startY&&w.year<=endY).map(w=>w.year))].sort((a,b)=>a-b);
@@ -2018,7 +2037,7 @@ function _bvRender5YearWeekly(m, startY, endY){
 function _bvRenderWeekly(m, wks){
   const canvas = _bvChartCanvas();
   if(_bvChart){ _bvChart.destroy(); _bvChart = null; }
-  const extr = { avgLice: s=>s.avgLice, aboveLimit: s=>s.aboveLimit, seaTemp: s=>s.avgTemp };
+  const extr = { avgLice: s=>s.avgLice, aboveLimit: s=>s.aboveLimit, seaTemp: s=>s.avgTemp, treated: s=>s.treated };
   const fn   = extr[m.key];
   const labels = wks.map(w => `W${w.week}`);
   const values = wks.map(w => {
