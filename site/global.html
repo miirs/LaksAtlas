@@ -301,6 +301,25 @@ nav {
 }
 .search-item:hover { background:rgba(0,200,255,0.07); color:var(--text); }
 
+/* === SPECIES MODE BANNER === */
+#speciesModeBanner {
+  display:none;
+  position:absolute; top:58px; right:14px; z-index:200; width:220px;
+  background:rgba(4,9,26,0.94); border:1px solid rgba(0,200,255,0.35);
+  border-radius:10px; padding:11px 13px; backdrop-filter:blur(12px);
+}
+#speciesModeBanner.visible { display:block; }
+.smb-top { display:flex; align-items:flex-start; justify-content:space-between; gap:8px; }
+.smb-name { font-size:13px; font-weight:700; color:var(--neon-cyan); line-height:1.35; }
+.smb-close {
+  background:none; border:none; color:var(--text-dim); cursor:pointer;
+  font-size:14px; line-height:1; padding:2px; flex-shrink:0; transition:color .15s;
+}
+.smb-close:hover { color:#ff4757; }
+.smb-stats { font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--text-dim); margin-top:7px; line-height:1.7; }
+.smb-stats span { color:var(--text); font-weight:600; }
+.smb-hint { font-size:10.5px; color:var(--text-muted); margin-top:6px; line-height:1.5; }
+
 /* === SPECIES PANE === */
 #speciesPane {
   position:relative; flex:0 0 0%; overflow:hidden;
@@ -965,6 +984,16 @@ nav {
       <div id="searchDropdown"></div>
     </div>
 
+    <!-- Species mode banner (shown when a species is searched) -->
+    <div id="speciesModeBanner">
+      <div class="smb-top">
+        <div class="smb-name" id="smbName"></div>
+        <button class="smb-close" id="smbClose" title="Clear species filter">✕</button>
+      </div>
+      <div class="smb-stats" id="smbStats"></div>
+      <div class="smb-hint">Click a country for its full breakdown</div>
+    </div>
+
     <!-- Global stats (bottom-right of map) -->
     <div id="globalStats">
       <div class="gstat">
@@ -1311,6 +1340,7 @@ let playing = false, playInterval = null;
 let activeEnvs  = new Set([0,1,2]);
 let activeGroups = new Set([0,1,2,3,4]);
 let yearScaleMode = true;   // true = current-year scale (default), false = all-time scale
+let speciesFilterMode = null, speciesColorScale = null;  // active "search a species" map overlay
 
 // Map
 let svgSel, projection, pathGen, colorScale;
@@ -1552,9 +1582,35 @@ function drawScaleBar() {
   ctx.fillRect(0, 0, W, H);
 }
 
+function fmtShort(n) {
+  if (n >= 1e9) return (n/1e9).toFixed(n>=1e10?0:1) + 'B';
+  if (n >= 1e6) return (n/1e6).toFixed(n>=1e7?0:1) + 'M';
+  if (n >= 1e3) return (n/1e3).toFixed(n>=1e4?0:1) + 'k';
+  return Math.round(n).toString();
+}
+
+// Regenerates the 6 tick labels under the map scale bar to match whatever
+// domain is currently driving fillColor (total production, or one species).
+function updateScaleBarLabels(domainMin, domainMax) {
+  const spans = document.querySelectorAll('#mapScaleBar .scale-label span');
+  if (!spans.length) return;
+  const logMin = Math.log10(domainMin), logMax = Math.log10(domainMax);
+  spans.forEach((sp, i) => {
+    const frac = i / (spans.length - 1);
+    const val = Math.pow(10, logMin + frac * (logMax - logMin));
+    sp.textContent = fmtShort(val) + (i === spans.length - 1 ? '+' : '');
+  });
+}
+
 function fillColor(isoId) {
   const name = ISO_TO_FAO[isoId];
   if (!name || !DATA.c[name]) return '#06111f';
+  if (speciesFilterMode) {
+    const sp = DATA.c[name].s.find(s => s.n === speciesFilterMode);
+    const t = sp ? (sp.q[currentYearIdx] || 0) : 0;
+    if (t < 1 || !speciesColorScale) return '#06111f';
+    return mapColor(speciesColorScale(t));
+  }
   const t = DATA.c[name].t[currentYearIdx] || 0;
   if (t < 50) return '#06111f';
   const v = colorScale(t);
@@ -1565,6 +1621,67 @@ function updateMapColors() {
   countryPaths.transition().duration(200)
     .attr('fill', d => d.id === selectedISO ? '#00c8ff' : fillColor(d.id));
   updateGlobalStats();
+  if (speciesFilterMode) updateSpeciesModeBanner();
+}
+
+// =============================================================================
+// SPECIES SEARCH MODE — choropleth by a single species across all countries
+// =============================================================================
+function enterSpeciesMode(name) {
+  if (selectedCountry) deselectCountry();
+
+  speciesFilterMode = name;
+  let maxT = 0;
+  Object.values(DATA.c).forEach(cd => {
+    const sp = cd.s.find(s => s.n === name);
+    if (sp) { const m = Math.max(...sp.q); if (m > maxT) maxT = m; }
+  });
+  speciesColorScale = d3.scaleLog().domain([10, Math.max(50, maxT)]).range([0.05, 1]).clamp(true);
+
+  document.querySelector('#mapScaleBar .scale-title').textContent = name + ' (tonnes)';
+  updateScaleBarLabels(10, Math.max(50, maxT));
+
+  document.getElementById('speciesModeBanner').classList.add('visible');
+  updateMapHintVisibility();
+  updateMapColors();
+}
+
+function exitSpeciesMode() {
+  speciesFilterMode = null;
+  speciesColorScale = null;
+  document.getElementById('speciesModeBanner').classList.remove('visible');
+  document.querySelector('#mapScaleBar .scale-title').textContent = 'Production (tonnes)';
+  const maxT = d3.max(Object.values(DATA.c), c => d3.max(c.t));
+  updateScaleBarLabels(50, maxT);
+  updateMapHintVisibility();
+  updateMapColors();
+}
+
+function updateSpeciesModeBanner() {
+  if (!speciesFilterMode) return;
+  const yr = DATA.qy[currentYearIdx];
+  let producers = 0, total = 0, topCountry = null, topQ = 0;
+  Object.entries(DATA.c).forEach(([cn, cd]) => {
+    const sp = cd.s.find(s => s.n === speciesFilterMode);
+    const q = sp ? (sp.q[currentYearIdx] || 0) : 0;
+    if (q > 0) {
+      producers++; total += q;
+      if (q > topQ) { topQ = q; topCountry = cn; }
+    }
+  });
+  document.getElementById('smbName').textContent = speciesFilterMode;
+  document.getElementById('smbStats').innerHTML =
+    `<span>${producers}</span> countries producing in ${yr}<br>` +
+    `<span>${fmtT(total)}</span> world total<br>` +
+    (topCountry ? `Top: <span>${topCountry}</span> (${fmtT(topQ)})` : 'No production reported this year');
+}
+
+// Keep the bottom "click a country" hint hidden whenever a country pane is
+// open OR the species overlay is active (the banner replaces it in that case).
+function updateMapHintVisibility() {
+  const hint = document.getElementById('mapHint');
+  if (!hint) return;
+  hint.classList.toggle('hidden', !!selectedCountry || !!speciesFilterMode);
 }
 
 // Map tooltip
@@ -1575,8 +1692,25 @@ function onMapHover(event, d) {
   const name = ISO_TO_FAO[d.id];
   if (!name || !DATA.c[name]) { mapTip.classList.remove('visible'); return; }
   const cd = DATA.c[name];
-  const total = cd.t[currentYearIdx] || 0;
   const yr = DATA.qy[currentYearIdx];
+
+  if (speciesFilterMode) {
+    const sp = cd.s.find(s => s.n === speciesFilterMode);
+    const q = sp ? (sp.q[currentYearIdx] || 0) : 0;
+    mapTip.innerHTML = `
+      <div class="tt-country">${name}</div>
+      <div class="tt-total">${speciesFilterMode}</div>
+      <div class="tt-species">${q > 0 ? fmtT(q) + ' in ' + yr : 'No production reported this year'}</div>
+    `;
+    mapTip.classList.add('visible');
+    if (d.id !== selectedISO) {
+      d3.select(event.currentTarget)
+        .attr('stroke','rgba(0,200,255,0.7)').attr('stroke-width',1.5);
+    }
+    return;
+  }
+
+  const total = cd.t[currentYearIdx] || 0;
 
   const top3 = [...cd.s]
     .map(sp => ({ n: sp.n, q: sp.q[currentYearIdx]||0 }))
@@ -1843,7 +1977,7 @@ function selectCountry(name, isoId) {
   selectedCountry = name;
   selectedISO     = isoId;
 
-  document.getElementById('mapHint').classList.add('hidden');
+  updateMapHintVisibility();
   document.getElementById('speciesCountryName').textContent = name;
   document.getElementById('mainLayout').classList.add('country-selected');
 
@@ -1864,7 +1998,7 @@ function deselectCountry() {
   selectedISO     = null;
 
   document.getElementById('mainLayout').classList.remove('country-selected');
-  document.getElementById('mapHint').classList.remove('hidden');
+  updateMapHintVisibility();
   countryPaths.attr('stroke','rgba(30,100,210,0.3)').attr('stroke-width',0.4);
 
   stopSpecies();
@@ -2312,23 +2446,16 @@ function setupSearch() {
       const iso = FAO_TO_ISO[el.dataset.v];
       if (iso) selectCountry(el.dataset.v, String(iso).padStart(3,'0'));
     } else {
-      // Find top producing country for this species in current year
-      const sn = el.dataset.v;
-      let best = null, bestQ = 0, bestISO = null;
-      Object.entries(DATA.c).forEach(([cn, cd]) => {
-        const sp = cd.s.find(s => s.n === sn);
-        if (sp) {
-          const q = sp.q[currentYearIdx] || Math.max(...sp.q);
-          if (q > bestQ) { bestQ = q; best = cn; bestISO = FAO_TO_ISO[cn]; }
-        }
-      });
-      if (best) selectCountry(best, String(bestISO).padStart(3,'0'));
+      // Show every producing country for this species on the map, colored by tonnage
+      enterSpeciesMode(el.dataset.v);
     }
   });
 
   document.addEventListener('click', e => {
     if (!e.target.closest('#searchWrap')) dropdown.classList.remove('open');
   });
+
+  document.getElementById('smbClose').addEventListener('click', exitSpeciesMode);
 }
 
 // =============================================================================
