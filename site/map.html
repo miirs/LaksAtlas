@@ -249,6 +249,11 @@ header { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; padding: 0 2
 .dp-bkd{color:#a855f7;border-color:rgba(168,85,247,0.3)}.dp-bkd:hover{background:rgba(168,85,247,0.15);border-color:#a855f7;box-shadow:0 0 8px rgba(168,85,247,0.25)}
 .dp-other{color:#5e88aa;border-color:rgba(94,136,170,0.3)}.dp-other:hover{background:rgba(94,136,170,0.15);border-color:#5e88aa}
 .disease-pill.dp-active{outline:2px solid currentColor;outline-offset:2px;filter:brightness(1.3)}
+.treatment-pill{color:#00f0ff;border-color:rgba(0,240,255,0.3);cursor:default}
+.disease-status-split{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;font-size:10px;font-family:'JetBrains Mono',monospace;font-weight:600}
+.dss-diagnosed{color:var(--neon-red)}
+.dss-suspected{color:var(--neon-amber)}
+.dss-unknown{color:#5e88aa}
 /* Health Overview panel button */
 .bv-panel-btn{display:flex;flex-direction:column;gap:3px;width:100%;background:linear-gradient(135deg,rgba(0,200,255,0.09),rgba(168,85,247,0.07));border:1px solid rgba(0,200,255,0.28);border-radius:10px;padding:12px 14px;cursor:pointer;transition:all .25s;text-align:left;margin-top:4px;box-sizing:border-box}
 .bv-panel-btn:hover{background:linear-gradient(135deg,rgba(0,200,255,0.18),rgba(168,85,247,0.14));border-color:rgba(0,200,255,0.55);box-shadow:0 0 14px rgba(0,200,255,0.18),0 0 28px rgba(168,85,247,0.09)}
@@ -437,10 +442,38 @@ let currentWeekIdx = 0;
 const weeklyStatsCache = {};  // key: "YYYY_WW" → { totalLocalities, reporting, fallow, aboveLimit, aboveModerate, avgLice, avgTemp, diseaseCount, municipalities }
 let chartInstance = null;
 
-function computeWeekStats(localities) {
+// Reconstructs whether a locality+disease was SUSPECTED or DIAGNOSED "as of"
+// a given year/week, using the accumulated disease status registry. Lets the
+// same lookup work correctly both for the currently loaded week and for older
+// archived weeks browsed via the week-nav arrows.
+function weekOrdinal(y, w) { return y * 100 + w; }
+function diseaseStatusAsOf(localityNo, code, year, week) {
+  const entry = diseaseStatusRegistry[String(localityNo)]?.[code];
+  if (!entry) return null;
+  if (year == null || week == null) return entry.latest_status || null;
+  const asOf = weekOrdinal(year, week);
+  const diagOrd = entry.diagnosed_year != null ? weekOrdinal(entry.diagnosed_year, entry.diagnosed_week) : null;
+  const suspOrd = entry.first_suspected_year != null ? weekOrdinal(entry.first_suspected_year, entry.first_suspected_week) : null;
+  if (diagOrd != null && asOf >= diagOrd) return 'DIAGNOSED';
+  if (suspOrd != null && asOf >= suspOrd) return 'SUSPECTED';
+  return null;
+}
+
+function computeWeekStats(localities, year, week) {
   const reporting = localities.filter(l => l.liceReport?.hasReported && !l.liceReport?.isFallow);
   const allLice = reporting.map(l => l.liceReport?.adultFemaleLice?.average).filter(v => v != null);
   const temps = localities.map(l => l.liceReport?.seaTemperature).filter(t => t != null && t > 0);
+
+  let diseaseDiagnosed = 0, diseaseSuspected = 0, diseaseUnknown = 0;
+  localities.forEach(l => {
+    (l.diseases || []).forEach(code => {
+      const st = diseaseStatusAsOf(l.locality?.no, code, year, week);
+      if (st === 'DIAGNOSED') diseaseDiagnosed++;
+      else if (st === 'SUSPECTED') diseaseSuspected++;
+      else diseaseUnknown++;
+    });
+  });
+
   return {
     totalLocalities: localities.length,
     reporting: localities.filter(l => l.liceReport?.hasReported).length,
@@ -450,6 +483,8 @@ function computeWeekStats(localities) {
     avgLice: allLice.length > 0 ? parseFloat((allLice.reduce((a,b)=>a+b,0)/allLice.length).toFixed(3)) : null,
     avgTemp: temps.length > 0 ? parseFloat((temps.reduce((a,b)=>a+b,0)/temps.length).toFixed(1)) : null,
     diseaseCount: localities.filter(l => (l.diseases||[]).length > 0).length,
+    diseaseDiagnosed, diseaseSuspected, diseaseUnknown,
+    treated: localities.filter(l => (l.liceTreatments || []).length > 0).length,
     municipalities: new Set(localities.map(l => l.municipality?.name).filter(Boolean)).size,
   };
 }
@@ -463,7 +498,7 @@ async function prefetchWeekStats() {
       const res = await fetch(`../data/localities_${key}.json`);
       if (!res.ok) continue;
       const data = await res.json();
-      weeklyStatsCache[key] = computeWeekStats(data.localities);
+      weeklyStatsCache[key] = computeWeekStats(data.localities, year, week);
       // If a chart popup is open, refresh it with the newly loaded data
       const popup = document.getElementById('statChartPopup');
       if (popup.classList.contains('visible')) {
@@ -489,6 +524,7 @@ const METRIC_CONFIG = {
   avgLice:         { label: 'Avg Lice / Fish',         color: '#f4a535', extract: s => s.avgLice,          fmt: v => v != null ? v.toFixed(3) : '—' },
   aboveModerate:   { label: 'Elevated Lice (0.2–0.5)',color: '#f4a535', extract: s => s.aboveModerate,    fmt: v => v.toLocaleString() },
   diseaseCount:    { label: 'Active Disease Cases',    color: '#ff4757', extract: s => s.diseaseCount,     fmt: v => v.toLocaleString() },
+  treated:         { label: 'Lice Treatments This Week', color: '#00f0ff', extract: s => s.treated,        fmt: v => v.toLocaleString() },
 };
 
 function showStatChart(metric, anchorEl) {
@@ -788,13 +824,13 @@ async function loadWeekFile(locUrl, sumUrl) {
 
   // Cache stats for this week immediately
   const cacheKey = `${year}_${String(week).padStart(2,'0')}`;
-  weeklyStatsCache[cacheKey] = computeWeekStats(allLocalityData);
+  weeklyStatsCache[cacheKey] = computeWeekStats(allLocalityData, year, week);
 
   plotLocalities(allLocalityData);
   buildTemperatureLayer(allLocalityData);
   buildLeftPanel(allLocalityData, sumData.summary);
-  buildRightPanel(allLocalityData, sumData.summary);
-  buildDetailsSheet(allLocalityData, sumData.summary);
+  buildRightPanel(allLocalityData, sumData.summary, year, week);
+  buildDetailsSheet(allLocalityData, sumData.summary, year, week);
 }
 
 function setupWeekNav() {
@@ -1142,7 +1178,7 @@ function updateFacilityLegend() {
 // =========================================================================
 let detailsChartInstance = null;
 
-function buildDetailsSheet(localities) {
+function buildDetailsSheet(localities, summary, year, week) {
   const container = document.getElementById('detailsSheetStats');
   if (!container) return;
   container.innerHTML = '';
@@ -1160,6 +1196,20 @@ function buildDetailsSheet(localities) {
   const allLice = rep.map(l => l.liceReport?.adultFemaleLice?.average).filter(v => v != null);
   const avgLice = allLice.length > 0 ? (allLice.reduce((a, b) => a + b, 0) / allLice.length).toFixed(3) : '—';
   const withDisease = localities.filter(l => (l.diseases || []).length > 0);
+  const treated = localities.filter(l => (l.liceTreatments || []).length > 0);
+
+  let diagnosedCount = 0, suspectedCount = 0, unknownCount = 0;
+  localities.forEach(l => {
+    (l.diseases || []).forEach(code => {
+      const st = diseaseStatusAsOf(l.locality?.no, code, year, week);
+      if (st === 'DIAGNOSED') diagnosedCount++;
+      else if (st === 'SUSPECTED') suspectedCount++;
+      else unknownCount++;
+    });
+  });
+  const diseaseSub = withDisease.length > 0
+    ? `✓ ${diagnosedCount} diagnosed · ? ${suspectedCount} suspected${unknownCount > 0 ? ` · ${unknownCount} unstatused` : ''}`
+    : 'none this week';
 
   const cards = [
     { label: 'Total Localities',        value: total.toLocaleString(),               sub: withSalmonoid + ' with salmonoid license',          color: 'cyan',  metric: 'totalLocalities' },
@@ -1170,7 +1220,8 @@ function buildDetailsSheet(localities) {
     { label: 'Above 0.5 Lice Limit',    value: aboveLimit.length.toString(),         sub: 'of ' + rep.length + ' reporting',                   color: 'red',   metric: 'aboveLimit' },
     { label: 'Avg Lice / Fish',          value: avgLice,                              sub: 'adult females, all sites',                          color: 'amber', metric: 'avgLice' },
     { label: 'Elevated Lice (0.2–0.5)', value: aboveModerate.length.toString(),      sub: 'approaching limit',                                 color: 'amber', metric: 'aboveModerate' },
-    { label: 'Active Disease Cases',     value: withDisease.length.toString(),        sub: 'ISA · PD and other',                                color: 'red',   metric: 'diseaseCount' },
+    { label: 'Lice Treatments This Week', value: treated.length.toString(),          sub: 'of ' + rep.length + ' reporting',                   color: 'cyan',  metric: 'treated' },
+    { label: 'Active Disease Cases',     value: withDisease.length.toString(),        sub: diseaseSub,                                          color: 'red',   metric: 'diseaseCount' },
   ];
 
   cards.forEach(c => {
@@ -1276,7 +1327,7 @@ function buildLeftPanel(localities, summary) {
 // =========================================================================
 // SECTION: RIGHT PANEL — Environmental impact stats
 // =========================================================================
-function buildRightPanel(localities, summary) {
+function buildRightPanel(localities, summary, year, week) {
   const panel = document.getElementById('rightPanel');
   const reporting = localities.filter(l => l.liceReport?.hasReported && !l.liceReport?.isFallow);
   const aboveLimit = reporting.filter(l => (l.liceReport?.adultFemaleLice?.average || 0) > 0.5);
@@ -1288,6 +1339,22 @@ function buildRightPanel(localities, summary) {
   const dcByCode = {};
   localities.forEach(l => { (l.diseases || []).forEach(d => { dcByCode[d] = (dcByCode[d] || 0) + 1; }); });
 
+  // Treatment activity this week
+  const treated = localities.filter(l => (l.liceTreatments || []).length > 0);
+  const tcByCode = {};
+  localities.forEach(l => { (l.liceTreatments || []).forEach(t => { tcByCode[t] = (tcByCode[t] || 0) + 1; }); });
+
+  // Diagnosed (confirmed) vs suspected breakdown for whichever week is loaded
+  let diagnosedCount = 0, suspectedCount = 0, unknownCount = 0;
+  localities.forEach(l => {
+    (l.diseases || []).forEach(code => {
+      const st = diseaseStatusAsOf(l.locality?.no, code, year, week);
+      if (st === 'DIAGNOSED') diagnosedCount++;
+      else if (st === 'SUSPECTED') suspectedCount++;
+      else unknownCount++;
+    });
+  });
+
   const cards = [
     { label: 'Above 0.5 Lice Limit', value: aboveLimit.length.toString(), sub: `of ${reporting.length} reporting`, color: 'red', bar: { width: Math.min((aboveLimit.length / Math.max(reporting.length, 1)) * 100, 100), color: 'red' }, metric: 'aboveLimit',
       info: 'Norwegian law sets 0.5 adult female sea lice per fish as the treatment threshold. Farms exceeding this must treat immediately using medicines or non-medicinal methods (e.g. thermal or mechanical delousing). Adult females are counted because they reproduce — each carries two egg strings and can release hundreds of thousands of larvae.' },
@@ -1295,6 +1362,8 @@ function buildRightPanel(localities, summary) {
       info: 'Sea lice (Lepeophtheirus salmonis) pass through several life stages: nauplius → copepodid → chalimus → pre-adult → adult. Only adult females are officially counted in Norwegian lice reports. They are visible to inspectors, carry egg strings, and drive population growth. A value above 0.2 triggers increased monitoring; above 0.5 requires treatment.' },
     { label: 'Elevated Lice (0.2–0.5)', value: aboveModerate.length.toString(), sub: 'approaching limit', color: 'amber', bar: { width: (aboveModerate.length / Math.max(reporting.length, 1)) * 100, color: 'amber' }, metric: 'aboveModerate',
       info: 'The 0.2 threshold is a precautionary monitoring level, not a legal limit. Farms in this range face increased inspection frequency and must report more often. It signals that lice pressure is building and treatment may soon be needed. The legal treatment threshold is 0.5 adult female lice per fish.' },
+    { label: 'Lice Treatments This Week', value: treated.length.toString(), sub: `of ${reporting.length} reporting`, color: 'cyan', bar: { width: Math.min((treated.length / Math.max(reporting.length, 1)) * 100, 100), color: 'cyan' }, metric: 'treated',
+      info: 'Localities that applied a lice treatment this reporting week, either medicinal (bath or in-feed) or non-medicinal (mechanical, thermal, or freshwater delousing). Sourced directly from the locality’s liceTreatments field.' },
   ];
   cards.forEach(c => {
     const el = document.createElement('div');
@@ -1306,13 +1375,33 @@ function buildRightPanel(localities, summary) {
     el.addEventListener('mouseenter', () => showStatChart(c.metric, el));
     el.addEventListener('mouseleave', hideStatChart);
     panel.appendChild(el);
+
+    // Treatment-type breakdown pills, right under the treatment card
+    if (c.metric === 'treated') {
+      const trow = document.createElement('div');
+      trow.className = 'disease-pills';
+      if (Object.keys(tcByCode).length === 0) {
+        trow.innerHTML = '<span style="font-size:9px;color:#5e88aa;font-family:\'JetBrains Mono\',monospace;opacity:0.6">none this week</span>';
+      } else {
+        Object.entries(tcByCode).forEach(([code, count]) => {
+          const pill = document.createElement('span');
+          pill.className = 'disease-pill treatment-pill';
+          pill.textContent = `${treatmentName(code)} · ${count}`;
+          trow.appendChild(pill);
+        });
+      }
+      el.appendChild(trow);
+    }
   });
 
-  // Disease card with pill breakdown
+  // Disease card with pill breakdown + confirmed-vs-suspected split
   const diseaseCard = document.createElement('div');
   diseaseCard.className = 'stat-card';
   diseaseCard.dataset.metric = 'diseaseCount';
-  diseaseCard.innerHTML = `<div class="stat-label">Active Disease Cases</div><div class="stat-value red">${withDisease.length}</div><div class="disease-pills" id="diseasePillsRow"></div><div style="margin-top:10px;font-size:11px;font-family:'JetBrains Mono',monospace;color:rgba(94,136,170,0.7);line-height:1.6">Click a pill to highlight farms on map.<br>Only works if cases are registered this week.</div>`;
+  const statusLine = withDisease.length > 0
+    ? `<div class="disease-status-split"><span class="dss-diagnosed">✓ ${diagnosedCount} diagnosed</span><span class="dss-suspected">? ${suspectedCount} suspected</span>${unknownCount > 0 ? `<span class="dss-unknown">${unknownCount} unstatused</span>` : ''}</div>`
+    : '';
+  diseaseCard.innerHTML = `<div class="stat-label">Active Disease Cases</div><div class="stat-value red">${withDisease.length}</div>${statusLine}<div class="disease-pills" id="diseasePillsRow"></div><div style="margin-top:10px;font-size:11px;font-family:'JetBrains Mono',monospace;color:rgba(94,136,170,0.7);line-height:1.6">Click a pill to highlight farms on map.<br>Diagnosed/suspected split reflects Barentswatch's weekly outbreak reports; older cases may show as unstatused.</div>`;
   diseaseCard.addEventListener('mouseenter', () => showStatChart('diseaseCount', diseaseCard));
   diseaseCard.addEventListener('mouseleave', hideStatChart);
   panel.appendChild(diseaseCard);

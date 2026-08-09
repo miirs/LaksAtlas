@@ -63,7 +63,8 @@ jobs:
                   data/summary.json \
                   data/health_history.json \
                   data/available_weeks.json \
-                  data/sea_temperature.json || true
+                  data/sea_temperature.json \
+                  data/disease_status.json || true
 
           # Stage any newly-created week-specific snapshot files
           git add "data/localities_*.json" "data/summary_*.json" || true
