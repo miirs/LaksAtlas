@@ -2,6 +2,18 @@
   "weeks": [
     {
       "year": 2026,
+      "week": 31,
+      "fetched_at": "2026-08-04T10:28:35.617725",
+      "total_localities": null
+    },
+    {
+      "year": 2026,
+      "week": 30,
+      "fetched_at": "2026-07-28T10:26:24.275266",
+      "total_localities": null
+    },
+    {
+      "year": 2026,
       "week": 29,
       "fetched_at": "2026-07-21T10:17:28.438470",
       "total_localities": null
@@ -171,6 +183,6 @@
   ],
   "latest": {
     "year": 2026,
-    "week": 29
+    "week": 31
   }
 }
