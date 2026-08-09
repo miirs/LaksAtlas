@@ -59,10 +59,13 @@ header { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; padding: 0 2
 .week-no-data { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--neon-amber); padding: 4px 10px; background: rgba(244,165,53,0.08); border: 1px solid rgba(244,165,53,0.22); border-radius: 6px; display: none; }
 .week-no-data.visible { display: block; }
 
-.chip{display:inline-flex;align-items:center;padding:2px 9px;border-radius:999px;font-size:10px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;font-family:'JetBrains Mono',monospace;vertical-align:middle;white-space:nowrap}
+.chip{display:inline-flex;align-items:center;gap:5px;padding:2px 9px;border-radius:999px;font-size:10px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;font-family:'JetBrains Mono',monospace;vertical-align:middle;white-space:nowrap}
 .chip-isa{background:rgba(255,71,87,0.12);color:#ff4757;border:1px solid rgba(255,71,87,0.28)}
 .chip-pd{background:rgba(244,165,53,0.12);color:#f4a535;border:1px solid rgba(244,165,53,0.28)}
 .chip-lice{background:rgba(168,85,247,0.12);color:#a855f7;border:1px solid rgba(168,85,247,0.28)}
+.chip-treatment{background:rgba(0,240,255,0.10);color:#00f0ff;border:1px solid rgba(0,240,255,0.25);text-transform:none;letter-spacing:0.2px;font-weight:600}
+.chip-confirmed{box-shadow:0 0 0 1px currentColor inset}
+.chip-sub{font-weight:500;text-transform:none;letter-spacing:0;opacity:0.85;font-size:9px}
 
 .layout { display: grid; grid-template-columns: 340px 1fr 360px; height: 100vh; padding-top: 57px; }
 
@@ -114,6 +117,7 @@ header { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; padding: 0 2
 .filter-item input[type="checkbox"]:checked { border-color: var(--neon-cyan); background: rgba(0,240,255,0.15); }
 .filter-item input[type="checkbox"]:checked::after { content: '✓'; position: absolute; top: -1px; left: 2px; font-size: 10px; color: var(--neon-cyan); }
 .filter-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.filter-dot-ring { background: transparent !important; border: 1.5px solid; box-sizing: border-box; }
 .filter-count { margin-left: auto; font-size: 10px; color: var(--text-muted); }
 .filter-divider { height: 1px; background: var(--border); margin: 8px 0; }
 
@@ -153,8 +157,18 @@ header { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; padding: 0 2
 .popup-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .popup-stat-label { font-size: 8px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
 .popup-stat-value { font-size: 17px; font-weight: 700; margin-top: 1px; }
-.popup-diseases { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); display: flex; flex-wrap: wrap; gap: 4px; }
+.popup-diseases { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); display: flex; flex-wrap: wrap; gap: 6px 4px; }
 .popup-fallow { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); font-size: 11px; color: var(--text-muted); font-style: italic; }
+.popup-facility-badges { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; }
+.facility-badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 999px; font-size: 10px; font-family: 'JetBrains Mono', monospace; }
+.fb-land { background: rgba(125,211,252,0.10); color: #7dd3fc; border: 1px solid rgba(125,211,252,0.28); }
+.fb-slaughter { background: rgba(252,165,165,0.10); color: #fca5a5; border: 1px solid rgba(252,165,165,0.28); }
+.popup-lice-trends { margin-top: 8px; display: flex; flex-direction: column; gap: 2px; }
+.lice-trend-row { display: flex; align-items: center; justify-content: space-between; font-size: 11px; padding: 2px 0; }
+.lt-label { color: var(--text-muted); font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 0.5px; text-transform: uppercase; flex: 1; }
+.lt-value { color: var(--text); font-family: 'JetBrains Mono', monospace; font-weight: 700; margin-right: 6px; }
+.lt-arrow { font-size: 9px; width: 12px; text-align: center; }
+.popup-treatments { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 4px; }
 .temp-tooltip.leaflet-tooltip { background: rgba(4,9,26,0.92); border: 1px solid var(--border-hover); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 6px; box-shadow: none; }
 
 /* =========================================================================
@@ -355,6 +369,10 @@ header { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; padding: 0 2
       <label class="filter-item"><input type="checkbox" id="filterDisease" checked><div class="filter-dot" style="background:#ff3b4a;box-shadow:0 0 4px rgba(255,59,74,0.4)"></div>Disease active<span class="filter-count" id="countDisease">—</span></label>
       <div class="filter-divider"></div>
       <label class="filter-item"><input type="checkbox" id="filterFallow"><div class="filter-dot" style="background:#555"></div>Fallow / Not reporting<span class="filter-count" id="countFallow">—</span></label>
+      <label class="filter-item"><input type="checkbox" id="filterNoLicense"><div class="filter-dot" style="background:#2a3446"></div>Not an active salmon site<span class="filter-count" id="countNoLicense">—</span></label>
+      <div class="filter-divider"></div>
+      <label class="filter-item"><input type="checkbox" id="filterOnLand"><div class="filter-dot filter-dot-ring" style="border-color:#7dd3fc"></div>Highlight land-based<span class="filter-count" id="countOnLand">—</span></label>
+      <label class="filter-item"><input type="checkbox" id="filterSlaughter"><div class="filter-dot filter-dot-ring" style="border-color:#fca5a5"></div>Highlight slaughter cages<span class="filter-count" id="countSlaughter">—</span></label>
       <div class="filter-divider"></div>
       <label class="filter-item"><input type="checkbox" id="filterTemp"><div class="filter-dot" style="background:linear-gradient(135deg,#1a1aff,#ff3b4a);width:10px;height:10px"></div>Sea temperature layer</label>
     </div>
@@ -379,6 +397,9 @@ header { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; padding: 0 2
   <div class="legend-item red"><div class="legend-dot"></div> Disease</div>
   <div class="legend-item grey"><div class="legend-dot"></div> Fallow</div>
 </div>
+<div class="map-legend" id="facilityLegend" style="display:none;">
+  <span style="font-size:10px;color:var(--text-muted);font-family:'JetBrains Mono',monospace;">🏗 dashed ring = land-based &nbsp; 🔪 double ring = slaughter cage</span>
+</div>
 
 <script>
 // =========================================================================
@@ -396,10 +417,13 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.p
 let allLocalityData = [];
 let currentSummary = {};
 let activeDiseaseFilter = null;
-let markersByStatus = { good: [], moderate: [], above_limit: [], disease: [], fallow: [] };
+let markersByStatus = { good: [], moderate: [], above_limit: [], disease: [], fallow: [], no_license: [] };
 let layerGroups = {};
 let heatLayer = null;
 let allMarkersForZoom = [];
+let diseaseStatusRegistry = {};   // locality no -> disease code -> {latest_status, subtype, since week, ...}
+let onLandLayer = L.layerGroup();
+let slaughterLayer = L.layerGroup();
 
 // =========================================================================
 // SECTION: WEEK NAVIGATION STATE
@@ -679,6 +703,15 @@ function refreshOpenChart(metric) {
 // =========================================================================
 async function loadData() {
   try {
+    // Disease status history (suspected/diagnosed timeline) — static registry, load once
+    try {
+      const dsRes = await fetch('../data/disease_status.json');
+      if (dsRes.ok) {
+        const ds = await dsRes.json();
+        diseaseStatusRegistry = ds.localities || {};
+      }
+    } catch (_) {}
+
     // Try to load the manifest of available weeks first
     let manifestOk = false;
     try {
@@ -824,6 +857,51 @@ function diseaseChipClass(code) {
   return 'chip-lice'; // neutral purple for others
 }
 
+// Looks up this locality+disease in the accumulated status registry (built from
+// Barentswatch's weekly diseaseOutbreaks feed) and returns a short status string
+// like "suspected W5" or "diagnosed W12 (suspected W8)". Falls back to null when
+// the disease predates the registry's coverage or fell outside its weekly feed.
+function diseaseStatusText(localityNo, code) {
+  const entry = diseaseStatusRegistry[String(localityNo)]?.[code];
+  if (!entry) return null;
+  const parts = [];
+  if (entry.diagnosed_week != null) {
+    parts.push(`diagnosed W${entry.diagnosed_week}`);
+    if (entry.first_suspected_week != null && entry.first_suspected_week !== entry.diagnosed_week) {
+      parts.push(`suspected W${entry.first_suspected_week}`);
+    }
+  } else if (entry.first_suspected_week != null) {
+    parts.push(`suspected W${entry.first_suspected_week}`);
+  }
+  let text = parts.join(', ');
+  if (entry.subtype) text += (text ? ' · ' : '') + entry.subtype;
+  return text || null;
+}
+function diseaseIsConfirmed(localityNo, code) {
+  return diseaseStatusRegistry[String(localityNo)]?.[code]?.latest_status === 'DIAGNOSED';
+}
+
+// =========================================================================
+// SECTION: LICE TREND ARROWS
+// =========================================================================
+function trendArrow(trend) {
+  if (trend === 'Increasing') return { sym: '▲', color: 'var(--neon-red)' };
+  if (trend === 'Decreasing') return { sym: '▼', color: 'var(--neon-green)' };
+  if (trend === 'Stable')     return { sym: '▬', color: 'var(--text-dim)' };
+  return { sym: '', color: 'var(--text-dim)' };
+}
+
+// =========================================================================
+// SECTION: LICE TREATMENT LABELS
+// =========================================================================
+const TREATMENT_NAMES = {
+  'IKKE_MEDIKAMENTELL': 'Non-medicinal treatment',
+  'MEDIKAMENTELL': 'Medicinal treatment',
+};
+function treatmentName(code) {
+  return TREATMENT_NAMES[code] || code.replace(/_/g, ' ').toLowerCase().replace(/^./, c => c.toUpperCase());
+}
+
 // =========================================================================
 // SECTION: CLASSIFY LOCALITY STATUS
 // =========================================================================
@@ -834,6 +912,10 @@ function getLocalityStatus(loc) {
   const diseases = loc.diseases || [];
   const avgLice = lr.adultFemaleLice?.average;
 
+  // Sites without a salmonid license never report lice/disease — they aren't
+  // currently active salmon/trout farms, so keep them visually distinct from
+  // a genuine salmon farm that's resting between production cycles.
+  if (!loc.hasSalmonoidLicense) return { color: '#2a3446', status: 'no_license', radius: 2 };
   if (!hasReported || isFallow) return { color: '#555', status: 'fallow', radius: 2.5 };
   if (diseases.length > 0) return { color: '#ff3b4a', status: 'disease', radius: 4 };
   if (avgLice != null && avgLice > 0.5) return { color: '#ffb020', status: 'above_limit', radius: 4 };
@@ -845,8 +927,11 @@ function getLocalityStatus(loc) {
 // SECTION: PLOT LOCALITIES — Grouped into filterable layer groups
 // =========================================================================
 function plotLocalities(localities) {
-  markersByStatus = { good: [], moderate: [], above_limit: [], disease: [], fallow: [] };
+  markersByStatus = { good: [], moderate: [], above_limit: [], disease: [], fallow: [], no_license: [] };
   allMarkersForZoom = [];
+  onLandLayer.clearLayers();
+  slaughterLayer.clearLayers();
+  let onLandCount = 0, slaughterCount = 0;
 
   function getDotSize(baseRadius) {
     const zoom = map.getZoom();
@@ -869,6 +954,10 @@ function plotLocalities(localities) {
     const seaTemp = lr.seaTemperature;
     const diseases = loc.diseases || [];
     const isFallow = lr.isFallow || false;
+    const isOnLand = loc.locality?.isOnLand || false;
+    const isSlaughterCage = loc.isSlaughterHoldingCage || false;
+    const treatments = loc.liceTreatments || [];
+    const noLicense = !loc.hasSalmonoidLicense;
 
     const marker = L.circleMarker([lat, lng], {
       radius: getDotSize(status.radius),
@@ -883,43 +972,86 @@ function plotLocalities(localities) {
 
     // Build popup
     let p = `<div class="popup-inner"><div class="popup-name">${name}</div><div class="popup-municipality">${municipality} · Locality ${localityNo}</div>`;
-    if (isFallow) {
+
+    if (isOnLand || isSlaughterCage) {
+      p += `<div class="popup-facility-badges">`;
+      if (isOnLand) p += `<span class="facility-badge fb-land">🏗 Land-based</span>`;
+      if (isSlaughterCage) p += `<span class="facility-badge fb-slaughter">🔪 Slaughter holding cage</span>`;
+      p += `</div>`;
+    }
+
+    if (noLicense) {
+      p += `<div class="popup-fallow">Not an active salmon/trout site (no salmonid license) — never reports lice or disease data.</div>`;
+    } else if (isFallow) {
       p += `<div class="popup-fallow">Currently fallow (no fish)</div>`;
     } else {
       const lv = avgLice != null ? avgLice.toFixed(2) : '—';
       const lc = avgLice > 0.5 ? 'var(--neon-red)' : avgLice > 0.2 ? 'var(--neon-amber)' : 'var(--neon-green)';
       const pv = prevLice != null ? prevLice.toFixed(2) : '—';
       const tv = seaTemp != null ? seaTemp.toFixed(1) + '°C' : '—';
-      const ml = lr.mobileLice?.average;
-      const mv = ml != null ? ml.toFixed(2) : '—';
+
       p += `<div class="popup-grid">`;
       p += `<div><div class="popup-stat-label">Adult ♀ Lice</div><div class="popup-stat-value" style="color:${lc}">${lv}</div></div>`;
       p += `<div><div class="popup-stat-label">Prev Week</div><div class="popup-stat-value" style="color:var(--text-dim)">${pv}</div></div>`;
       p += `<div><div class="popup-stat-label">Sea Temp</div><div class="popup-stat-value" style="color:var(--neon-cyan)">${tv}</div></div>`;
-      p += `<div><div class="popup-stat-label">Mobile Lice</div><div class="popup-stat-value" style="color:var(--text-dim)">${mv}</div></div>`;
       p += `</div>`;
+
+      // Full breakdown of all 4 lice categories with trend arrows
+      const liceCats = [
+        ['Adult ♀', lr.adultFemaleLice],
+        ['Mobile', lr.mobileLice],
+        ['Stationary', lr.stationaryLice],
+        ['Total', lr.totalLice],
+      ];
+      p += `<div class="popup-lice-trends">`;
+      liceCats.forEach(([label, cat]) => {
+        if (!cat) return;
+        const v = cat.average != null ? cat.average.toFixed(2) : '—';
+        const t = trendArrow(cat.trend);
+        p += `<div class="lice-trend-row"><span class="lt-label">${label}</span><span class="lt-value">${v}</span><span class="lt-arrow" style="color:${t.color}" title="${cat.trend || ''}">${t.sym}</span></div>`;
+      });
+      p += `</div>`;
+
+      if (treatments.length > 0) {
+        p += `<div class="popup-treatments">${treatments.map(t => `<span class="chip chip-treatment">🧪 ${treatmentName(t)}</span>`).join('')}</div>`;
+      }
     }
+
     if (diseases.length > 0) {
       const disChips = diseases.map(d => {
-        return `<span class="chip ${diseaseChipClass(d)}">${diseaseName(d)}</span>`;
+        const statusText = diseaseStatusText(localityNo, d);
+        const confirmed = diseaseIsConfirmed(localityNo, d);
+        const sub = statusText ? `<span class="chip-sub">${confirmed ? '✓' : '?'} ${statusText}</span>` : '';
+        return `<span class="chip ${diseaseChipClass(d)}${confirmed ? ' chip-confirmed' : ''}">${diseaseName(d)}${sub}</span>`;
       }).join('');
       p += `<div class="popup-diseases">${disChips}</div>`;
     }
     p += `</div>`;
-    marker.bindPopup(p, { maxWidth: 280 });
+    marker.bindPopup(p, { maxWidth: 300 });
 
     marker._diseaseCodes = diseases;
     markersByStatus[status.status].push(marker);
+
+    if (isOnLand) {
+      onLandCount++;
+      L.circleMarker([lat, lng], { radius: getDotSize(status.radius) + 4, fill: false, color: '#7dd3fc', weight: 1.5, opacity: 0.85, dashArray: '3,3' }).addTo(onLandLayer);
+    }
+    if (isSlaughterCage) {
+      slaughterCount++;
+      L.circleMarker([lat, lng], { radius: getDotSize(status.radius) + 6, fill: false, color: '#fca5a5', weight: 1.5, opacity: 0.85 }).addTo(slaughterLayer);
+    }
   });
 
   // Create layer groups
   Object.keys(markersByStatus).forEach(s => { layerGroups[s] = L.layerGroup(markersByStatus[s]); });
 
   // Add layers according to current checkbox state (respects user's active filters)
-  const filterMap = { good: 'filterGood', moderate: 'filterModerate', above_limit: 'filterAbove', disease: 'filterDisease', fallow: 'filterFallow' };
+  const filterMap = { good: 'filterGood', moderate: 'filterModerate', above_limit: 'filterAbove', disease: 'filterDisease', fallow: 'filterFallow', no_license: 'filterNoLicense' };
   Object.entries(filterMap).forEach(([status, id]) => {
     if (document.getElementById(id).checked) layerGroups[status].addTo(map);
   });
+  if (document.getElementById('filterOnLand').checked) onLandLayer.addTo(map);
+  if (document.getElementById('filterSlaughter').checked) slaughterLayer.addTo(map);
 
   // Update counts in filter panel
   document.getElementById('countGood').textContent = markersByStatus.good.length;
@@ -927,6 +1059,9 @@ function plotLocalities(localities) {
   document.getElementById('countAbove').textContent = markersByStatus.above_limit.length;
   document.getElementById('countDisease').textContent = markersByStatus.disease.length;
   document.getElementById('countFallow').textContent = markersByStatus.fallow.length;
+  document.getElementById('countNoLicense').textContent = markersByStatus.no_license.length;
+  document.getElementById('countOnLand').textContent = onLandCount;
+  document.getElementById('countSlaughter').textContent = slaughterCount;
 
   // Resize on zoom
   map.on('zoomend', () => {
@@ -971,7 +1106,7 @@ function buildTemperatureLayer(localities) {
 // SECTION: FILTER CONTROLS — Connect checkboxes to layer visibility
 // =========================================================================
 function setupFilters() {
-  const filters = { filterGood: 'good', filterModerate: 'moderate', filterAbove: 'above_limit', filterDisease: 'disease', filterFallow: 'fallow' };
+  const filters = { filterGood: 'good', filterModerate: 'moderate', filterAbove: 'above_limit', filterDisease: 'disease', filterFallow: 'fallow', filterNoLicense: 'no_license' };
 
   Object.entries(filters).forEach(([id, status]) => {
     document.getElementById(id).addEventListener('change', (e) => {
@@ -985,6 +1120,21 @@ function setupFilters() {
     if (e.target.checked) { map.addLayer(heatLayer); legend.classList.add('visible'); }
     else { map.removeLayer(heatLayer); legend.classList.remove('visible'); }
   });
+
+  document.getElementById('filterOnLand').addEventListener('change', (e) => {
+    if (e.target.checked) map.addLayer(onLandLayer); else map.removeLayer(onLandLayer);
+    updateFacilityLegend();
+  });
+  document.getElementById('filterSlaughter').addEventListener('change', (e) => {
+    if (e.target.checked) map.addLayer(slaughterLayer); else map.removeLayer(slaughterLayer);
+    updateFacilityLegend();
+  });
+}
+
+function updateFacilityLegend() {
+  const onLand = document.getElementById('filterOnLand').checked;
+  const slaughter = document.getElementById('filterSlaughter').checked;
+  document.getElementById('facilityLegend').style.display = (onLand || slaughter) ? 'block' : 'none';
 }
 
 // =========================================================================

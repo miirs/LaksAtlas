@@ -1,0 +1,532 @@
+{
+  "generated_at": "2026-08-09T09:34:11.238763+00:00",
+  "source_note": "Accumulated from Barentswatch's weekly diseaseOutbreaks feed, which only reports newly SUSPECTED/DIAGNOSED cases per week. Localities/diseases never seen in that feed have no entry here.",
+  "weeks_scanned": 30,
+  "localities": {
+    "33737": {
+      "PANKREASSYKDOM": {
+        "latest_status": "SUSPECTED",
+        "latest_year": 2026,
+        "latest_week": 2,
+        "first_suspected_year": 2026,
+        "first_suspected_week": 2,
+        "diagnosed_year": null,
+        "diagnosed_week": null,
+        "subtype": "SAV2",
+        "locality_name": "Olausskjæret"
+      }
+    },
+    "17177": {
+      "PANKREASSYKDOM": {
+        "latest_status": "SUSPECTED",
+        "latest_year": 2026,
+        "latest_week": 2,
+        "first_suspected_year": 2026,
+        "first_suspected_week": 2,
+        "diagnosed_year": null,
+        "diagnosed_week": null,
+        "subtype": "SAV3",
+        "locality_name": "Grunneneset"
+      }
+    },
+    "14042": {
+      "PANKREASSYKDOM": {
+        "latest_status": "SUSPECTED",
+        "latest_year": 2026,
+        "latest_week": 3,
+        "first_suspected_year": 2026,
+        "first_suspected_week": 3,
+        "diagnosed_year": null,
+        "diagnosed_week": null,
+        "subtype": "SAV2",
+        "locality_name": "Kattholmen"
+      }
+    },
+    "13241": {
+      "PANKREASSYKDOM": {
+        "latest_status": "SUSPECTED",
+        "latest_year": 2026,
+        "latest_week": 3,
+        "first_suspected_year": 2026,
+        "first_suspected_week": 3,
+        "diagnosed_year": null,
+        "diagnosed_week": null,
+        "subtype": "SAV3",
+        "locality_name": "Endal Vest"
+      }
+    },
+    "30437": {
+      "PANKREASSYKDOM": {
+        "latest_status": "SUSPECTED",
+        "latest_year": 2026,
+        "latest_week": 3,
+        "first_suspected_year": 2026,
+        "first_suspected_week": 3,
+        "diagnosed_year": null,
+        "diagnosed_week": null,
+        "subtype": "SAV2",
+        "locality_name": "Kattholmen II"
+      }
+    },
+    "31557": {
+      "PANKREASSYKDOM": {
+        "latest_status": "SUSPECTED",
+        "latest_year": 2026,
+        "latest_week": 3,
+        "first_suspected_year": 2026,
+        "first_suspected_week": 3,
+        "diagnosed_year": null,
+        "diagnosed_week": null,
+        "subtype": "SAV2",
+        "locality_name": "Valøyan"
+      },
+      "INFEKSIOES_LAKSEANEMI": {
+        "latest_status": "SUSPECTED",
+        "latest_year": 2026,
+        "latest_week": 12,
+        "first_suspected_year": 2026,
+        "first_suspected_week": 12,
+        "diagnosed_year": null,
+        "diagnosed_week": null,
+        "subtype": null,
+        "locality_name": "Valøyan"
+      }
+    },
+    "12348": {
+      "BAKTERIELL_NYRESYKE": {
+        "latest_status": "SUSPECTED",
+        "latest_year": 2026,
+        "latest_week": 4,
+        "first_suspected_year": 2026,
+        "first_suspected_week": 4,
+        "diagnosed_year": null,
+        "diagnosed_week": null,
+        "subtype": null,
+        "locality_name": "Kåholmen"
+      },
+      "PANKREASSYKDOM": {
+        "latest_status": "SUSPECTED",
+        "latest_year": 2026,
+        "latest_week": 8,
+        "first_suspected_year": 2026,
+        "first_suspected_week": 8,
+        "diagnosed_year": null,
+        "diagnosed_week": null,
+        "subtype": "SAV2",
+        "locality_name": "Kåholmen"
+      }
+    },
+    "13503": {
+      "PANKREASSYKDOM": {
+        "latest_status": "SUSPECTED",
+        "latest_year": 2026,
+        "latest_week": 4,
+        "first_suspected_year": 2026,
+        "first_suspected_week": 4,
+        "diagnosed_year": null,
+        "diagnosed_week": null,
+        "subtype": "SAV2",
+        "locality_name": "Heggvika"
+      },
+      "BAKTERIELL_NYRESYKE": {
+        "latest_status": "SUSPECTED",
+        "latest_year": 2026,
+        "latest_week": 13,
+        "first_suspected_year": 2026,
+        "first_suspected_week": 13,
+        "diagnosed_year": null,
+        "diagnosed_week": null,
+        "subtype": null,
+        "locality_name": "Heggvika"
+      }
+    },
+    "13837": {
+      "PANKREASSYKDOM": {
+        "latest_status": "SUSPECTED",
+        "latest_year": 2026,
+        "latest_week": 5,
+        "first_suspected_year": 2026,
+        "first_suspected_week": 5,
+        "diagnosed_year": null,
+        "diagnosed_week": null,
+        "subtype": "SAV3",
+        "locality_name": "Verpeide"
+      }
+    },
+    "24696": {
+      "PANKREASSYKDOM": {
+        "latest_status": "SUSPECTED",
+        "latest_year": 2026,
+        "latest_week": 5,
+        "first_suspected_year": 2026,
+        "first_suspected_week": 5,
+        "diagnosed_year": null,
+        "diagnosed_week": null,
+        "subtype": "SAV2",
+        "locality_name": "Ørnøya II"
+      }
+    },
+    "37197": {
+      "PANKREASSYKDOM": {
+        "latest_status": "SUSPECTED",
+        "latest_year": 2026,
+        "latest_week": 5,
+        "first_suspected_year": 2026,
+        "first_suspected_week": 5,
+        "diagnosed_year": null,
+        "diagnosed_week": null,
+        "subtype": "SAV2",
+        "locality_name": "Ruggstein"
+      }
+    },
+    "12394": {
+      "PANKREASSYKDOM": {
+        "latest_status": "SUSPECTED",
+        "latest_year": 2026,
+        "latest_week": 5,
+        "first_suspected_year": 2026,
+        "first_suspected_week": 5,
+        "diagnosed_year": null,
+        "diagnosed_week": null,
+        "subtype": "SAV2",
+        "locality_name": "Ørnøya"
+      }
+    },
+    "28636": {
+      "PANKREASSYKDOM": {
+        "latest_status": "SUSPECTED",
+        "latest_year": 2026,
+        "latest_week": 6,
+        "first_suspected_year": 2026,
+        "first_suspected_week": 6,
+        "diagnosed_year": null,
+        "diagnosed_week": null,
+        "subtype": "SAV2",
+        "locality_name": "Rataren"
+      }
+    },
+    "31959": {
+      "PANKREASSYKDOM": {
+        "latest_status": "SUSPECTED",
+        "latest_year": 2026,
+        "latest_week": 6,
+        "first_suspected_year": 2026,
+        "first_suspected_week": 6,
+        "diagnosed_year": null,
+        "diagnosed_week": null,
+        "subtype": "SAV2",
+        "locality_name": "Rataren II"
+      }
+    },
+    "35377": {
+      "PANKREASSYKDOM": {
+        "latest_status": "SUSPECTED",
+        "latest_year": 2026,
+        "latest_week": 6,
+        "first_suspected_year": 2026,
+        "first_suspected_week": 6,
+        "diagnosed_year": null,
+        "diagnosed_week": null,
+        "subtype": "SAV2",
+        "locality_name": "Kveitskjeret"
+      },
+      "INFEKSIOES_LAKSEANEMI": {
+        "latest_status": "SUSPECTED",
+        "latest_year": 2026,
+        "latest_week": 17,
+        "first_suspected_year": 2026,
+        "first_suspected_week": 17,
+        "diagnosed_year": null,
+        "diagnosed_week": null,
+        "subtype": null,
+        "locality_name": "Kveitskjeret"
+      }
+    },
+    "38797": {
+      "PANKREASSYKDOM": {
+        "latest_status": "SUSPECTED",
+        "latest_year": 2026,
+        "latest_week": 6,
+        "first_suspected_year": 2026,
+        "first_suspected_week": 6,
+        "diagnosed_year": null,
+        "diagnosed_week": null,
+        "subtype": "SAV2",
+        "locality_name": "Oløya N"
+      }
+    },
+    "45020": {
+      "FRANCISELLOSE": {
+        "latest_status": "SUSPECTED",
+        "latest_year": 2026,
+        "latest_week": 7,
+        "first_suspected_year": 2026,
+        "first_suspected_week": 7,
+        "diagnosed_year": null,
+        "diagnosed_week": null,
+        "subtype": null,
+        "locality_name": "Rekvika"
+      }
+    },
+    "13841": {
+      "PANKREASSYKDOM": {
+        "latest_status": "SUSPECTED",
+        "latest_year": 2026,
+        "latest_week": 7,
+        "first_suspected_year": 2026,
+        "first_suspected_week": 7,
+        "diagnosed_year": null,
+        "diagnosed_week": null,
+        "subtype": "SAV3",
+        "locality_name": "Brunsvik"
+      }
+    },
+    "31357": {
+      "INFEKSIOES_LAKSEANEMI": {
+        "latest_status": "SUSPECTED",
+        "latest_year": 2026,
+        "latest_week": 8,
+        "first_suspected_year": 2026,
+        "first_suspected_week": 8,
+        "diagnosed_year": null,
+        "diagnosed_week": null,
+        "subtype": null,
+        "locality_name": "Geitryggen"
+      }
+    },
+    "12449": {
+      "PANKREASSYKDOM": {
+        "latest_status": "SUSPECTED",
+        "latest_year": 2026,
+        "latest_week": 9,
+        "first_suspected_year": 2026,
+        "first_suspected_week": 9,
+        "diagnosed_year": null,
+        "diagnosed_week": null,
+        "subtype": "SAV2",
+        "locality_name": "Tennøya"
+      }
+    },
+    "12385": {
+      "PANKREASSYKDOM": {
+        "latest_status": "SUSPECTED",
+        "latest_year": 2026,
+        "latest_week": 9,
+        "first_suspected_year": 2026,
+        "first_suspected_week": 9,
+        "diagnosed_year": null,
+        "diagnosed_week": null,
+        "subtype": "SAV2",
+        "locality_name": "Lyngvær Ø II"
+      }
+    },
+    "35657": {
+      "PANKREASSYKDOM": {
+        "latest_status": "SUSPECTED",
+        "latest_year": 2026,
+        "latest_week": 11,
+        "first_suspected_year": 2026,
+        "first_suspected_week": 11,
+        "diagnosed_year": null,
+        "diagnosed_week": null,
+        "subtype": "SAV2",
+        "locality_name": "Varden"
+      }
+    },
+    "13549": {
+      "PANKREASSYKDOM": {
+        "latest_status": "SUSPECTED",
+        "latest_year": 2026,
+        "latest_week": 11,
+        "first_suspected_year": 2026,
+        "first_suspected_week": 11,
+        "diagnosed_year": null,
+        "diagnosed_week": null,
+        "subtype": "SAV3",
+        "locality_name": "Løypingneset"
+      }
+    },
+    "20559": {
+      "PANKREASSYKDOM": {
+        "latest_status": "SUSPECTED",
+        "latest_year": 2026,
+        "latest_week": 11,
+        "first_suspected_year": 2026,
+        "first_suspected_week": 11,
+        "diagnosed_year": null,
+        "diagnosed_week": null,
+        "subtype": "SAV2",
+        "locality_name": "Langskjæra"
+      }
+    },
+    "33557": {
+      "PANKREASSYKDOM": {
+        "latest_status": "SUSPECTED",
+        "latest_year": 2026,
+        "latest_week": 11,
+        "first_suspected_year": 2026,
+        "first_suspected_week": 11,
+        "diagnosed_year": null,
+        "diagnosed_week": null,
+        "subtype": "SAV2",
+        "locality_name": "Langskjæra II"
+      }
+    },
+    "45078": {
+      "PANKREASSYKDOM": {
+        "latest_status": "DIAGNOSED",
+        "latest_year": 2026,
+        "latest_week": 16,
+        "first_suspected_year": null,
+        "first_suspected_week": null,
+        "diagnosed_year": 2026,
+        "diagnosed_week": 16,
+        "subtype": "SAV3",
+        "locality_name": "Almbakkevika"
+      }
+    },
+    "10045": {
+      "PANKREASSYKDOM": {
+        "latest_status": "SUSPECTED",
+        "latest_year": 2026,
+        "latest_week": 20,
+        "first_suspected_year": 2026,
+        "first_suspected_week": 20,
+        "diagnosed_year": null,
+        "diagnosed_week": null,
+        "subtype": "SAV3",
+        "locality_name": "Eidholmen"
+      }
+    },
+    "10041": {
+      "PANKREASSYKDOM": {
+        "latest_status": "SUSPECTED",
+        "latest_year": 2026,
+        "latest_week": 20,
+        "first_suspected_year": 2026,
+        "first_suspected_week": 20,
+        "diagnosed_year": null,
+        "diagnosed_week": null,
+        "subtype": "SAV3",
+        "locality_name": "Kviksholmen"
+      }
+    },
+    "45198": {
+      "INFEKSIOES_LAKSEANEMI": {
+        "latest_status": "SUSPECTED",
+        "latest_year": 2026,
+        "latest_week": 20,
+        "first_suspected_year": 2026,
+        "first_suspected_week": 20,
+        "diagnosed_year": null,
+        "diagnosed_week": null,
+        "subtype": null,
+        "locality_name": "Purkholmen"
+      }
+    },
+    "13581": {
+      "INFEKSIOES_LAKSEANEMI": {
+        "latest_status": "SUSPECTED",
+        "latest_year": 2026,
+        "latest_week": 20,
+        "first_suspected_year": 2026,
+        "first_suspected_week": 20,
+        "diagnosed_year": null,
+        "diagnosed_week": null,
+        "subtype": null,
+        "locality_name": "Ramstadholmen"
+      }
+    },
+    "10256": {
+      "INFEKSIOES_LAKSEANEMI": {
+        "latest_status": "SUSPECTED",
+        "latest_year": 2026,
+        "latest_week": 22,
+        "first_suspected_year": 2026,
+        "first_suspected_week": 22,
+        "diagnosed_year": null,
+        "diagnosed_week": null,
+        "subtype": null,
+        "locality_name": "Bondøya"
+      }
+    },
+    "38857": {
+      "INFEKSIOES_LAKSEANEMI": {
+        "latest_status": "SUSPECTED",
+        "latest_year": 2026,
+        "latest_week": 23,
+        "first_suspected_year": 2026,
+        "first_suspected_week": 23,
+        "diagnosed_year": null,
+        "diagnosed_week": null,
+        "subtype": null,
+        "locality_name": "Vannfjorden"
+      }
+    },
+    "11688": {
+      "PANKREASSYKDOM": {
+        "latest_status": "SUSPECTED",
+        "latest_year": 2026,
+        "latest_week": 23,
+        "first_suspected_year": 2026,
+        "first_suspected_week": 23,
+        "diagnosed_year": null,
+        "diagnosed_week": null,
+        "subtype": "SAV3",
+        "locality_name": "Portevika"
+      }
+    },
+    "26135": {
+      "PANKREASSYKDOM": {
+        "latest_status": "SUSPECTED",
+        "latest_year": 2026,
+        "latest_week": 27,
+        "first_suspected_year": 2026,
+        "first_suspected_week": 27,
+        "diagnosed_year": null,
+        "diagnosed_week": null,
+        "subtype": "SAV2",
+        "locality_name": "Kjørsvikgrunn"
+      }
+    },
+    "14040": {
+      "PANKREASSYKDOM": {
+        "latest_status": "SUSPECTED",
+        "latest_year": 2026,
+        "latest_week": 28,
+        "first_suspected_year": 2026,
+        "first_suspected_week": 28,
+        "diagnosed_year": null,
+        "diagnosed_week": null,
+        "subtype": "SAV3",
+        "locality_name": "Krigsholmen"
+      }
+    },
+    "12625": {
+      "INFEKSIOES_LAKSEANEMI": {
+        "latest_status": "SUSPECTED",
+        "latest_year": 2026,
+        "latest_week": 28,
+        "first_suspected_year": 2026,
+        "first_suspected_week": 28,
+        "diagnosed_year": null,
+        "diagnosed_week": null,
+        "subtype": null,
+        "locality_name": "Bjørgan"
+      }
+    },
+    "37057": {
+      "INFEKSIOES_LAKSEANEMI": {
+        "latest_status": "SUSPECTED",
+        "latest_year": 2026,
+        "latest_week": 31,
+        "first_suspected_year": 2026,
+        "first_suspected_week": 31,
+        "diagnosed_year": null,
+        "diagnosed_week": null,
+        "subtype": null,
+        "locality_name": "Mjøsund Vest"
+      }
+    }
+  }
+}

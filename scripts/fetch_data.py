@@ -13,8 +13,12 @@ Output: data/localities.json, data/summary.json
 import requests
 import json
 import os
+import sys
 from datetime import datetime, timedelta
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parent))
+from build_disease_status import build_and_save as build_disease_status
 
 # =============================================================================
 # SECTION 1: CONFIGURATION
@@ -223,6 +227,11 @@ def main():
 
     # Update the manifest of available weeks
     update_manifest(year, week, metadata["fetched_at"])
+
+    # Rebuild the persistent disease status registry (suspected/diagnosed history)
+    # from every archived weekly summary file, including this one
+    print("\nRebuilding disease status registry...")
+    build_disease_status()
 
     # Quick stats
     print(f"\n{'=' * 60}")
