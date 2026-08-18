@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-08-11T08:44:28.640487+00:00",
+  "generated_at": "2026-08-18T08:25:40.720081+00:00",
   "source_note": "Accumulated from Barentswatch's weekly diseaseOutbreaks feed, which only reports newly SUSPECTED/DIAGNOSED cases per week. Localities/diseases never seen in that feed have no entry here.",
-  "weeks_scanned": 31,
+  "weeks_scanned": 32,
   "localities": {
     "33737": {
       "PANKREASSYKDOM": {
@@ -526,6 +526,32 @@
         "diagnosed_week": null,
         "subtype": null,
         "locality_name": "Mjøsund Vest"
+      }
+    },
+    "32397": {
+      "INFEKSIOES_LAKSEANEMI": {
+        "latest_status": "SUSPECTED",
+        "latest_year": 2026,
+        "latest_week": 33,
+        "first_suspected_year": 2026,
+        "first_suspected_week": 33,
+        "diagnosed_year": null,
+        "diagnosed_week": null,
+        "subtype": null,
+        "locality_name": "Storvika I Skjerstadfjorden"
+      }
+    },
+    "39917": {
+      "PANKREASSYKDOM": {
+        "latest_status": "SUSPECTED",
+        "latest_year": 2026,
+        "latest_week": 33,
+        "first_suspected_year": 2026,
+        "first_suspected_week": 33,
+        "diagnosed_year": null,
+        "diagnosed_week": null,
+        "subtype": "SAV3",
+        "locality_name": "Fureneset"
       }
     }
   }
