@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-08-25T08:32:04.682201+00:00",
+  "generated_at": "2026-09-01T12:54:37.390897+00:00",
   "source_note": "Accumulated from Barentswatch's weekly diseaseOutbreaks feed, which only reports newly SUSPECTED/DIAGNOSED cases per week. Localities/diseases never seen in that feed have no entry here.",
-  "weeks_scanned": 33,
+  "weeks_scanned": 34,
   "localities": {
     "33737": {
       "PANKREASSYKDOM": {
@@ -552,6 +552,32 @@
         "diagnosed_week": null,
         "subtype": "SAV3",
         "locality_name": "Fureneset"
+      }
+    },
+    "11272": {
+      "INFEKSIOES_LAKSEANEMI": {
+        "latest_status": "SUSPECTED",
+        "latest_year": 2026,
+        "latest_week": 35,
+        "first_suspected_year": 2026,
+        "first_suspected_week": 35,
+        "diagnosed_year": null,
+        "diagnosed_week": null,
+        "subtype": null,
+        "locality_name": "Øksengård"
+      }
+    },
+    "19115": {
+      "PANKREASSYKDOM": {
+        "latest_status": "SUSPECTED",
+        "latest_year": 2026,
+        "latest_week": 35,
+        "first_suspected_year": 2026,
+        "first_suspected_week": 35,
+        "diagnosed_year": null,
+        "diagnosed_week": null,
+        "subtype": "SAV2",
+        "locality_name": "Fugløya"
       }
     }
   }
