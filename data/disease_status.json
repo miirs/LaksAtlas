@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-01T12:54:37.390897+00:00",
+  "generated_at": "2026-09-08T12:26:54.185532+00:00",
   "source_note": "Accumulated from Barentswatch's weekly diseaseOutbreaks feed, which only reports newly SUSPECTED/DIAGNOSED cases per week. Localities/diseases never seen in that feed have no entry here.",
-  "weeks_scanned": 34,
+  "weeks_scanned": 35,
   "localities": {
     "33737": {
       "PANKREASSYKDOM": {
@@ -578,6 +578,45 @@
         "diagnosed_week": null,
         "subtype": "SAV2",
         "locality_name": "Fugløya"
+      }
+    },
+    "13811": {
+      "INFEKSIOES_LAKSEANEMI": {
+        "latest_status": "SUSPECTED",
+        "latest_year": 2026,
+        "latest_week": 36,
+        "first_suspected_year": 2026,
+        "first_suspected_week": 36,
+        "diagnosed_year": null,
+        "diagnosed_week": null,
+        "subtype": null,
+        "locality_name": "Breivika"
+      }
+    },
+    "26835": {
+      "FRANCISELLOSE": {
+        "latest_status": "SUSPECTED",
+        "latest_year": 2026,
+        "latest_week": 36,
+        "first_suspected_year": 2026,
+        "first_suspected_week": 36,
+        "diagnosed_year": null,
+        "diagnosed_week": null,
+        "subtype": null,
+        "locality_name": "Pålskjæra"
+      }
+    },
+    "24695": {
+      "INFEKSIOES_LAKSEANEMI": {
+        "latest_status": "SUSPECTED",
+        "latest_year": 2026,
+        "latest_week": 36,
+        "first_suspected_year": 2026,
+        "first_suspected_week": 36,
+        "diagnosed_year": null,
+        "diagnosed_week": null,
+        "subtype": null,
+        "locality_name": "Årnes"
       }
     }
   }
