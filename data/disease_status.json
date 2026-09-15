@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-08T12:26:54.185532+00:00",
+  "generated_at": "2026-09-15T13:00:59.075207+00:00",
   "source_note": "Accumulated from Barentswatch's weekly diseaseOutbreaks feed, which only reports newly SUSPECTED/DIAGNOSED cases per week. Localities/diseases never seen in that feed have no entry here.",
-  "weeks_scanned": 35,
+  "weeks_scanned": 36,
   "localities": {
     "33737": {
       "PANKREASSYKDOM": {
@@ -617,6 +617,19 @@
         "diagnosed_week": null,
         "subtype": null,
         "locality_name": "Årnes"
+      }
+    },
+    "31837": {
+      "INFEKSIOES_LAKSEANEMI": {
+        "latest_status": "SUSPECTED",
+        "latest_year": 2026,
+        "latest_week": 37,
+        "first_suspected_year": 2026,
+        "first_suspected_week": 37,
+        "diagnosed_year": null,
+        "diagnosed_week": null,
+        "subtype": null,
+        "locality_name": "Sørfjorden Stamfiskanlegg"
       }
     }
   }
