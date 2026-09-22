@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-15T13:00:59.075207+00:00",
+  "generated_at": "2026-09-22T12:58:12.319749+00:00",
   "source_note": "Accumulated from Barentswatch's weekly diseaseOutbreaks feed, which only reports newly SUSPECTED/DIAGNOSED cases per week. Localities/diseases never seen in that feed have no entry here.",
-  "weeks_scanned": 36,
+  "weeks_scanned": 37,
   "localities": {
     "33737": {
       "PANKREASSYKDOM": {
