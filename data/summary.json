@@ -1,9 +1,9 @@
 {
   "metadata": {
-    "fetched_at": "2026-10-06T14:36:45.088474",
+    "fetched_at": "2026-10-13T15:26:39.757592",
     "year": 2026,
-    "week": 40,
-    "total_localities": 1780
+    "week": 41,
+    "total_localities": 1779
   },
   "summary": {
     "diseaseOutbreaks": [],
@@ -273,25 +273,25 @@
     },
     "liceStatistics": {
       "aboveThreshold": {
-        "count": 7,
-        "percentage": 1.37524557956778
+        "count": 8,
+        "percentage": 1.5968063872255487
       },
       "belowThreshold": {
-        "count": 502,
-        "percentage": 98.62475442043221
+        "count": 493,
+        "percentage": 98.40319361277446
       },
       "belowMinimumThreshold": {
-        "count": 363,
-        "percentage": 71.31630648330058
+        "count": 339,
+        "percentage": 67.66467065868264
       }
     },
     "annualLiceStatistics": {
       "isFiltered": true,
       "liceStatistics": {
-        "aboveThreshold": 265
+        "aboveThreshold": 281
       },
       "filteredLiceStatistics": {
-        "aboveThreshold": 264
+        "aboveThreshold": 280
       },
       "weeklyLiceStatistics": {
         "1": {
@@ -412,13 +412,13 @@
           "aboveThreshold": 11
         },
         "40": {
-          "aboveThreshold": 7
+          "aboveThreshold": 15
         },
         "41": {
-          "aboveThreshold": 0
+          "aboveThreshold": 8
         },
         "42": {
-          "aboveThreshold": null
+          "aboveThreshold": 0
         },
         "43": {
           "aboveThreshold": null
@@ -458,64 +458,25 @@
     "farmedFishEscapes": [
       {
         "locality": {
-          "no": 12966,
-          "name": "LINDVIK",
+          "no": 25835,
+          "name": "FLATØYFLU",
           "isOnLand": false
         },
         "species": "Laks",
-        "date": "2026-10-02T12:46:00+02:00",
+        "date": "2026-10-10T14:40:00+02:00",
         "count": null,
         "estimatedCount": "1-10",
         "estimationSource": "Breeder",
-        "size": 0.274
-      },
-      {
-        "locality": {
-          "no": 10147,
-          "name": "TUNGESVIK",
-          "isOnLand": false
-        },
-        "species": "Laks",
-        "date": "2026-09-30T12:30:00+02:00",
-        "count": null,
-        "estimatedCount": "1-10",
-        "estimationSource": "Breeder",
-        "size": 4.6
-      },
-      {
-        "locality": {
-          "no": 17495,
-          "name": "VULLUM",
-          "isOnLand": false
-        },
-        "species": "Laks",
-        "date": "2026-09-30T09:09:00+02:00",
-        "count": null,
-        "estimatedCount": "1-10",
-        "estimationSource": "Breeder",
-        "size": 1.0
-      },
-      {
-        "locality": {
-          "no": 13996,
-          "name": "HAMNEFJORD",
-          "isOnLand": false
-        },
-        "species": "Laks",
-        "date": "2026-09-28T07:15:00+02:00",
-        "count": null,
-        "estimatedCount": "1-10",
-        "estimationSource": "Breeder",
-        "size": 1.685
+        "size": 0.35
       }
     ],
     "annualEscapeStatistics": {
       "isFiltered": false,
       "escapeStatistics": {
-        "count": 45
+        "count": 40
       },
       "filteredEscapeStatistics": {
-        "count": 45
+        "count": 40
       },
       "weeklyEscapeStatistics": {
         "1": {
@@ -524,26 +485,17 @@
         "32": {
           "count": 1
         },
-        "36": {
-          "count": 1
-        },
         "39": {
           "count": 6
         },
-        "40": {
-          "count": 4
+        "42": {
+          "count": 1
         },
         "4": {
           "count": 1
         },
-        "27": {
-          "count": 4
-        },
         "25": {
           "count": 4
-        },
-        "37": {
-          "count": 3
         },
         "38": {
           "count": 1
@@ -566,8 +518,14 @@
         "2": {
           "count": 1
         },
+        "27": {
+          "count": 2
+        },
         "31": {
           "count": 1
+        },
+        "40": {
+          "count": 2
         },
         "15": {
           "count": 1
@@ -588,6 +546,12 @@
           "count": 1
         },
         "24": {
+          "count": 1
+        },
+        "37": {
+          "count": 1
+        },
+        "41": {
           "count": 1
         },
         "3": {
@@ -638,11 +602,8 @@
         "35": {
           "count": 0
         },
-        "41": {
+        "36": {
           "count": 0
-        },
-        "42": {
-          "count": null
         },
         "43": {
           "count": null
