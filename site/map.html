@@ -414,8 +414,11 @@ header { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; padding: 0 2
 const norwayBounds = L.latLngBounds([57.5, 3.5], [71.5, 31.5]);
 const map = L.map('map', { center: [65.0, 13], zoom: 5, minZoom: 4, maxZoom: 15, maxBounds: norwayBounds.pad(0.3), maxBoundsViscosity: 0.8, zoomControl: true, attributionControl: true });
 map.fitBounds(norwayBounds, { padding: [20, 20] });
-L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', { attribution: '&copy; OSM &copy; CARTO', subdomains: 'abcd', maxZoom: 19 }).addTo(map);
-L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png', { subdomains: 'abcd', maxZoom: 19, pane: 'overlayPane' }).addTo(map);
+// CARTO's free raster basemap tiles now require an API key (basemaps.cartocdn.com
+// started returning "API KEY REQUIRED" placeholder tiles) — switched to Esri's
+// free, no-key-required Dark Gray Canvas tiles instead.
+L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', { attribution: 'Esri, HERE, Garmin, &copy; OpenStreetMap contributors', maxZoom: 16 }).addTo(map);
+L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}', { maxZoom: 16, pane: 'overlayPane' }).addTo(map);
 
 // =========================================================================
 // SECTION: GLOBAL STATE — Markers grouped by status for filtering
