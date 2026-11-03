@@ -1,16 +1,29 @@
 {
   "metadata": {
-    "fetched_at": "2026-10-27T13:49:04.681468",
+    "fetched_at": "2026-11-03T15:39:22.781376",
     "year": 2026,
-    "week": 43,
-    "total_localities": 1780
+    "week": 44,
+    "total_localities": 1782
   },
   "summary": {
-    "diseaseOutbreaks": [],
+    "diseaseOutbreaks": [
+      {
+        "locality": {
+          "no": 25315,
+          "name": "Skogsøya",
+          "isOnLand": false
+        },
+        "disease": {
+          "name": "FRANCISELLOSE",
+          "subType": null,
+          "status": "DIAGNOSED"
+        }
+      }
+    ],
     "diseaseStatistics": [
       {
         "name": "PANKREASSYKDOM",
-        "count": 32
+        "count": 29
       },
       {
         "name": "INFEKSIOES_LAKSEANEMI",
@@ -18,7 +31,7 @@
       },
       {
         "name": "FRANCISELLOSE",
-        "count": 2
+        "count": 3
       }
     ],
     "annualDiseaseStatistics": {
@@ -278,35 +291,35 @@
     },
     "liceStatistics": {
       "aboveThreshold": {
-        "count": 16,
-        "percentage": 3.455723542116631
+        "count": 25,
+        "percentage": 4.690431519699812
       },
       "belowThreshold": {
-        "count": 447,
-        "percentage": 96.54427645788337
+        "count": 508,
+        "percentage": 95.30956848030019
       },
       "belowMinimumThreshold": {
-        "count": 283,
-        "percentage": 61.12311015118791
+        "count": 317,
+        "percentage": 59.47467166979362
       }
     },
     "annualLiceStatistics": {
       "isFiltered": true,
       "liceStatistics": {
-        "aboveThreshold": 333
+        "aboveThreshold": 363
       },
       "filteredLiceStatistics": {
-        "aboveThreshold": 332
+        "aboveThreshold": 362
       },
       "weeklyLiceStatistics": {
         "1": {
-          "aboveThreshold": 9
+          "aboveThreshold": 8
         },
         "2": {
-          "aboveThreshold": 6
+          "aboveThreshold": 5
         },
         "3": {
-          "aboveThreshold": 3
+          "aboveThreshold": 2
         },
         "4": {
           "aboveThreshold": 5
@@ -426,13 +439,13 @@
           "aboveThreshold": 27
         },
         "43": {
-          "aboveThreshold": 16
+          "aboveThreshold": 25
         },
         "44": {
-          "aboveThreshold": 1
+          "aboveThreshold": 25
         },
         "45": {
-          "aboveThreshold": null
+          "aboveThreshold": 0
         },
         "46": {
           "aboveThreshold": null
@@ -463,51 +476,67 @@
     "farmedFishEscapes": [
       {
         "locality": {
-          "no": 33337,
-          "name": "LYNGNES",
+          "no": 36077,
+          "name": "MOLLVIKA",
           "isOnLand": false
         },
         "species": "Laks",
-        "date": "2026-10-21T02:50:00+02:00",
-        "count": null,
-        "estimatedCount": "10-100",
-        "estimationSource": "Breeder",
-        "size": 2.2
-      },
-      {
-        "locality": {
-          "no": 11861,
-          "name": "SKIPNINGSDALEN",
-          "isOnLand": false
-        },
-        "species": "Laks",
-        "date": "2026-10-22T07:18:00+02:00",
+        "date": "2026-10-27T08:10:00+01:00",
         "count": null,
         "estimatedCount": "1-10",
         "estimationSource": "Breeder",
-        "size": 5.431
+        "size": 0.461
+      },
+      {
+        "locality": {
+          "no": 21516,
+          "name": "HULLØYHAMN Ø",
+          "isOnLand": false
+        },
+        "species": "Laks",
+        "date": "2026-10-30T09:00:00+01:00",
+        "count": null,
+        "estimatedCount": "1-10",
+        "estimationSource": "Breeder",
+        "size": 5.0
+      },
+      {
+        "locality": {
+          "no": 33957,
+          "name": "HOFSØYA",
+          "isOnLand": false
+        },
+        "species": "Laks",
+        "date": "2026-10-28T22:00:00+01:00",
+        "count": null,
+        "estimatedCount": "1-10",
+        "estimationSource": "Breeder",
+        "size": 2.2
       }
     ],
     "annualEscapeStatistics": {
       "isFiltered": false,
       "escapeStatistics": {
-        "count": 41
+        "count": 38
       },
       "filteredEscapeStatistics": {
-        "count": 41
+        "count": 38
       },
       "weeklyEscapeStatistics": {
-        "1": {
+        "20": {
           "count": 1
         },
-        "27": {
-          "count": 2
+        "1": {
+          "count": 1
         },
         "32": {
           "count": 1
         },
+        "44": {
+          "count": 3
+        },
         "39": {
-          "count": 6
+          "count": 4
         },
         "42": {
           "count": 1
@@ -518,11 +547,8 @@
         "25": {
           "count": 4
         },
-        "38": {
-          "count": 1
-        },
         "33": {
-          "count": 3
+          "count": 2
         },
         "7": {
           "count": 1
@@ -530,11 +556,8 @@
         "23": {
           "count": 1
         },
-        "20": {
-          "count": 1
-        },
         "43": {
-          "count": 2
+          "count": 1
         },
         "6": {
           "count": 1
@@ -542,11 +565,14 @@
         "2": {
           "count": 1
         },
+        "27": {
+          "count": 2
+        },
         "31": {
           "count": 1
         },
         "40": {
-          "count": 2
+          "count": 1
         },
         "15": {
           "count": 1
@@ -626,11 +652,11 @@
         "36": {
           "count": 0
         },
-        "44": {
+        "38": {
           "count": 0
         },
         "45": {
-          "count": null
+          "count": 0
         },
         "46": {
           "count": null
