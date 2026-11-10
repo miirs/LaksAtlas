@@ -1,25 +1,12 @@
 {
   "metadata": {
-    "fetched_at": "2026-11-03T15:39:22.781376",
+    "fetched_at": "2026-11-10T15:57:52.613784",
     "year": 2026,
-    "week": 44,
+    "week": 45,
     "total_localities": 1782
   },
   "summary": {
-    "diseaseOutbreaks": [
-      {
-        "locality": {
-          "no": 25315,
-          "name": "Skogsøya",
-          "isOnLand": false
-        },
-        "disease": {
-          "name": "FRANCISELLOSE",
-          "subType": null,
-          "status": "DIAGNOSED"
-        }
-      }
-    ],
+    "diseaseOutbreaks": [],
     "diseaseStatistics": [
       {
         "name": "PANKREASSYKDOM",
@@ -27,7 +14,7 @@
       },
       {
         "name": "INFEKSIOES_LAKSEANEMI",
-        "count": 14
+        "count": 13
       },
       {
         "name": "FRANCISELLOSE",
@@ -291,25 +278,25 @@
     },
     "liceStatistics": {
       "aboveThreshold": {
-        "count": 25,
-        "percentage": 4.690431519699812
+        "count": 13,
+        "percentage": 2.7777777777777777
       },
       "belowThreshold": {
-        "count": 508,
-        "percentage": 95.30956848030019
+        "count": 455,
+        "percentage": 97.22222222222221
       },
       "belowMinimumThreshold": {
-        "count": 317,
-        "percentage": 59.47467166979362
+        "count": 281,
+        "percentage": 60.04273504273504
       }
     },
     "annualLiceStatistics": {
       "isFiltered": true,
       "liceStatistics": {
-        "aboveThreshold": 363
+        "aboveThreshold": 376
       },
       "filteredLiceStatistics": {
-        "aboveThreshold": 362
+        "aboveThreshold": 375
       },
       "weeklyLiceStatistics": {
         "1": {
@@ -445,10 +432,10 @@
           "aboveThreshold": 25
         },
         "45": {
-          "aboveThreshold": 0
+          "aboveThreshold": 13
         },
         "46": {
-          "aboveThreshold": null
+          "aboveThreshold": 0
         },
         "47": {
           "aboveThreshold": null
@@ -476,56 +463,40 @@
     "farmedFishEscapes": [
       {
         "locality": {
-          "no": 36077,
-          "name": "MOLLVIKA",
+          "no": 31817,
+          "name": "SVARTSKJÆR",
           "isOnLand": false
         },
         "species": "Laks",
-        "date": "2026-10-27T08:10:00+01:00",
+        "date": "2026-11-05T14:18:00+01:00",
         "count": null,
         "estimatedCount": "1-10",
         "estimationSource": "Breeder",
-        "size": 0.461
+        "size": 4.714
       },
       {
         "locality": {
-          "no": 21516,
-          "name": "HULLØYHAMN Ø",
+          "no": 11687,
+          "name": "RAMSVIK",
           "isOnLand": false
         },
-        "species": "Laks",
-        "date": "2026-10-30T09:00:00+01:00",
+        "species": "Regnbueørret",
+        "date": "2026-11-05T05:20:00+01:00",
         "count": null,
         "estimatedCount": "1-10",
         "estimationSource": "Breeder",
-        "size": 5.0
-      },
-      {
-        "locality": {
-          "no": 33957,
-          "name": "HOFSØYA",
-          "isOnLand": false
-        },
-        "species": "Laks",
-        "date": "2026-10-28T22:00:00+01:00",
-        "count": null,
-        "estimatedCount": "1-10",
-        "estimationSource": "Breeder",
-        "size": 2.2
+        "size": 5.06
       }
     ],
     "annualEscapeStatistics": {
       "isFiltered": false,
       "escapeStatistics": {
-        "count": 38
+        "count": 35
       },
       "filteredEscapeStatistics": {
-        "count": 38
+        "count": 35
       },
       "weeklyEscapeStatistics": {
-        "20": {
-          "count": 1
-        },
         "1": {
           "count": 1
         },
@@ -536,7 +507,7 @@
           "count": 3
         },
         "39": {
-          "count": 4
+          "count": 2
         },
         "42": {
           "count": 1
@@ -548,12 +519,12 @@
           "count": 4
         },
         "33": {
-          "count": 2
-        },
-        "7": {
           "count": 1
         },
         "23": {
+          "count": 1
+        },
+        "20": {
           "count": 1
         },
         "43": {
@@ -568,8 +539,8 @@
         "27": {
           "count": 2
         },
-        "31": {
-          "count": 1
+        "45": {
+          "count": 2
         },
         "40": {
           "count": 1
@@ -605,6 +576,9 @@
           "count": 0
         },
         "5": {
+          "count": 0
+        },
+        "7": {
           "count": 0
         },
         "8": {
@@ -643,6 +617,9 @@
         "30": {
           "count": 0
         },
+        "31": {
+          "count": 0
+        },
         "34": {
           "count": 0
         },
@@ -655,11 +632,8 @@
         "38": {
           "count": 0
         },
-        "45": {
-          "count": 0
-        },
         "46": {
-          "count": null
+          "count": 0
         },
         "47": {
           "count": null
